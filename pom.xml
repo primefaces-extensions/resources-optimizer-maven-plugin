@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!-- $Id$ -->
+	<parent>
+		<groupId>org.primefaces.extensions</groupId>
+		<artifactId>pe-plugins-builder</artifactId>
+		<version>SNAPSHOT</version>
+	</parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.primefaces.extensions</groupId>
+    <artifactId>resources-optimizer-maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <version>0.3-SNAPSHOT</version>
+    <name>resources-optimizer-maven-plugin</name>
+    <description>
+        <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
+    </description>
+    <url>http://code.google.com/p/primefaces-extensions</url>
+
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    
+    <issueManagement>
+        <system>Google Code</system>
+        <url>http://code.google.com/p/primefaces-extensions/issues/list</url>
+    </issueManagement>
+
+    <inceptionYear>2011</inceptionYear>
+
+    <scm>
+        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/resources-optimizer-maven-plugin/trunk</connection>
+        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/resources-optimizer-maven-plugin/trunk</developerConnection>
+        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/resources-optimizer-maven-plugin/trunk</url>
+    </scm>
+    
+    <developers>
+        <developer>
+            <id>varaksin</id>
+            <name>Oleg Varaksin</name>
+            <email>ovaraksin@googlemail.com</email>
+            <roles>
+                <role>Buildmaster</role>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+        </dependency>        
+		<dependency>
+			<groupId>com.google.javascript</groupId>
+			<artifactId>closure-compiler</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.yahoo.platform.yui</groupId>
+			<artifactId>yuicompressor</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>
