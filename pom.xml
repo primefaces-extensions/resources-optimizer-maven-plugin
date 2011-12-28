@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.primefaces.extensions</groupId>
 		<artifactId>pe-plugins-builder</artifactId>
-		<version>SNAPSHOT</version>
+		<version>1.0</version>
 	</parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -34,9 +34,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/trunk</connection>
-        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/trunk</developerConnection>
-        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/trunk</url>
+        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/tags/resources-optimizer-maven-plugin-1.0</connection>
+        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/tags/resources-optimizer-maven-plugin-1.0</developerConnection>
+        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/tags/resources-optimizer-maven-plugin-1.0</url>
     </scm>
     
     <developers>
