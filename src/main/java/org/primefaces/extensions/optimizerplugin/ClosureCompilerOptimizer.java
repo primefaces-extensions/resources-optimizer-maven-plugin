@@ -151,7 +151,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 					}
 				} else {
 					// only aggregation without compressing
-					outputFile = aggregateFiles(rsa, cset, log);
+					outputFile = aggregateFiles(rsa, cset, log, true);
 				}
 
 				// delete single files if necessary

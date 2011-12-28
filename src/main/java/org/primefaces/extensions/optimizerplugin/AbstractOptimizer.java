@@ -68,7 +68,8 @@ public abstract class AbstractOptimizer {
 		return outputFile;
 	}
 
-	protected File aggregateFiles(final ResourcesSetAdapter rsa, final Charset cset, final Log log) throws IOException {
+	protected File aggregateFiles(final ResourcesSetAdapter rsa, final Charset cset, final Log log, final boolean delimeters)
+	    throws IOException {
 		int filesCount = rsa.getFiles().size();
 		if (rsa.getAggregation().getPrependedFile() != null) {
 			filesCount++;
@@ -89,7 +90,12 @@ public abstract class AbstractOptimizer {
 			StringWriter writer = new StringWriter();
 			IOUtil.copy(in, writer);
 
-			// write / append compiled content into / to the new file
+			if (delimeters && outputFile.length() > 0) {
+				// append semicolon to the new file in order to avoid invalid JS code
+				Files.append(";", outputFile, cset);
+			}
+
+			// write / append content into / to the new file
 			Files.append(writer.toString(), outputFile, cset);
 			IOUtil.close(in);
 		}
@@ -126,6 +132,10 @@ public abstract class AbstractOptimizer {
 		InputStreamReader in = new InputStreamReader(new FileInputStream(prependedFile), encoding);
 		StringWriter writer = new StringWriter();
 		IOUtil.copy(in, writer);
+
+		String lineSeparator =
+		    java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
+		writer.write(lineSeparator);
 
 		// write / append compiled content into / to the new file
 		Files.append(writer.toString(), outputFile, cset);

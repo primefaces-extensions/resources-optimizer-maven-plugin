@@ -157,7 +157,7 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 					}
 				} else {
 					// only aggregation without compressing
-					outputFile = aggregateFiles(rsa, cset, log);
+					outputFile = aggregateFiles(rsa, cset, log, false);
 				}
 
 				// delete single files if necessary
