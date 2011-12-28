@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.primefaces.extensions</groupId>
 		<artifactId>pe-plugins-builder</artifactId>
-		<version>1.0</version>
+		<version>SNAPSHOT</version>
 	</parent>
 
     <modelVersion>4.0.0</modelVersion>
