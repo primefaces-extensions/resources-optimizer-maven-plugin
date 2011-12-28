@@ -133,9 +133,7 @@ public abstract class AbstractOptimizer {
 		StringWriter writer = new StringWriter();
 		IOUtil.copy(in, writer);
 
-		String lineSeparator =
-		    java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
-		writer.write(lineSeparator);
+		writer.write(System.getProperty("line.separator"));
 
 		// write / append compiled content into / to the new file
 		Files.append(writer.toString(), outputFile, cset);
