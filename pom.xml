@@ -3,14 +3,14 @@
 	<parent>
 		<groupId>org.primefaces.extensions</groupId>
 		<artifactId>pe-plugins-builder</artifactId>
-		<version>1.0</version>
+		<version>SNAPSHOT</version>
 	</parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.primefaces.extensions</groupId>
     <artifactId>resources-optimizer-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0</version>
+    <version>0.3-SNAPSHOT</version>
     <name>resources-optimizer-maven-plugin</name>
     <description>
         <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
@@ -34,9 +34,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/tags/pe-plugins-builder-1.0/resources-optimizer-maven-plugin-1.0</connection>
-        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/tags/pe-plugins-builder-1.0/resources-optimizer-maven-plugin-1.0</developerConnection>
-        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-1.0/tags/pe-plugins-builder-1.0/resources-optimizer-maven-plugin-1.0</url>
+        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/trunk</connection>
+        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/trunk</developerConnection>
+        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin/trunk</url>
     </scm>
     
     <developers>
