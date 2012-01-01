@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <!-- $Id$ -->
-	<parent>
-		<groupId>org.primefaces.extensions</groupId>
-		<artifactId>pe-plugins-builder</artifactId>
-		<version>SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.primefaces.extensions</groupId>
+        <artifactId>master-pom</artifactId>
+        <version>0.2.0</version>
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.primefaces.extensions</groupId>
@@ -34,9 +35,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-0.3.0/trunk</connection>
-        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-0.3.0/trunk</developerConnection>
-        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin/tags/pe-plugins-builder-0.3.0/trunk</url>
+        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin</connection>
+        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin</developerConnection>
+        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin</url>
     </scm>
     
     <developers>
@@ -53,6 +54,18 @@
     </developers>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+        </dependency>        
 		<dependency>
 			<groupId>com.google.javascript</groupId>
 			<artifactId>closure-compiler</artifactId>
