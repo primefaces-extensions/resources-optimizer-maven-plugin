@@ -34,9 +34,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin</connection>
-        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin</developerConnection>
-        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin</url>
+        <connection>scm:svn:http://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/trunk</connection>
+        <developerConnection>scm:svn:https://primefaces-extensions.googlecode.com/svn/plugins/resources-optimizer-maven-plugin/trunk</developerConnection>
+        <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin/trunk</url>
     </scm>
     
     <developers>
