@@ -75,5 +75,4 @@
 			<artifactId>yuicompressor</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>
