@@ -40,10 +40,6 @@
         <url>http://code.google.com/p/primefaces-extensions/source/browse/#svn/plugins/resources-optimizer-maven-plugin/trunk</url>
     </scm>
     
-    <prerequisites>
-        <maven>3.0.3</maven>
-    </prerequisites>    
-    
     <developers>
         <developer>
             <id>varaksin</id>
