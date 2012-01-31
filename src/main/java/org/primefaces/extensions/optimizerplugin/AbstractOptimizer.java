@@ -118,10 +118,6 @@ public abstract class AbstractOptimizer {
 	}
 
 	protected void renameOutputFileIfNecessary(final ResourcesSetAdapter rsa, final File outputFile) throws IOException {
-		if (!rsa.getAggregation().isSubDirMode()) {
-			return;
-		}
-
 		if (outputFile != null && outputFile.exists()) {
 			FileUtils.rename(outputFile, rsa.getAggregation().getOutputFile());
 		}
@@ -142,19 +138,13 @@ public abstract class AbstractOptimizer {
 
 	protected File getOutputFile(final ResourcesSetAdapter rsa) throws IOException {
 		File outputFile = rsa.getAggregation().getOutputFile();
-		if (rsa.getAggregation().isSubDirMode()) {
-			// prevent overwriting of existing CSS or JS file with the same name as the output file
-			File aggrFile = new File(FileUtils.removeExtension(outputFile.getCanonicalPath()) + AGGREGATED_FILE_EXTENSION);
-			Files.createParentDirs(aggrFile);
-			Files.touch(aggrFile);
 
-			return aggrFile;
-		}
+		// prevent overwriting of existing CSS or JS file with the same name as the output file
+		File aggrFile = new File(FileUtils.removeExtension(outputFile.getCanonicalPath()) + AGGREGATED_FILE_EXTENSION);
+		Files.createParentDirs(aggrFile);
+		Files.touch(aggrFile);
 
-		Files.createParentDirs(outputFile);
-		Files.touch(outputFile);
-
-		return outputFile;
+		return aggrFile;
 	}
 
 	protected void addToOriginalSize(final File file) {
