@@ -37,7 +37,6 @@ import com.google.javascript.jscomp.WarningLevel;
  * @version $Revision$
  * @goal    optimize
  * @phase   process-resources
- * @since   0.1
  */
 public class ResourcesOptimizerMojo extends AbstractMojo {
 
