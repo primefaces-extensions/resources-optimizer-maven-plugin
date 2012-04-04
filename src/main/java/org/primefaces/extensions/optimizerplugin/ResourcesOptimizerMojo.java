@@ -18,17 +18,16 @@
 
 package org.primefaces.extensions.optimizerplugin;
 
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.WarningLevel;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.WarningLevel;
+import java.io.File;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Entry point for this plugin.
@@ -127,7 +126,6 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	 * @throws MojoExecutionException
 	 * @throws MojoFailureException
 	 */
-	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Optimization of resources is started ...");
 
