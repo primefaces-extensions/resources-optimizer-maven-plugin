@@ -51,7 +51,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 	private static final String OPTIMIZED_FILE_EXTENSION = ".optcss";
 
 	@Override
-	public void optimize(final ResourcesSetAdapter rsa, final Log log) throws MojoExecutionException {
+	public void optimize(final ResourcesSetAdapter rsAdapter, final Log log) throws MojoExecutionException {
+		ResourcesSetCssAdapter rsa = (ResourcesSetCssAdapter) rsAdapter;
 		InputStreamReader in = null;
 		OutputStreamWriter out = null;
 

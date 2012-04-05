@@ -38,6 +38,8 @@ public class TokenReplacingReader extends Reader {
 	private String tokenEndMarker;
 	private char[] tokenStartMarkerChars;
 	private char[] tokenEndMarkerChars;
+	private char[] tmpTokenStartMarkerChars;
+	private char[] tmpTokenEndMarkerChars;
 	private PushbackReader pushbackReader;
 	private TokenResolver tokenResolver;
 	private StringBuilder tokenBuffer = new StringBuilder();
@@ -47,17 +49,20 @@ public class TokenReplacingReader extends Reader {
 	public TokenReplacingReader(final TokenResolver resolver, final Reader source, final String tokenStartMarker,
 	                            final String tokenEndMarker) {
 		if (resolver == null) {
-			throw new IllegalArgumentException("TokenResolver is null");
+			throw new IllegalArgumentException("Token resolver is null");
 		}
 
-		if (tokenStartMarker == null || tokenEndMarker == null) {
-			throw new IllegalArgumentException("Token start or end marker is null");
+		if ((tokenStartMarker == null || tokenStartMarker.length() < 1)
+		    || (tokenEndMarker == null || tokenEndMarker.length() < 1)) {
+			throw new IllegalArgumentException("Token start / end marker is null or empty");
 		}
 
 		this.tokenStartMarker = tokenStartMarker;
 		this.tokenEndMarker = tokenEndMarker;
 		this.tokenStartMarkerChars = tokenStartMarker.toCharArray();
 		this.tokenEndMarkerChars = tokenEndMarker.toCharArray();
+		this.tmpTokenStartMarkerChars = new char[tokenStartMarker.length()];
+		this.tmpTokenEndMarkerChars = new char[tokenEndMarker.length()];
 		this.pushbackReader = new PushbackReader(source, Math.max(tokenStartMarker.length(), tokenEndMarker.length()));
 		this.tokenResolver = resolver;
 	}
@@ -75,20 +80,78 @@ public class TokenReplacingReader extends Reader {
 			}
 		}
 
-		char[] cbuf = new char[tokenStartMarker.length()];
-		pushbackReader.read(cbuf);
+		// read proper number of chars into a temp. char array in order to find token start marker
+		int countValidChars = readChars(tmpTokenStartMarkerChars);
 
-		if (!Arrays.equals(cbuf, tokenStartMarker.toCharArray())) {
-			pushbackReader.unread(cbuf);
+		if (!Arrays.equals(tmpTokenStartMarkerChars, tokenStartMarkerChars)) {
+			if (countValidChars > 0) {
+				pushbackReader.unread(tmpTokenStartMarkerChars, 0, countValidChars);
+			}
 
 			return pushbackReader.read();
 		}
 
-		// found start of token
+		// found start of token, read proper number of chars into a temp. char array in order to find token end marker
+		boolean endOfSource = false;
 		tokenBuffer.delete(0, tokenBuffer.length());
+		countValidChars = readChars(tmpTokenEndMarkerChars);
 
-		// TODO
-		return 0;
+		while (!Arrays.equals(tmpTokenEndMarkerChars, tokenEndMarkerChars)) {
+			if (countValidChars == -1) {
+				// end of source and no token end marker was found
+				endOfSource = true;
+
+				break;
+			}
+
+			for (int i = 0; i < countValidChars; i++) {
+				tokenBuffer.append(tmpTokenEndMarkerChars[i]);
+			}
+
+			pushbackReader.unread(tmpTokenEndMarkerChars, 0, countValidChars);
+			if (pushbackReader.read() == -1) {
+				// end of source and no token end marker was found
+				endOfSource = true;
+
+				break;
+			}
+
+			countValidChars = readChars(tmpTokenEndMarkerChars);
+		}
+
+		if (endOfSource) {
+			resolvedToken = tokenStartMarker + tokenBuffer.toString();
+		} else {
+			// try to resolve token
+			resolvedToken = tokenResolver.resolveToken(tokenBuffer.toString());
+			if (resolvedToken == null) {
+				// token was not resolved
+				resolvedToken = tokenStartMarker + tokenBuffer.toString() + tokenEndMarker;
+			}
+		}
+
+		return resolvedToken.charAt(resolvedTokenIndex++);
+	}
+
+	private int readChars(char[] tmpChars) throws IOException {
+		int countValidChars = -1;
+		int length = tmpChars.length;
+		int data = pushbackReader.read();
+
+		for (int i = 0; i < length; i++) {
+			if (data != -1) {
+				tmpChars[i] = (char) data;
+				countValidChars = i + 1;
+				if (i + 1 < length) {
+					data = pushbackReader.read();
+				}
+			} else {
+				// reset to java default value for char
+				tmpChars[i] = '\u0000';
+			}
+		}
+
+		return countValidChars;
 	}
 
 	@Override

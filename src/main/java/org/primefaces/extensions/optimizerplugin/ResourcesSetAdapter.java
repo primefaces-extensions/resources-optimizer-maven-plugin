@@ -21,9 +21,6 @@ package org.primefaces.extensions.optimizerplugin;
 import java.io.File;
 import java.util.Set;
 
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.WarningLevel;
-
 /**
  * Container class containing all needed infos for a resource set.
  *
@@ -31,15 +28,11 @@ import com.google.javascript.jscomp.WarningLevel;
  * @version $Revision$
  * @since   0.1
  */
-public class ResourcesSetAdapter {
+public abstract class ResourcesSetAdapter {
 
 	private File inputDir;
 
 	private Set<File> files;
-
-	private CompilationLevel compilationLevel;
-
-	private WarningLevel warningLevel;
 
 	private Aggregation aggregation;
 
@@ -49,13 +42,10 @@ public class ResourcesSetAdapter {
 
 	private String suffix;
 
-	public ResourcesSetAdapter(final File inputDir, final Set<File> files, final CompilationLevel compilationLevel,
-	                           final WarningLevel warningLevel, final Aggregation aggregation, final String encoding,
+	public ResourcesSetAdapter(final File inputDir, final Set<File> files, final Aggregation aggregation, final String encoding,
 	                           final boolean failOnWarning, final String suffix) {
 		this.inputDir = inputDir;
 		this.files = files;
-		this.compilationLevel = compilationLevel;
-		this.warningLevel = warningLevel;
 		this.aggregation = aggregation;
 		this.encoding = encoding;
 		this.failOnWarning = failOnWarning;
@@ -68,14 +58,6 @@ public class ResourcesSetAdapter {
 
 	public Set<File> getFiles() {
 		return files;
-	}
-
-	public CompilationLevel getCompilationLevel() {
-		return compilationLevel;
-	}
-
-	public WarningLevel getWarningLevel() {
-		return warningLevel;
 	}
 
 	public Aggregation getAggregation() {

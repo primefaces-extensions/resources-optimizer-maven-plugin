@@ -54,7 +54,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 	private static final String OPTIMIZED_FILE_EXTENSION = ".optjs";
 
 	@Override
-	public void optimize(final ResourcesSetAdapter rsa, final Log log) throws MojoExecutionException {
+	public void optimize(final ResourcesSetAdapter rsAdapter, final Log log) throws MojoExecutionException {
+		ResourcesSetJsAdapter rsa = (ResourcesSetJsAdapter) rsAdapter;
 		CompilationLevel compLevel = rsa.getCompilationLevel();
 		CompilerOptions options = new CompilerOptions();
 		compLevel.setOptionsForCompilationLevel(options);

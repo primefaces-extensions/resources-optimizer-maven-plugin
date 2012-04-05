@@ -51,6 +51,13 @@ public class ResourcesSet {
 	private String warningLevel;
 
 	/**
+	 * Flag if images referenced in CSS files (size < 32KB) should be converted to data URIs.
+	 *
+	 * @parameter
+	 */
+	private boolean useDataUri;
+
+	/**
 	 * Files to be included. Files selectors follow patterns specified in {@link org.codehaus.plexus.util.DirectoryScanner}.
 	 *
 	 * @parameter
@@ -93,6 +100,14 @@ public class ResourcesSet {
 
 	public void setWarningLevel(String warningLevel) {
 		this.warningLevel = warningLevel;
+	}
+
+	public boolean isUseDataUri() {
+		return useDataUri;
+	}
+
+	public void setUseDataUri(boolean useDataUri) {
+		this.useDataUri = useDataUri;
 	}
 
 	public String[] getIncludes() {

@@ -18,16 +18,17 @@
 
 package org.primefaces.extensions.optimizerplugin;
 
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.WarningLevel;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.WarningLevel;
 
 /**
  * Entry point for this plugin.
@@ -49,6 +50,14 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	 * @parameter expression="${inputDir}" default-value="${project.build.directory}/webapp"
 	 */
 	private File inputDir;
+
+	/**
+	 * Images directories according to JSF spec.
+	 *
+	 * @parameter
+	 *            default-value="${project.build.directory}${file.separator}webapp${file.separator}resources,${project.build.directory}${file.separator}classes${file.separator}META-INF${file.separator}resources"
+	 */
+	private String imagesDir;
 
 	/**
 	 * Compilation level for Google Closure Compiler.
@@ -85,6 +94,13 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	 * @parameter
 	 */
 	private String suffix;
+
+	/**
+	 * Flag if images referenced in CSS files (size < 32KB) should be converted to data URIs.
+	 *
+	 * @parameter
+	 */
+	private boolean useDataUri = false;
 
 	/**
 	 * Files to be included. Files selectors follow patterns specified in {@link org.codehaus.plexus.util.DirectoryScanner}.
@@ -164,7 +180,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 									    filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
 									if (!subDirCssFiles.isEmpty()) {
 										// handle CSS files
-										processCssFiles(file, subDirCssFiles,
+										// TODO
+										processCssFiles(file, subDirCssFiles, null,
 										                getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
 										                null);
 									}
@@ -183,7 +200,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 					} else {
 						if (!scanner.getCssFiles().isEmpty()) {
 							// handle CSS files
-							processCssFiles(dir, scanner.getCssFiles(), aggr, suffix);
+							// TODO
+							processCssFiles(dir, scanner.getCssFiles(), null, aggr, suffix);
 						}
 
 						if (!scanner.getJsFiles().isEmpty()) {
@@ -252,7 +270,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 										    filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
 										if (!subDirCssFiles.isEmpty()) {
 											// handle CSS files
-											processCssFiles(file, subDirCssFiles,
+											// TODO
+											processCssFiles(file, subDirCssFiles, null,
 											                getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
 											                null);
 										}
@@ -285,7 +304,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 						} else {
 							if (!scanner.getCssFiles().isEmpty()) {
 								// handle CSS files
-								processCssFiles(dir, scanner.getCssFiles(), aggr, suffix);
+								// TODO
+								processCssFiles(dir, scanner.getCssFiles(), null, aggr, suffix);
 							}
 
 							if (!scanner.getJsFiles().isEmpty()) {
@@ -326,11 +346,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 		outputStatistic();
 	}
 
-	private void processCssFiles(final File inputDir, final Set<File> cssFiles, final Aggregation aggr, final String suffix)
-	    throws MojoExecutionException {
+	private void processCssFiles(final File inputDir, final Set<File> cssFiles, final DataUriTokenResolver dataUriTokenResolver,
+	                             final Aggregation aggr, final String suffix) throws MojoExecutionException {
 		resFound = true;
 
-		ResourcesSetAdapter rsa = new ResourcesSetAdapter(inputDir, cssFiles, null, null, aggr, encoding, failOnWarning, suffix);
+		ResourcesSetAdapter rsa =
+		    new ResourcesSetCssAdapter(inputDir, cssFiles, dataUriTokenResolver, aggr, encoding, failOnWarning, suffix);
 
 		YuiCompressorOptimizer yuiOptimizer = new YuiCompressorOptimizer();
 		yuiOptimizer.optimize(rsa, getLog());
@@ -345,7 +366,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 		resFound = true;
 
 		ResourcesSetAdapter rsa =
-		    new ResourcesSetAdapter(inputDir, jsFiles, compilationLevel, warningLevel, aggr, encoding, failOnWarning, suffix);
+		    new ResourcesSetJsAdapter(inputDir, jsFiles, compilationLevel, warningLevel, aggr, encoding, failOnWarning, suffix);
 
 		ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
 		closureOptimizer.optimize(rsa, getLog());

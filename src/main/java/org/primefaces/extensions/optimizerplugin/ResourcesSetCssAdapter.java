@@ -19,31 +19,27 @@
 package org.primefaces.extensions.optimizerplugin;
 
 import java.io.File;
+import java.util.Set;
 
 /**
- * Implementation of the interface {@link TokenResolver} to replace JSF based image references #{resource[...]} in CSS files by
- * embedded dataURIs (base64 .
+ * Container class containing all needed infos for a resource set describing CSS files.
  *
  * @author  Oleg Varaksin / last modified by $Author$
  * @version $Revision$
  * @since   0.5
  */
-public class DataUriTokenResolver implements TokenResolver {
+public class ResourcesSetCssAdapter extends ResourcesSetAdapter {
 
-	/** directories where to look for images from */
-	private File[] imagesDir;
+	private DataUriTokenResolver dataUriTokenResolver;
 
-	public DataUriTokenResolver(final File[] imagesDir) {
-		this.imagesDir = imagesDir;
+	public ResourcesSetCssAdapter(final File inputDir, final Set<File> files, final DataUriTokenResolver dataUriTokenResolver,
+	                              final Aggregation aggregation, final String encoding, final boolean failOnWarning,
+	                              final String suffix) {
+		super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
+		this.dataUriTokenResolver = dataUriTokenResolver;
 	}
 
-	public String resolveToken(final String token) {
-		if (token == null || token.length() < 1) {
-			return token;
-		}
-
-		// TODO
-		// not forget to check if image exists and less than 32KB
-		return "test-dataURI";
+	public DataUriTokenResolver getDataUriTokenResolver() {
+		return dataUriTokenResolver;
 	}
 }
