@@ -20,11 +20,11 @@ package org.primefaces.extensions.optimizerplugin;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
@@ -50,10 +50,14 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
 	private static final String OPTIMIZED_FILE_EXTENSION = ".optcss";
 
+	private static final String DATA_URI_START_MARKER = "#{resource[";
+
+	private static final String DATA_URI_END_MARKER = "]}";
+
 	@Override
 	public void optimize(final ResourcesSetAdapter rsAdapter, final Log log) throws MojoExecutionException {
 		ResourcesSetCssAdapter rsa = (ResourcesSetCssAdapter) rsAdapter;
-		InputStreamReader in = null;
+		Reader in = null;
 		OutputStreamWriter out = null;
 
 		try {
@@ -63,7 +67,7 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 					log.info("Optimize CSS file " + file.getName() + " ...");
 					addToOriginalSize(file);
 
-					in = new InputStreamReader(new FileInputStream(file), rsa.getEncoding());
+					in = getReader(rsa, file);
 
 					// generate output
 					String path = file.getCanonicalPath();
@@ -114,8 +118,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 						log.info("Optimize CSS file " + file.getName() + " ...");
 						addToOriginalSize(file);
 
-						// create input stream for the current file
-						in = new InputStreamReader(new FileInputStream(file), rsa.getEncoding());
+						// create reader for the current file
+						in = getReader(rsa, file);
 
 						// compress and write compressed content into the output stream
 						CssCompressor compressor = new CssCompressor(in);
@@ -144,7 +148,7 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
 					if (rsa.getAggregation().getPrependedFile() != null) {
 						// write / append to be prepended file into / to the output file
-						prependFile(rsa.getAggregation().getPrependedFile(), outputFile, cset, rsa.getEncoding());
+						prependFile(rsa.getAggregation().getPrependedFile(), outputFile, cset, rsa);
 					}
 
 					// write / append compiled content into / to the output file
@@ -175,6 +179,19 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 		} finally {
 			closeStreams(in, out);
 		}
+	}
+
+	@Override
+	protected Reader getReader(final ResourcesSetAdapter rsAdapter, final File file)
+	    throws FileNotFoundException, UnsupportedEncodingException {
+		ResourcesSetCssAdapter rsa = (ResourcesSetCssAdapter) rsAdapter;
+
+		Reader reader = super.getReader(rsa, file);
+		if (rsa.getDataUriTokenResolver() != null) {
+			reader = new TokenReplacingReader(rsa.getDataUriTokenResolver(), reader, DATA_URI_START_MARKER, DATA_URI_END_MARKER);
+		}
+
+		return reader;
 	}
 
 	protected void closeStreams(final Reader in, final Writer out) {

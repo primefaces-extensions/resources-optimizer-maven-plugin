@@ -130,6 +130,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	 */
 	private List<ResourcesSet> resourcesSets;
 
+	private DataUriTokenResolver dataUriTokenResolver;
+
 	private long originalFilesSize = 0;
 
 	private long optimizedFilesSize = 0;
@@ -149,6 +151,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 			if (resourcesSets == null || resourcesSets.isEmpty()) {
 				String[] incls = (includes != null && includes.length > 0) ? includes : DEFAULT_INCLUDES;
 				String[] excls = (excludes != null && excludes.length > 0) ? excludes : DEFAULT_EXCLUDES;
+
 				Aggregation[] aggrs;
 				if (aggregations == null || aggregations.length < 1) {
 					aggrs = new Aggregation[1];
@@ -179,9 +182,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 									Set<File> subDirCssFiles =
 									    filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
 									if (!subDirCssFiles.isEmpty()) {
+										DataUriTokenResolver dataUriTokenResolver =
+										    (useDataUri ? getDataUriTokenResolver() : null);
+
 										// handle CSS files
-										// TODO
-										processCssFiles(file, subDirCssFiles, null,
+										processCssFiles(file, subDirCssFiles, dataUriTokenResolver,
 										                getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
 										                null);
 									}
@@ -199,9 +204,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 						}
 					} else {
 						if (!scanner.getCssFiles().isEmpty()) {
+							DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
+
 							// handle CSS files
-							// TODO
-							processCssFiles(dir, scanner.getCssFiles(), null, aggr, suffix);
+							processCssFiles(dir, scanner.getCssFiles(), dataUriTokenResolver, aggr, suffix);
 						}
 
 						if (!scanner.getJsFiles().isEmpty()) {
@@ -269,9 +275,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 										Set<File> subDirCssFiles =
 										    filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
 										if (!subDirCssFiles.isEmpty()) {
+											DataUriTokenResolver dataUriTokenResolver =
+											    (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
+
 											// handle CSS files
-											// TODO
-											processCssFiles(file, subDirCssFiles, null,
+											processCssFiles(file, subDirCssFiles, dataUriTokenResolver,
 											                getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
 											                null);
 										}
@@ -303,9 +311,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 							}
 						} else {
 							if (!scanner.getCssFiles().isEmpty()) {
+								DataUriTokenResolver dataUriTokenResolver =
+								    (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
+
 								// handle CSS files
-								// TODO
-								processCssFiles(dir, scanner.getCssFiles(), null, aggr, suffix);
+								processCssFiles(dir, scanner.getCssFiles(), dataUriTokenResolver, aggr, suffix);
 							}
 
 							if (!scanner.getJsFiles().isEmpty()) {
@@ -454,6 +464,22 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 				return WarningLevel.QUIET;
 			}
 		}
+	}
+
+	private DataUriTokenResolver getDataUriTokenResolver() {
+		if (dataUriTokenResolver != null) {
+			return dataUriTokenResolver;
+		}
+
+		String[] arrImagesDir = imagesDir.split(",");
+		File[] fileImagesDir = new File[arrImagesDir.length];
+		for (int i = 0; i < arrImagesDir.length; i++) {
+			fileImagesDir[i] = new File(arrImagesDir[i]);
+		}
+
+		dataUriTokenResolver = new DataUriTokenResolver(fileImagesDir);
+
+		return dataUriTokenResolver;
 	}
 
 	private Set<File> filterSubDirFiles(final Set<File> resSetFiles, final Set<File> subDirFiles) {

@@ -138,7 +138,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
 					if (rsa.getAggregation().getPrependedFile() != null) {
 						// write / append to be prepended file into / to the output file
-						prependFile(rsa.getAggregation().getPrependedFile(), outputFile, cset, rsa.getEncoding());
+						prependFile(rsa.getAggregation().getPrependedFile(), outputFile, cset, rsa);
 					}
 
 					// write / append compiled content into / to the output file

@@ -20,9 +20,12 @@ package org.primefaces.extensions.optimizerplugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -82,11 +85,11 @@ public abstract class AbstractOptimizer {
 		File outputFile = getOutputFile(rsa);
 		if (rsa.getAggregation().getPrependedFile() != null) {
 			// write / append to be prepended file into / to the output file
-			prependFile(rsa.getAggregation().getPrependedFile(), outputFile, cset, rsa.getEncoding());
+			prependFile(rsa.getAggregation().getPrependedFile(), outputFile, cset, rsa);
 		}
 
 		for (File file : rsa.getFiles()) {
-			InputStreamReader in = new InputStreamReader(new FileInputStream(file), rsa.getEncoding());
+			Reader in = getReader(rsa, file);
 			StringWriter writer = new StringWriter();
 			IOUtil.copy(in, writer);
 
@@ -123,9 +126,9 @@ public abstract class AbstractOptimizer {
 		}
 	}
 
-	protected void prependFile(final File prependedFile, final File outputFile, final Charset cset, final String encoding)
+	protected void prependFile(final File prependedFile, final File outputFile, final Charset cset, final ResourcesSetAdapter rsa)
 	    throws IOException {
-		InputStreamReader in = new InputStreamReader(new FileInputStream(prependedFile), encoding);
+		Reader in = getReader(rsa, prependedFile);
 		StringWriter writer = new StringWriter();
 		IOUtil.copy(in, writer);
 
@@ -145,6 +148,11 @@ public abstract class AbstractOptimizer {
 		Files.touch(aggrFile);
 
 		return aggrFile;
+	}
+
+	protected Reader getReader(final ResourcesSetAdapter rsAdapter, final File file)
+	    throws FileNotFoundException, UnsupportedEncodingException {
+		return new InputStreamReader(new FileInputStream(file), rsAdapter.getEncoding());
 	}
 
 	protected void addToOriginalSize(final File file) {
