@@ -104,9 +104,7 @@ public class TokenReplacingReader extends Reader {
 				break;
 			}
 
-			for (int i = 0; i < countValidChars; i++) {
-				tokenBuffer.append(tmpTokenEndMarkerChars[i]);
-			}
+			tokenBuffer.append(tmpTokenEndMarkerChars[0]);
 
 			pushbackReader.unread(tmpTokenEndMarkerChars, 0, countValidChars);
 			if (pushbackReader.read() == -1) {
@@ -171,6 +169,8 @@ public class TokenReplacingReader extends Reader {
 				}
 
 				break;
+			} else {
+				charsRead = i + 1;
 			}
 
 			cbuf[off + i] = (char) nextChar;

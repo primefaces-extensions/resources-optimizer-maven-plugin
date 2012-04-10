@@ -70,7 +70,7 @@ public class DataUriTokenResolver implements TokenResolver {
 			return null;
 		}
 
-		final String separator = System.getProperty("line.separator");
+		final String separator = System.getProperty("file.separator");
 		StringBuilder sb = new StringBuilder();
 		sb.append(separator);
 
