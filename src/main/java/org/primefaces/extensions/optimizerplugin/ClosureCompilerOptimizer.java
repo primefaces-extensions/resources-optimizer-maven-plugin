@@ -71,6 +71,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 				// no aggregation
 				for (File file : rsa.getFiles()) {
 					log.info("Optimize JS file " + file.getName() + " ...");
+
+					// statistic
 					addToOriginalSize(file);
 
 					JSSourceFile jsSourceFile = JSSourceFile.fromFile(file, cset);
@@ -114,6 +116,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 					List<JSSourceFile> interns = new ArrayList<JSSourceFile>();
 					for (File file : rsa.getFiles()) {
 						log.info("Optimize JS file " + file.getName() + " ...");
+
+						// statistic
 						addToOriginalSize(file);
 
 						interns.add(JSSourceFile.fromFile(file, cset));
@@ -124,6 +128,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
 					int filesCount = rsa.getFiles().size();
 					if (rsa.getAggregation().getPrependedFile() != null) {
+						// statistic
+						addToOriginalSize(rsa.getAggregation().getPrependedFile());
 						filesCount++;
 					}
 

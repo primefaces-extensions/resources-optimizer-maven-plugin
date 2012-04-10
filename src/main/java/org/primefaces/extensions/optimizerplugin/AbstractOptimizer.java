@@ -75,6 +75,8 @@ public abstract class AbstractOptimizer {
 	    throws IOException {
 		int filesCount = rsa.getFiles().size();
 		if (rsa.getAggregation().getPrependedFile() != null) {
+			// statistic
+			addToOriginalSize(rsa.getAggregation().getPrependedFile());
 			filesCount++;
 		}
 
@@ -83,12 +85,18 @@ public abstract class AbstractOptimizer {
 		}
 
 		File outputFile = getOutputFile(rsa);
+
+		long sizeBefore = outputFile.length();
+
 		if (rsa.getAggregation().getPrependedFile() != null) {
 			// write / append to be prepended file into / to the output file
 			prependFile(rsa.getAggregation().getPrependedFile(), outputFile, cset, rsa);
 		}
 
 		for (File file : rsa.getFiles()) {
+			// statistic
+			addToOriginalSize(file);
+
 			Reader in = getReader(rsa, file);
 			StringWriter writer = new StringWriter();
 			IOUtil.copy(in, writer);
@@ -102,6 +110,9 @@ public abstract class AbstractOptimizer {
 			Files.append(writer.toString(), outputFile, cset);
 			IOUtil.close(in);
 		}
+
+		// statistic
+		addToOptimizedSize(outputFile.length() - sizeBefore);
 
 		if (filesCount > 1) {
 			log.info(filesCount + " files were successfully aggregated.");

@@ -65,6 +65,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 				// no aggregation
 				for (File file : rsa.getFiles()) {
 					log.info("Optimize CSS file " + file.getName() + " ...");
+
+					// statistic
 					addToOriginalSize(file);
 
 					in = getReader(rsa, file);
@@ -116,6 +118,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 					// with compressing before aggregation
 					for (File file : rsa.getFiles()) {
 						log.info("Optimize CSS file " + file.getName() + " ...");
+
+						// statistic
 						addToOriginalSize(file);
 
 						// create reader for the current file
@@ -134,6 +138,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
 					int filesCount = rsa.getFiles().size();
 					if (rsa.getAggregation().getPrependedFile() != null) {
+						// statistic
+						addToOriginalSize(rsa.getAggregation().getPrependedFile());
 						filesCount++;
 					}
 
