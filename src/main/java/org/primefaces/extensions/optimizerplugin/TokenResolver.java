@@ -18,6 +18,8 @@
 
 package org.primefaces.extensions.optimizerplugin;
 
+import java.io.IOException;
+
 /**
  * Interface for resolving of tokens found via {@link TokenReplacingReader}.
  *
@@ -27,5 +29,5 @@ package org.primefaces.extensions.optimizerplugin;
  */
 public interface TokenResolver {
 
-	String resolveToken(String token);
+	String resolveToken(String token) throws IOException;
 }
