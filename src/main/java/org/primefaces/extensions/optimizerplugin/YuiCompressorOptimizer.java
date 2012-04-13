@@ -37,8 +37,6 @@ import org.codehaus.plexus.util.StringUtils;
 
 import com.google.common.io.Files;
 
-import com.yahoo.platform.yui.compressor.CssCompressor;
-
 /**
  * Class for YUI Compressor doing CSS optimization.
  *
