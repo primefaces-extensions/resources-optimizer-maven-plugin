@@ -4,7 +4,6 @@
         <groupId>org.primefaces.extensions</groupId>
         <artifactId>master-pom</artifactId>
         <version>1.4.0</version>
-        <relativePath />
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -16,42 +15,12 @@
     <description>
         <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
     </description>
-    <url>http://code.google.com/p/primefaces-extensions</url>
-
-    <licenses>
-        <license>
-            <name>Apache 2</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
-    
-    <issueManagement>
-        <system>Google Code</system>
-        <url>http://code.google.com/p/primefaces-extensions/issues/list</url>
-    </issueManagement>
-
-    <inceptionYear>2011</inceptionYear>
 
     <scm>
         <connection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</developerConnection>
         <url>https://github.com/primefaces-extensions/resources-optimizer-maven-plugin</url>
     </scm>
-    
-    <developers>
-        <developer>
-            <id>varaksin</id>
-            <name>Oleg Varaksin</name>
-            <email>ovaraksin@googlemail.com</email>
-            <roles>
-                <role>Buildmaster</role>
-                <role>Developer</role>
-            </roles>
-            <timezone>+1</timezone>
-        </developer>
-    </developers>
 
     <dependencies>
         <dependency>
