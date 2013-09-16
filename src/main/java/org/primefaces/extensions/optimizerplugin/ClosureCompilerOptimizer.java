@@ -35,8 +35,8 @@ import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.JSError;
-import com.google.javascript.jscomp.JSSourceFile;
 import com.google.javascript.jscomp.Result;
+import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.jscomp.WarningLevel;
 
 /**
@@ -49,7 +49,7 @@ import com.google.javascript.jscomp.WarningLevel;
 public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
 	// Note: empty externs, probably CommandLineRunner.getDefaultExterns() would be better
-	private static final List<JSSourceFile> EXTERNS_EMPTY = new ArrayList<JSSourceFile>();
+	private static final List<SourceFile> EXTERNS_EMPTY = new ArrayList<SourceFile>();
 
 	private static final String OPTIMIZED_FILE_EXTENSION = ".optjs";
 
@@ -75,8 +75,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 					// statistic
 					addToOriginalSize(file);
 
-					JSSourceFile jsSourceFile = JSSourceFile.fromFile(file, cset);
-					List<JSSourceFile> interns = new ArrayList<JSSourceFile>();
+					SourceFile jsSourceFile = SourceFile.fromFile(file, cset);
+					List<SourceFile> interns = new ArrayList<SourceFile>();
 					interns.add(jsSourceFile);
 
 					// compile
@@ -113,14 +113,14 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
 				if (!rsa.getAggregation().isWithoutCompress()) {
 					// with compressing before aggregation
-					List<JSSourceFile> interns = new ArrayList<JSSourceFile>();
+					List<SourceFile> interns = new ArrayList<SourceFile>();
 					for (File file : rsa.getFiles()) {
 						log.info("Optimize JS file " + file.getName() + " ...");
 
 						// statistic
 						addToOriginalSize(file);
 
-						interns.add(JSSourceFile.fromFile(file, cset));
+						interns.add(SourceFile.fromFile(file, cset));
 					}
 
 					// compile
@@ -175,7 +175,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 		}
 	}
 
-	protected Compiler compile(final Log log, final List<JSSourceFile> interns, final CompilerOptions options,
+	protected Compiler compile(final Log log, final List<SourceFile> interns, final CompilerOptions options,
 	                           final boolean failOnWarning) throws MojoExecutionException {
 		// compile
 		com.google.javascript.jscomp.Compiler compiler = new Compiler();
