@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.primefaces.extensions</groupId>
         <artifactId>master-pom</artifactId>
-        <version>1.8.0</version>
+        <version>3.0.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20130722</version>
+            <version>v20140407</version>
         </dependency>
     </dependencies>
 </project>
