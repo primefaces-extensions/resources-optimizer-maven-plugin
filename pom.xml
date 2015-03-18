@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20140407</version>
+            <version>v20150315</version>
         </dependency>
     </dependencies>
 </project>
