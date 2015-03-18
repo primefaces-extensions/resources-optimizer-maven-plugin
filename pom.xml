@@ -19,7 +19,7 @@
         <connection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</developerConnection>
         <url>https://github.com/primefaces-extensions/resources-optimizer-maven-plugin</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
   </scm>
 
     <dependencies>
