@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 PrimeFaces Extensions.
+ * Copyright 2011-2015 PrimeFaces Extensions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ package org.primefaces.extensions.optimizerplugin;
  * Author: Julien Lecomte -  http://www.julienlecomte.net/
  * Author: Isaac Schlueter - http://foohack.com/
  * Author: Stoyan Stefanov - http://phpied.com/
- * Copyright (c) 2011 Yahoo! Inc.  All rights reserved.
+ * Copyright 2011-2015 PrimeFaces Extensions
  * The copyrights embodied in the content of this file are licensed
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
