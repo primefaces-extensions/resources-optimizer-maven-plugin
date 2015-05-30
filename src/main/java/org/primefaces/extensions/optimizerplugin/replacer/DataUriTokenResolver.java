@@ -16,7 +16,12 @@
  * $Id$
  */
 
-package org.primefaces.extensions.optimizerplugin;
+package org.primefaces.extensions.optimizerplugin.replacer;
+
+import com.google.common.io.Files;
+import org.codehaus.plexus.util.Base64;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,19 +29,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.codehaus.plexus.util.Base64;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
-
-import com.google.common.io.Files;
-
 /**
  * Implementation of the interface {@link TokenResolver} to replace JSF based image references #{resource[...]} in CSS files by
  * embedded dataURIs (encoded base64 string).
  *
- * @author  Oleg Varaksin / last modified by $Author$
- * @version $Revision$
- * @since   0.5
+ * @author  Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class DataUriTokenResolver implements TokenResolver {
 

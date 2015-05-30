@@ -16,24 +16,21 @@
  * $Id$
  */
 
-package org.primefaces.extensions.optimizerplugin;
+package org.primefaces.extensions.optimizerplugin.util;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.maven.plugin.MojoExecutionException;
-
-import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
-
 /**
  * Scans JavaScript and CSS resources by specifing includes / excludes and prepares two sets with file objects.
  *
- * @author  Oleg Varaksin / last modified by $Author$
- * @version $Revision$
- * @since   0.1
+ * @author  Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class ResourcesScanner {
 

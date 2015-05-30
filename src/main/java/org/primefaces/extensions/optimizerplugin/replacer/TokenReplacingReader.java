@@ -16,7 +16,7 @@
  * $Id$
  */
 
-package org.primefaces.extensions.optimizerplugin;
+package org.primefaces.extensions.optimizerplugin.replacer;
 
 import java.io.IOException;
 import java.io.PushbackReader;
@@ -28,9 +28,7 @@ import java.util.Arrays;
  * Reader for inplace token replacements. It does not use as much memory as the String.replace() method. Got the idea from
  * http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html
  *
- * @author  Oleg Varaksin / last modified by $Author$
- * @version $Revision$
- * @since   0.5
+ * @author  Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class TokenReplacingReader extends Reader {
 

@@ -16,16 +16,14 @@
  * $Id$
  */
 
-package org.primefaces.extensions.optimizerplugin;
+package org.primefaces.extensions.optimizerplugin.replacer;
 
 import java.io.IOException;
 
 /**
  * Interface for resolving of tokens found via {@link TokenReplacingReader}.
  *
- * @author  Oleg Varaksin / last modified by $Author$
- * @version $Revision$
- * @since   0.5
+ * @author  Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public interface TokenResolver {
 

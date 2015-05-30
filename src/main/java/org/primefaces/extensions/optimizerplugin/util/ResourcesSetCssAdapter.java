@@ -16,7 +16,10 @@
  * $Id$
  */
 
-package org.primefaces.extensions.optimizerplugin;
+package org.primefaces.extensions.optimizerplugin.util;
+
+import org.primefaces.extensions.optimizerplugin.model.Aggregation;
+import org.primefaces.extensions.optimizerplugin.replacer.DataUriTokenResolver;
 
 import java.io.File;
 import java.util.Set;
@@ -24,22 +27,20 @@ import java.util.Set;
 /**
  * Container class containing all needed infos for a resource set describing CSS files.
  *
- * @author  Oleg Varaksin / last modified by $Author$
- * @version $Revision$
- * @since   0.5
+ * @author  Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class ResourcesSetCssAdapter extends ResourcesSetAdapter {
 
-	private DataUriTokenResolver dataUriTokenResolver;
+    private DataUriTokenResolver dataUriTokenResolver;
 
-	public ResourcesSetCssAdapter(final File inputDir, final Set<File> files, final DataUriTokenResolver dataUriTokenResolver,
-	                              final Aggregation aggregation, final String encoding, final boolean failOnWarning,
-	                              final String suffix) {
-		super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
-		this.dataUriTokenResolver = dataUriTokenResolver;
-	}
+    public ResourcesSetCssAdapter(File inputDir, Set<File> files, DataUriTokenResolver dataUriTokenResolver,
+                                  Aggregation aggregation, String encoding, boolean failOnWarning,
+                                  String suffix) {
+        super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
+        this.dataUriTokenResolver = dataUriTokenResolver;
+    }
 
-	public DataUriTokenResolver getDataUriTokenResolver() {
-		return dataUriTokenResolver;
-	}
+    public DataUriTokenResolver getDataUriTokenResolver() {
+        return dataUriTokenResolver;
+    }
 }
