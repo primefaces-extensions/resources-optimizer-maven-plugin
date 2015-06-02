@@ -95,9 +95,22 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     interns.add(SourceFile.fromFile(file, cset));
                     Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
 
-                    // generate output
+                    // path of the original file
                     String path = file.getCanonicalPath();
+                    File sourceFile = null;
+                    if (rsa.isCreateSourceMap()) {
+                        // create an empty file with ...source.js from the original one
+                        sourceFile = getFileWithSuffix(path, OUTPUT_FILE_SUFFIX);
+                    }
+
                     if (StringUtils.isNotBlank(rsa.getSuffix())) {
+                        if (sourceFile != null) {
+                            // rename original file as ...source.js
+                            FileUtils.rename(file, sourceFile);
+                            // move the renamed file to the source map dir
+                            moveToSourceMapDir(sourceFile, log);
+                        }
+
                         // write compiled content into the new file
                         File outputFile = getFileWithSuffix(path, rsa.getSuffix());
                         Files.write(compiler.toSource(), outputFile, cset);
@@ -105,6 +118,13 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         // statistic
                         addToOptimizedSize(outputFile);
                     } else {
+                        if (sourceFile != null) {
+                            // copy content of the original file to the ...source.js
+                            FileUtils.copyFile(file, sourceFile);
+                            // move the ...source.js to the source map dir
+                            moveToSourceMapDir(sourceFile, log);
+                        }
+
                         // path of temp. file
                         String pathOptimized = FileUtils.removeExtension(path) + OPTIMIZED_FILE_EXTENSION;
 
@@ -273,15 +293,15 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         moveToSourceMapDir(sourceMapFile, log);
     }
 
-    private void moveToSourceMapDir(File sourceMapFile, Log log) {
+    private void moveToSourceMapDir(File file, Log log) {
         try {
-            String name = sourceMapFile.getName();
+            String name = file.getName();
             String target = sourceMapDir + name;
             File targetFile = new File(target);
             Files.createParentDirs(targetFile);
-            Files.move(sourceMapFile, targetFile);
+            Files.move(file, targetFile);
         } catch (Exception e) {
-            log.error("File " + sourceMapFile + " could not be moved to " + sourceMapDir, e);
+            log.error("File " + file + " could not be moved to " + sourceMapDir, e);
         }
     }
 }

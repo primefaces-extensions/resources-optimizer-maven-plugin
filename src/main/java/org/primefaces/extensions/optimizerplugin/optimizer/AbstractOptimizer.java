@@ -43,7 +43,7 @@ import java.nio.charset.Charset;
  */
 public abstract class AbstractOptimizer {
 
-    private static final String OUTPUT_FILE_SUFFIX = ".source";
+    protected static final String OUTPUT_FILE_SUFFIX = ".source";
 
     private long sizeTotalOriginal = 0;
 
