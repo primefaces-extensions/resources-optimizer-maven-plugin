@@ -82,35 +82,36 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     // statistic
                     addToOriginalSize(file);
 
+                    // path of the original file
+                    String path = file.getCanonicalPath();
+
                     String outputFilePath = null;
                     File sourceMapFile = null;
+                    File sourceFile;
                     if (rsa.isCreateSourceMap()) {
                         // setup source map
                         outputFilePath = file.getCanonicalPath();
                         sourceMapFile = setupSourceMapFile(options, outputFilePath);
+                        // create an empty file with ...source.js from the original one
+                        sourceFile = getFileWithSuffix(path, OUTPUT_FILE_SUFFIX);
+
+                        if (StringUtils.isNotBlank(rsa.getSuffix())) {
+                            // rename original file as ...source.js
+                            FileUtils.rename(file, sourceFile);
+                        } else {
+                            // copy content of the original file to the ...source.js
+                            FileUtils.copyFile(file, sourceFile);
+                        }
+                    } else {
+                        sourceFile = file;
                     }
 
                     // compile
                     List<SourceFile> interns = new ArrayList<SourceFile>();
-                    interns.add(SourceFile.fromFile(file, cset));
+                    interns.add(SourceFile.fromFile(sourceFile, cset));
                     Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
 
-                    // path of the original file
-                    String path = file.getCanonicalPath();
-                    File sourceFile = null;
-                    if (rsa.isCreateSourceMap()) {
-                        // create an empty file with ...source.js from the original one
-                        sourceFile = getFileWithSuffix(path, OUTPUT_FILE_SUFFIX);
-                    }
-
                     if (StringUtils.isNotBlank(rsa.getSuffix())) {
-                        if (sourceFile != null) {
-                            // rename original file as ...source.js
-                            FileUtils.rename(file, sourceFile);
-                            // move the renamed file to the source map dir
-                            moveToSourceMapDir(sourceFile, log);
-                        }
-
                         // write compiled content into the new file
                         File outputFile = getFileWithSuffix(path, rsa.getSuffix());
                         Files.write(compiler.toSource(), outputFile, cset);
@@ -118,13 +119,6 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         // statistic
                         addToOptimizedSize(outputFile);
                     } else {
-                        if (sourceFile != null) {
-                            // copy content of the original file to the ...source.js
-                            FileUtils.copyFile(file, sourceFile);
-                            // move the ...source.js to the source map dir
-                            moveToSourceMapDir(sourceFile, log);
-                        }
-
                         // path of temp. file
                         String pathOptimized = FileUtils.removeExtension(path) + OPTIMIZED_FILE_EXTENSION;
 
@@ -144,6 +138,9 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         // write the source map
                         Files.touch(sourceMapFile);
                         writeSourceMap(sourceMapFile, outputFilePath, compiler.getSourceMap(), log);
+
+                        // move the source file to the source map dir
+                        moveToSourceMapDir(sourceFile, log);
                     }
                 }
             } else if (rsa.getAggregation().getOutputFile() != null) {
