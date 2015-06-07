@@ -38,6 +38,13 @@ public class SourceMap {
      */
     private String format;
 
+    /**
+     * Boolean flag if the source map should be created.
+     * 
+     * @parameter 
+     */
+    private boolean create = true;
+
     public String getSourceMapRoot() {
         return sourceMapRoot;
     }
@@ -68,5 +75,13 @@ public class SourceMap {
 
     public void setOutputDir(String outputDir) {
         this.outputDir = outputDir;
+    }
+
+    public boolean isCreate() {
+        return create;
+    }
+
+    public void setCreate(boolean create) {
+        this.create = create;
     }
 }

@@ -459,7 +459,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
             smap = sourceMap;
         }
         
-        if (smap == null) {
+        if (smap == null || !smap.isCreate()) {
             return null;
         }
 
