@@ -21,7 +21,7 @@ package org.primefaces.extensions.optimizerplugin.model;
 import java.io.File;
 
 /**
- * Class representing an aggregation.
+ * Class representing an aggregation configuration.
  *
  * @author  Oleg Varaksin (ovaraksin@googlemail.com)
  */

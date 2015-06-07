@@ -21,9 +21,9 @@ package org.primefaces.extensions.optimizerplugin.model;
 import java.io.File;
 
 /**
- * Class representing a resources set.
+ * Class representing a resources set configuration.
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class ResourcesSet {
 
@@ -49,13 +49,6 @@ public class ResourcesSet {
     private String warningLevel;
 
     /**
-     * Flag whether the source map should be created.
-     *
-     * @parameter
-     */
-    private boolean createSourceMap;
-
-    /**
      * Flag if images referenced in CSS files (size < 32KB) should be converted to data URIs.
      *
      * @parameter
@@ -77,11 +70,18 @@ public class ResourcesSet {
     private String[] excludes;
 
     /**
-     * Aggregations.
+     * Configuration for aggregations.
      *
      * @parameter
      */
     private Aggregation[] aggregations;
+
+    /**
+     * Configuration for source maps.
+     *
+     * @parameter
+     */
+    private SourceMap sourceMap;
 
     public File getInputDir() {
         return inputDir;
@@ -105,14 +105,6 @@ public class ResourcesSet {
 
     public void setWarningLevel(String warningLevel) {
         this.warningLevel = warningLevel;
-    }
-
-    public boolean isCreateSourceMap() {
-        return createSourceMap;
-    }
-
-    public void setCreateSourceMap(boolean createSourceMap) {
-        this.createSourceMap = createSourceMap;
     }
 
     public boolean isUseDataUri() {
@@ -145,5 +137,13 @@ public class ResourcesSet {
 
     public void setAggregations(Aggregation[] aggregations) {
         this.aggregations = aggregations;
+    }
+
+    public SourceMap getSourceMap() {
+        return sourceMap;
+    }
+
+    public void setSourceMap(SourceMap sourceMap) {
+        this.sourceMap = sourceMap;
     }
 }

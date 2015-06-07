@@ -25,6 +25,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
 import org.primefaces.extensions.optimizerplugin.model.ResourcesSet;
+import org.primefaces.extensions.optimizerplugin.model.SourceMap;
 import org.primefaces.extensions.optimizerplugin.optimizer.ClosureCompilerOptimizer;
 import org.primefaces.extensions.optimizerplugin.optimizer.YuiCompressorOptimizer;
 import org.primefaces.extensions.optimizerplugin.replacer.DataUriTokenResolver;
@@ -41,7 +42,7 @@ import java.util.Set;
 /**
  * Entry point for this plugin.
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  * @goal optimize
  * @phase process-resources
  * @threadSafe true
@@ -81,13 +82,6 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      * @parameter property="warningLevel" default-value="QUIET"
      */
     private String warningLevel;
-
-    /**
-     * Flag whether the source map should be created.
-     *
-     * @parameter property="createSourceMap" default-value="false"
-     */
-    private boolean createSourceMap = false;
 
     /**
      * Encoding to read files.
@@ -133,11 +127,26 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private String[] excludes;
 
     /**
-     * Aggregations.
+     * Configuration for aggregations.
      *
      * @parameter
      */
     private Aggregation[] aggregations;
+
+    /**
+     * Configuration for source maps.
+     *
+     * @parameter
+     */
+    private SourceMap sourceMap;
+
+    /**
+     * Default output directory for created source maps and original source files.
+     * This value is used internally in this class.
+     *
+     * @parameter default-value="${project.build.directory}${file.separator}sourcemap${file.separator}"
+     */
+    private String smapOutputDir;
 
     /**
      * Compile sets.
@@ -145,13 +154,6 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      * @parameter
      */
     private List<ResourcesSet> resourcesSets;
-
-    /**
-     * Directory for source map files.
-     * 
-     * @parameter default-value="${project.build.directory}${file.separator}sourcemap${file.separator}"
-     */
-    private String sourceMapDir;
 
     private DataUriTokenResolver dataUriTokenResolver;
 
@@ -217,9 +219,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                     Set<File> subDirJsFiles = filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
                                     if (!subDirJsFiles.isEmpty()) {
                                         // handle JavaScript files
-                                        processJsFiles(file, subDirJsFiles, getCompilationLevel(compilationLevel),
-                                                getWarningLevel(warningLevel), createSourceMap,
-                                                getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION), null);
+                                        processJsFiles(file, subDirJsFiles,
+                                                getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
+                                                getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
+                                                resolveSourceMap(null), null);
                                     }
                                 }
                             }
@@ -234,8 +237,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
                         if (!scanner.getJsFiles().isEmpty()) {
                             // handle JavaScript files
-                            processJsFiles(dir, scanner.getJsFiles(), getCompilationLevel(compilationLevel),
-                                    getWarningLevel(warningLevel), createSourceMap, aggr, suffix);
+                            processJsFiles(dir, scanner.getJsFiles(), aggr, getCompilationLevel(compilationLevel),
+                                    getWarningLevel(warningLevel), resolveSourceMap(null), suffix);
                         }
                     }
                 }
@@ -309,24 +312,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                         Set<File> subDirJsFiles =
                                                 filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
                                         if (!subDirJsFiles.isEmpty()) {
-                                            CompilationLevel compLevel;
-                                            if (rs.getCompilationLevel() != null) {
-                                                compLevel = getCompilationLevel(rs.getCompilationLevel());
-                                            } else {
-                                                compLevel = getCompilationLevel(compilationLevel);
-                                            }
-
-                                            WarningLevel warnLevel;
-                                            if (rs.getWarningLevel() != null) {
-                                                warnLevel = getWarningLevel(rs.getWarningLevel());
-                                            } else {
-                                                warnLevel = getWarningLevel(warningLevel);
-                                            }
-
                                             // handle JavaScript files
-                                            processJsFiles(file, subDirJsFiles, compLevel, warnLevel,
-                                                    (createSourceMap || rs.isCreateSourceMap()),
-                                                    getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION), null);
+                                            processJsFiles(file, subDirJsFiles,
+                                                    getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
+                                                    resolveCompilationLevel(rs), resolveWarningLevel(rs),
+                                                    resolveSourceMap(rs), null);
                                         }
                                     }
                                 }
@@ -341,23 +331,9 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                             }
 
                             if (!scanner.getJsFiles().isEmpty()) {
-                                CompilationLevel compLevel;
-                                if (rs.getCompilationLevel() != null) {
-                                    compLevel = getCompilationLevel(rs.getCompilationLevel());
-                                } else {
-                                    compLevel = getCompilationLevel(compilationLevel);
-                                }
-
-                                WarningLevel warnLevel;
-                                if (rs.getWarningLevel() != null) {
-                                    warnLevel = getWarningLevel(rs.getWarningLevel());
-                                } else {
-                                    warnLevel = getWarningLevel(warningLevel);
-                                }
-
                                 // handle JavaScript files
-                                processJsFiles(dir, scanner.getJsFiles(), compLevel, warnLevel,
-                                        (createSourceMap || rs.isCreateSourceMap()), aggr, suffix);
+                                processJsFiles(dir, scanner.getJsFiles(), aggr, resolveCompilationLevel(rs),
+                                        resolveWarningLevel(rs), resolveSourceMap(rs), suffix);
                             }
                         }
                     }
@@ -392,14 +368,13 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         optimizedFilesSize += yuiOptimizer.getTotalOptimizedSize();
     }
 
-    private void processJsFiles(File inputDir, Set<File> jsFiles, CompilationLevel compilationLevel, WarningLevel warningLevel,
-                                boolean createSourceMap, Aggregation aggr, String suffix) throws MojoExecutionException {
+    private void processJsFiles(File inputDir, Set<File> jsFiles, Aggregation aggr, CompilationLevel compilationLevel,
+                                WarningLevel warningLevel, SourceMap sourceMap, String suffix) throws MojoExecutionException {
         resFound = true;
         ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
-                inputDir, jsFiles, compilationLevel, warningLevel, createSourceMap, aggr, encoding, failOnWarning, suffix);
+                inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding, failOnWarning, suffix);
 
         ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
-        closureOptimizer.setSourceMapDir(sourceMapDir);
         closureOptimizer.optimize(rsa, getLog());
 
         originalFilesSize += closureOptimizer.getTotalOriginalSize();
@@ -452,6 +427,56 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         subDirAggr.setOutputFile(outputFile);
 
         return subDirAggr;
+    }
+
+    private CompilationLevel resolveCompilationLevel(ResourcesSet rs) throws MojoExecutionException {
+        CompilationLevel compLevel;
+        if (rs.getCompilationLevel() != null) {
+            compLevel = getCompilationLevel(rs.getCompilationLevel());
+        } else {
+            compLevel = getCompilationLevel(compilationLevel);
+        }
+
+        return compLevel;
+    }
+
+    private WarningLevel resolveWarningLevel(ResourcesSet rs) throws MojoExecutionException {
+        WarningLevel warnLevel;
+        if (rs.getWarningLevel() != null) {
+            warnLevel = getWarningLevel(rs.getWarningLevel());
+        } else {
+            warnLevel = getWarningLevel(warningLevel);
+        }
+
+        return warnLevel;
+    }
+
+    private SourceMap resolveSourceMap(ResourcesSet rs) {
+        SourceMap smap;
+        if (rs != null && rs.getSourceMap() != null) {
+            smap = rs.getSourceMap();
+        } else {
+            smap = sourceMap;
+        }
+        
+        if (smap == null) {
+            return null;
+        }
+
+        // set defaults
+        if (smap.getOutputDir() == null) {
+            smap.setOutputDir(smapOutputDir);
+        }
+
+        if (smap.getDetailLevel() == null) {
+            smap.setDetailLevel(com.google.javascript.jscomp.SourceMap.DetailLevel.ALL.name());
+        }
+
+        if (smap.getFormat() == null) {
+            smap.setFormat(com.google.javascript.jscomp.SourceMap.Format.V3.name());
+        }
+
+        return smap;
     }
 
     private CompilationLevel getCompilationLevel(String compilationLevel) throws MojoExecutionException {
@@ -553,7 +578,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     }
 
     private double round(double value, int places) {
-        double roundedValue = 0.0;
+        double roundedValue;
         double factor = Math.pow(10.0, places);
         double temp = Math.round(value * factor * factor) / factor;
         roundedValue = Math.round(temp) / factor;

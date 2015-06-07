@@ -58,8 +58,6 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
     private static final String SOURCE_MAP_FILE_EXTENSION = ".map";
 
-    private String sourceMapDir;
-
     @Override
     public void optimize(final ResourcesSetAdapter rsAdapter, final Log log) throws MojoExecutionException {
         ResourcesSetJsAdapter rsa = (ResourcesSetJsAdapter) rsAdapter;
@@ -86,12 +84,15 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     String path = file.getCanonicalPath();
 
                     String outputFilePath = null;
+                    String outputSourceMapDir = null;
                     File sourceMapFile = null;
                     File sourceFile;
-                    if (rsa.isCreateSourceMap()) {
+
+                    if (rsa.getSourceMap() != null) {
                         // setup source map
                         outputFilePath = file.getCanonicalPath();
-                        sourceMapFile = setupSourceMapFile(options, outputFilePath);
+                        outputSourceMapDir = rsa.getSourceMap().getOutputDir();
+                        sourceMapFile = setupSourceMapFile(options, rsa.getSourceMap(), outputFilePath);
                         // create an empty file with ...source.js from the original one
                         sourceFile = getFileWithSuffix(path, OUTPUT_FILE_SUFFIX);
 
@@ -116,6 +117,11 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         File outputFile = getFileWithSuffix(path, rsa.getSuffix());
                         Files.write(compiler.toSource(), outputFile, cset);
 
+                        if (sourceMapFile != null) {
+                            // write sourceMappingURL into the minified file
+                            writeSourceMappingURL(outputFile, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset, log);
+                        }
+
                         // statistic
                         addToOptimizedSize(outputFile);
                     } else {
@@ -130,6 +136,11 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         Files.write(compiler.toSource(), outputFile, cset);
                         FileUtils.rename(outputFile, file);
 
+                        if (sourceMapFile != null) {
+                            // write sourceMappingURL into the minified file
+                            writeSourceMappingURL(file, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset, log);
+                        }
+
                         // statistic
                         addToOptimizedSize(file);
                     }
@@ -137,10 +148,10 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     if (outputFilePath != null && sourceMapFile != null) {
                         // write the source map
                         Files.touch(sourceMapFile);
-                        writeSourceMap(sourceMapFile, outputFilePath, compiler.getSourceMap(), log);
+                        writeSourceMap(sourceMapFile, outputFilePath, compiler.getSourceMap(), outputSourceMapDir, log);
 
                         // move the source file to the source map dir
-                        moveToSourceMapDir(sourceFile, log);
+                        moveToSourceMapDir(sourceFile, outputSourceMapDir, log);
                     }
                 }
             } else if (rsa.getAggregation().getOutputFile() != null) {
@@ -159,10 +170,10 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                     String outputFilePath = null;
                     File sourceMapFile = null;
-                    if (rsa.isCreateSourceMap()) {
+                    if (rsa.getSourceMap() != null) {
                         // setup source map
                         outputFilePath = outputFile.getCanonicalPath();
-                        sourceMapFile = setupSourceMapFile(options, outputFilePath);
+                        sourceMapFile = setupSourceMapFile(options, rsa.getSourceMap(), outputFilePath);
                     }
 
                     // compile
@@ -177,31 +188,35 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     Files.touch(outputFile);
                     Files.write(compiler.toSource(), outputFile, cset);
 
-                    // statistic
-                    addToOptimizedSize(sizeBefore - outputFile.length());
-
                     if (outputFilePath != null && sourceMapFile != null) {
+                        // write sourceMappingURL into the minified file
+                        writeSourceMappingURL(outputFile, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset, log);
+
                         // write the source map
+                        String outputSourceMapDir = rsa.getSourceMap().getOutputDir();
                         Files.touch(sourceMapFile);
-                        writeSourceMap(sourceMapFile, outputFilePath, compiler.getSourceMap(), log);
+                        writeSourceMap(sourceMapFile, outputFilePath, compiler.getSourceMap(), outputSourceMapDir, log);
 
                         // move the source file
-                        moveToSourceMapDir(aggrOutputFile, log);
+                        moveToSourceMapDir(aggrOutputFile, outputSourceMapDir, log);
                     } else {
                         // delete the temp. aggregated file ...source.js
                         if (aggrOutputFile.exists() && !aggrOutputFile.delete()) {
                             log.warn("Temporary file " + aggrOutputFile.getName() + " could not be deleted.");
                         }
                     }
-                } else {
-                    // statistic
-                    addToOptimizedSize(sizeBefore);
 
+                    // statistic
+                    addToOptimizedSize(sizeBefore - outputFile.length());
+                } else {
                     // delete single files if necessary
                     deleteFilesIfNecessary(rsa, log);
 
                     // rename aggregated file if necessary
                     renameOutputFileIfNecessary(rsa, aggrOutputFile);
+
+                    // statistic
+                    addToOptimizedSize(sizeBefore);
                 }
             } else {
                 // should not happen
@@ -212,12 +227,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
     }
 
-    public void setSourceMapDir(String sourceMapDir) {
-        this.sourceMapDir = sourceMapDir;
-    }
-
-    protected Compiler compile(Log log, List<SourceFile> interns, CompilerOptions options,
-                               boolean failOnWarning) throws MojoExecutionException {
+    protected Compiler compile(Log log, List<SourceFile> interns, CompilerOptions options, boolean failOnWarning)
+    throws MojoExecutionException {
         // compile
         Compiler compiler = new Compiler();
         Result result = compiler.compile(EXTERNS_EMPTY, interns, options);
@@ -254,10 +265,11 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
     }
 
-    private File setupSourceMapFile(CompilerOptions options, String outputFilePath) throws IOException {
+    private File setupSourceMapFile(CompilerOptions options, org.primefaces.extensions.optimizerplugin.model.SourceMap sourceMap,
+                                    String outputFilePath) throws IOException {
         // set options for source map
-        options.setSourceMapDetailLevel(SourceMap.DetailLevel.ALL);
-        options.setSourceMapFormat(SourceMap.Format.V3);
+        options.setSourceMapDetailLevel(SourceMap.DetailLevel.valueOf(sourceMap.getDetailLevel()));
+        options.setSourceMapFormat(SourceMap.Format.valueOf(sourceMap.getFormat()));
 
         File sourceMapFile = new File(outputFilePath + SOURCE_MAP_FILE_EXTENSION);
         options.setSourceMapOutputPath(sourceMapFile.getCanonicalPath());
@@ -276,7 +288,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         return sourceMapFile;
     }
 
-    private void writeSourceMap(File sourceMapFile, String sourceFileName, SourceMap sourceMap, Log log) {
+    private void writeSourceMap(File sourceMapFile, String sourceFileName, SourceMap sourceMap, String outputDir, Log log) {
         try {
             FileWriter out = new FileWriter(sourceMapFile);
             sourceMap.appendTo(out, sourceFileName);
@@ -287,18 +299,29 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
 
         // move the file
-        moveToSourceMapDir(sourceMapFile, log);
+        moveToSourceMapDir(sourceMapFile, outputDir, log);
     }
 
-    private void moveToSourceMapDir(File file, Log log) {
+    private void moveToSourceMapDir(File file, String outputDir, Log log) {
         try {
             String name = file.getName();
-            String target = sourceMapDir + name;
+            String target = outputDir + name;
             File targetFile = new File(target);
             Files.createParentDirs(targetFile);
             Files.move(file, targetFile);
         } catch (Exception e) {
-            log.error("File " + file + " could not be moved to " + sourceMapDir, e);
+            log.error("File " + file + " could not be moved to " + outputDir, e);
+        }
+    }
+
+    private void writeSourceMappingURL(File minifiedFile, File sourceMapFile, String sourceMapRoot, Charset cset, Log log) {
+        try {
+            // write sourceMappingURL
+            String smRoot = (sourceMapRoot != null ? sourceMapRoot : "");
+            Files.append(System.getProperty("line.separator"), minifiedFile, cset);
+            Files.append("//# sourceMappingURL=" + smRoot + sourceMapFile.getName(), minifiedFile, cset);
+        } catch (IOException e) {
+            log.error("//# sourceMappingURL for the minified file " + minifiedFile + " could not be written", e);
         }
     }
 }

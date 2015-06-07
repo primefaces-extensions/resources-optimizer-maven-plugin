@@ -21,6 +21,7 @@ package org.primefaces.extensions.optimizerplugin.util;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.WarningLevel;
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
+import org.primefaces.extensions.optimizerplugin.model.SourceMap;
 
 import java.io.File;
 import java.util.Set;
@@ -28,7 +29,7 @@ import java.util.Set;
 /**
  * Container class containing all needed infos for a resource set describing JavaScript files..
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
@@ -36,15 +37,15 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     private WarningLevel warningLevel;
 
-    private boolean createSourceMap;
+    private SourceMap sourceMap;
 
-    public ResourcesSetJsAdapter(File inputDir, Set<File> files, CompilationLevel compilationLevel, WarningLevel warningLevel,
-                                 boolean createSourceMap, Aggregation aggregation, String encoding, boolean failOnWarning, 
+    public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation, CompilationLevel compilationLevel,
+                                 WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
                                  String suffix) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.compilationLevel = compilationLevel;
         this.warningLevel = warningLevel;
-        this.createSourceMap = createSourceMap;
+        this.sourceMap = sourceMap;
     }
 
     public CompilationLevel getCompilationLevel() {
@@ -55,7 +56,7 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
         return warningLevel;
     }
 
-    public boolean isCreateSourceMap() {
-        return createSourceMap;
+    public SourceMap getSourceMap() {
+        return sourceMap;
     }
 }
