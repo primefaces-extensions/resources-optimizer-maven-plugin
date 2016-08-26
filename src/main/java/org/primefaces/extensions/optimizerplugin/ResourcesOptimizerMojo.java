@@ -19,6 +19,8 @@
 package org.primefaces.extensions.optimizerplugin;
 
 import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.WarningLevel;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -148,11 +150,20 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      */
     private String smapOutputDir;
 
+
+    /**
+     * Language mode for input javascript.
+     *
+     * @parameter property="languageIn" default-value="ECMASCRIPT3"
+     */
+    private String languageIn;
+
     /**
      * Compile sets.
      *
      * @parameter
      */
+
     private List<ResourcesSet> resourcesSets;
 
     private DataUriTokenResolver dataUriTokenResolver;
@@ -222,7 +233,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                         processJsFiles(file, subDirJsFiles,
                                                 getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                 getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
-                                                resolveSourceMap(null), null);
+                                                resolveSourceMap(null), null, getLanguageIn(languageIn));
                                     }
                                 }
                             }
@@ -238,7 +249,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         if (!scanner.getJsFiles().isEmpty()) {
                             // handle JavaScript files
                             processJsFiles(dir, scanner.getJsFiles(), aggr, getCompilationLevel(compilationLevel),
-                                    getWarningLevel(warningLevel), resolveSourceMap(null), suffix);
+                                    getWarningLevel(warningLevel), resolveSourceMap(null), suffix, getLanguageIn(languageIn));
                         }
                     }
                 }
@@ -316,7 +327,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                             processJsFiles(file, subDirJsFiles,
                                                     getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                     resolveCompilationLevel(rs), resolveWarningLevel(rs),
-                                                    resolveSourceMap(rs), null);
+                                                    resolveSourceMap(rs), null, resolveLnaguageIn(rs));
                                         }
                                     }
                                 }
@@ -333,7 +344,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                             if (!scanner.getJsFiles().isEmpty()) {
                                 // handle JavaScript files
                                 processJsFiles(dir, scanner.getJsFiles(), aggr, resolveCompilationLevel(rs),
-                                        resolveWarningLevel(rs), resolveSourceMap(rs), suffix);
+                                        resolveWarningLevel(rs), resolveSourceMap(rs), suffix, resolveLnaguageIn(rs));
                             }
                         }
                     }
@@ -369,10 +380,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     }
 
     private void processJsFiles(File inputDir, Set<File> jsFiles, Aggregation aggr, CompilationLevel compilationLevel,
-                                WarningLevel warningLevel, SourceMap sourceMap, String suffix) throws MojoExecutionException {
+                                WarningLevel warningLevel, SourceMap sourceMap, String suffix,
+                                LanguageMode languageIn) throws MojoExecutionException {
         resFound = true;
         ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
-                inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding, failOnWarning, suffix);
+                inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
+                failOnWarning, suffix, languageIn);
 
         ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
         closureOptimizer.optimize(rsa, getLog());
@@ -479,6 +492,17 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return smap;
     }
 
+    private LanguageMode resolveLnaguageIn(ResourcesSet rs) throws MojoExecutionException {
+        LanguageMode langIn;
+        if (rs.getLanguageIn() != null) {
+            langIn = getLanguageIn(rs.getLanguageIn());
+        } else {
+            langIn = getLanguageIn(languageIn);
+        }
+
+        return langIn;
+    }
+
     private CompilationLevel getCompilationLevel(String compilationLevel) throws MojoExecutionException {
         try {
             return CompilationLevel.valueOf(compilationLevel);
@@ -510,6 +534,25 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                 getLog().warn("Using 'QUIET' as warning level");
 
                 return WarningLevel.QUIET;
+            }
+        }
+    }
+
+    private LanguageMode getLanguageIn(String languageIn) throws MojoExecutionException {
+        try {
+            return LanguageMode.valueOf(languageIn);
+        } catch (Exception e) {
+            final String errMsg =
+                    "Input language spec'" + languageIn + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
+                            "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT6','ECMASCRIPT6_STRICT'," +
+                            "'ECMASCRIPT6_TYPED'";
+            if (failOnWarning) {
+                throw new MojoExecutionException(errMsg);
+            } else {
+                getLog().warn(errMsg);
+                getLog().warn("Using 'QUIET' as warning level");
+
+                return LanguageMode.ECMASCRIPT3;
             }
         }
     }

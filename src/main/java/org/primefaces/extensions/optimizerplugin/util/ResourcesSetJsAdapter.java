@@ -19,6 +19,8 @@
 package org.primefaces.extensions.optimizerplugin.util;
 
 import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.WarningLevel;
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
 import org.primefaces.extensions.optimizerplugin.model.SourceMap;
@@ -39,13 +41,16 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     private SourceMap sourceMap;
 
+    private LanguageMode languageIn;
+
     public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation, CompilationLevel compilationLevel,
                                  WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
-                                 String suffix) {
+                                 String suffix, LanguageMode languageIn) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.compilationLevel = compilationLevel;
         this.warningLevel = warningLevel;
         this.sourceMap = sourceMap;
+        this.languageIn = languageIn;
     }
 
     public CompilationLevel getCompilationLevel() {
@@ -58,5 +63,9 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     public SourceMap getSourceMap() {
         return sourceMap;
+    }
+
+    public LanguageMode getLanguageIn() {
+        return languageIn;
     }
 }
