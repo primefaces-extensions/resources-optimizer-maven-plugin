@@ -19,7 +19,6 @@
 package org.primefaces.extensions.optimizerplugin;
 
 import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.WarningLevel;
 import org.apache.maven.plugin.AbstractMojo;
@@ -159,6 +158,13 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private String languageIn;
 
     /**
+     * Language mode for output javascript.
+     *
+     * @parameter property="languageOut" default-value="NO_TRANSPILE"
+     */
+    private String languageOut;
+
+    /**
      * Compile sets.
      *
      * @parameter
@@ -233,7 +239,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                         processJsFiles(file, subDirJsFiles,
                                                 getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                 getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
-                                                resolveSourceMap(null), null, getLanguageIn(languageIn));
+                                                resolveSourceMap(null), null, getLanguageIn(languageIn), getLanguageOut(languageOut));
                                     }
                                 }
                             }
@@ -249,7 +255,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         if (!scanner.getJsFiles().isEmpty()) {
                             // handle JavaScript files
                             processJsFiles(dir, scanner.getJsFiles(), aggr, getCompilationLevel(compilationLevel),
-                                    getWarningLevel(warningLevel), resolveSourceMap(null), suffix, getLanguageIn(languageIn));
+                                    getWarningLevel(warningLevel), resolveSourceMap(null), suffix,
+                                    getLanguageIn(languageIn), getLanguageOut(languageOut));
                         }
                     }
                 }
@@ -327,7 +334,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                             processJsFiles(file, subDirJsFiles,
                                                     getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                     resolveCompilationLevel(rs), resolveWarningLevel(rs),
-                                                    resolveSourceMap(rs), null, resolveLnaguageIn(rs));
+                                                    resolveSourceMap(rs), null, resolveLanguageIn(rs), resolveLanguageOut(rs));
                                         }
                                     }
                                 }
@@ -344,7 +351,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                             if (!scanner.getJsFiles().isEmpty()) {
                                 // handle JavaScript files
                                 processJsFiles(dir, scanner.getJsFiles(), aggr, resolveCompilationLevel(rs),
-                                        resolveWarningLevel(rs), resolveSourceMap(rs), suffix, resolveLnaguageIn(rs));
+                                        resolveWarningLevel(rs), resolveSourceMap(rs), suffix,
+                                        resolveLanguageIn(rs), resolveLanguageOut(rs));
                             }
                         }
                     }
@@ -381,11 +389,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
     private void processJsFiles(File inputDir, Set<File> jsFiles, Aggregation aggr, CompilationLevel compilationLevel,
                                 WarningLevel warningLevel, SourceMap sourceMap, String suffix,
-                                LanguageMode languageIn) throws MojoExecutionException {
+                                LanguageMode languageIn, LanguageMode languageOut) throws MojoExecutionException {
         resFound = true;
         ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
                 inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
-                failOnWarning, suffix, languageIn);
+                failOnWarning, suffix, languageIn, languageOut);
 
         ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
         closureOptimizer.optimize(rsa, getLog());
@@ -492,7 +500,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return smap;
     }
 
-    private LanguageMode resolveLnaguageIn(ResourcesSet rs) throws MojoExecutionException {
+    private LanguageMode resolveLanguageIn(ResourcesSet rs) throws MojoExecutionException {
         LanguageMode langIn;
         if (rs.getLanguageIn() != null) {
             langIn = getLanguageIn(rs.getLanguageIn());
@@ -501,6 +509,17 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
 
         return langIn;
+    }
+
+    private LanguageMode resolveLanguageOut(ResourcesSet rs) throws MojoExecutionException {
+        LanguageMode langOut;
+        if (rs.getLanguageOut() != null) {
+            langOut = getLanguageOut(rs.getLanguageOut());
+        } else {
+            langOut = getLanguageIn(languageOut);
+        }
+
+        return langOut;
     }
 
     private CompilationLevel getCompilationLevel(String compilationLevel) throws MojoExecutionException {
@@ -553,6 +572,24 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                 getLog().warn("Using 'QUIET' as warning level");
 
                 return LanguageMode.ECMASCRIPT3;
+            }
+        }
+    }
+
+    private LanguageMode getLanguageOut(String languageOut) throws MojoExecutionException {
+        try {
+            return LanguageMode.valueOf(languageOut);
+        } catch (Exception e) {
+            final String errMsg =
+                    "Output language spec'" + languageOut + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
+                            "'ECMASCRIPT5', 'ECMASCRIPT5_STRICT', 'ECMASCRIPT6_TYPED' (experimental)";
+            if (failOnWarning) {
+                throw new MojoExecutionException(errMsg);
+            } else {
+                getLog().warn(errMsg);
+                getLog().warn("Using 'QUIET' as warning level");
+
+                return LanguageMode.NO_TRANSPILE;
             }
         }
     }

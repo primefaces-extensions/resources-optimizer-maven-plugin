@@ -19,7 +19,6 @@
 package org.primefaces.extensions.optimizerplugin.util;
 
 import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.WarningLevel;
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
@@ -43,14 +42,17 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     private LanguageMode languageIn;
 
+    private LanguageMode languageOut;
+
     public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation, CompilationLevel compilationLevel,
                                  WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
-                                 String suffix, LanguageMode languageIn) {
+                                 String suffix, LanguageMode languageIn, LanguageMode languageOut) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.compilationLevel = compilationLevel;
         this.warningLevel = warningLevel;
         this.sourceMap = sourceMap;
         this.languageIn = languageIn;
+        this.languageOut = languageOut;
     }
 
     public CompilationLevel getCompilationLevel() {
@@ -67,5 +69,9 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     public LanguageMode getLanguageIn() {
         return languageIn;
+    }
+
+    public LanguageMode getLanguageOut() {
+        return languageOut;
     }
 }

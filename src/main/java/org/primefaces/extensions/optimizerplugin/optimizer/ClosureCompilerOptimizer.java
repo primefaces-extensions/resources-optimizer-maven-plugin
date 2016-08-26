@@ -71,6 +71,9 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
         LanguageMode langIn = rsa.getLanguageIn();
         options.setLanguageIn(langIn);
+
+        LanguageMode langOut = rsa.getLanguageOut();
+        options.setLanguageOut(langOut);
         Compiler.setLoggingLevel(Level.WARNING);
 
         try {
