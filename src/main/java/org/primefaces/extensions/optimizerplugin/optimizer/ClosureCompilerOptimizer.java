@@ -23,6 +23,7 @@ import com.google.common.io.Files;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.JSError;
 import com.google.javascript.jscomp.Result;
 import com.google.javascript.jscomp.SourceFile;
@@ -67,6 +68,12 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
         WarningLevel warnLevel = rsa.getWarningLevel();
         warnLevel.setOptionsForWarningLevel(options);
+
+        LanguageMode langIn = rsa.getLanguageIn();
+        options.setLanguageIn(langIn);
+
+        LanguageMode langOut = rsa.getLanguageOut();
+        options.setLanguageOut(langOut);
         Compiler.setLoggingLevel(Level.WARNING);
 
         try {

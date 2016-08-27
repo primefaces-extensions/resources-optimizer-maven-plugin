@@ -83,6 +83,20 @@ public class ResourcesSet {
      */
     private SourceMap sourceMap;
 
+    /**
+     * Configuration for input JS language mode.
+     *
+     * @parameter
+     */
+    private String languageIn;
+
+    /**
+     * Configuration for output JS language mode.
+     *
+     * @parameter
+     */
+    private String languageOut;
+
     public File getInputDir() {
         return inputDir;
     }
@@ -145,5 +159,21 @@ public class ResourcesSet {
 
     public void setSourceMap(SourceMap sourceMap) {
         this.sourceMap = sourceMap;
+    }
+
+    public String getLanguageIn() {
+        return languageIn;
+    }
+
+    public void setLanguageIn(String languageIn) {
+        this.languageIn = languageIn;
+    }
+
+    public String getLanguageOut() {
+        return languageOut;
+    }
+
+    public void setLanguageOut(String languageOut) {
+        this.languageOut = languageOut;
     }
 }
