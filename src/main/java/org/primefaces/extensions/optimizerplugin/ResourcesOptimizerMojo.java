@@ -64,9 +64,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     /**
      * Images directories according to JSF spec.
      *
-     * @parameter default-value="${project.basedir}${file.separator}src${file.separator}main${file.separator}webapp${file
-     * .separator}resources,${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file
-     * .separator}META-INF${file.separator}resources"
+     * @parameter default-value="${project.basedir}${file.separator}src${file.separator}main${file.separator}webapp${file.separator}resources, ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}META-INF${file.separator}resources"
      */
     private String imagesDir;
 
