@@ -314,8 +314,10 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
             String name = file.getName();
             String target = outputDir + name;
             File targetFile = new File(target);
-            Files.createParentDirs(targetFile);
-            Files.move(file, targetFile);
+            if(!file.equals(targetFile)) {
+                Files.createParentDirs(targetFile);
+                Files.move(file, targetFile);
+            }
         } catch (Exception e) {
             log.error("File " + file + " could not be moved to " + outputDir, e);
         }
