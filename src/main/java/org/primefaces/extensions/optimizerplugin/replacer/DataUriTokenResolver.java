@@ -51,6 +51,7 @@ public class DataUriTokenResolver implements TokenResolver {
 		supportedTypes.put("jpg", "image/jpeg");
 		supportedTypes.put("jpeg", "image/jpeg");
 		supportedTypes.put("png", "image/png");
+		supportedTypes.put("svg", "image/svg+xml");
 	}
 
 	public DataUriTokenResolver(final File[] imagesDir) {
