@@ -1,5 +1,5 @@
-/*
- * Copyright 2011-2015 PrimeFaces Extensions
+/**
+ * Copyright 2011-2017 PrimeFaces Extensions
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * $Id$
  */
 
 package org.primefaces.extensions.optimizerplugin.optimizer;
-
-import com.google.common.io.Files;
-import com.yahoo.platform.yui.compressor.CssCompressor;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.StringUtils;
-import org.primefaces.extensions.optimizerplugin.replacer.TokenReplacingReader;
-import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
-import org.primefaces.extensions.optimizerplugin.util.ResourcesSetCssAdapter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,10 +26,21 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.StringUtils;
+import org.primefaces.extensions.optimizerplugin.replacer.TokenReplacingReader;
+import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
+import org.primefaces.extensions.optimizerplugin.util.ResourcesSetCssAdapter;
+
+import com.google.common.io.Files;
+
 /**
  * Class for YUI Compressor doing CSS optimization.
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class YuiCompressorOptimizer extends AbstractOptimizer {
 
@@ -83,7 +81,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
                         // statistic
                         addToOptimizedSize(outputFile);
-                    } else {
+                    }
+                    else {
                         // path of temp. file
                         String pathOptimized = FileUtils.removeExtension(path) + OPTIMIZED_FILE_EXTENSION;
 
@@ -104,7 +103,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
                         addToOptimizedSize(file);
                     }
                 }
-            } else if (rsa.getAggregation().getOutputFile() != null) {
+            }
+            else if (rsa.getAggregation().getOutputFile() != null) {
                 // aggregation to one output file
                 File outputFile;
                 Charset cset = Charset.forName(rsa.getEncoding());
@@ -154,7 +154,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
                     // statistic
                     addToOptimizedSize(outputFile.length() - sizeBefore);
-                } else {
+                }
+                else {
                     // only aggregation without compressing
                     outputFile = aggregateFiles(rsa, cset, false);
 
@@ -168,20 +169,23 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
                 // rename aggregated file if necessary
                 renameOutputFileIfNecessary(rsa, outputFile);
-            } else {
+            }
+            else {
                 // should not happen
                 log.error("Wrong plugin's internal state.");
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new MojoExecutionException("Resources optimization failure: " + e.getLocalizedMessage(), e);
-        } finally {
+        }
+        finally {
             closeStreams(in, out);
         }
     }
 
     @Override
     protected Reader getReader(ResourcesSetAdapter rsAdapter, File file)
-    throws FileNotFoundException, UnsupportedEncodingException {
+                throws FileNotFoundException, UnsupportedEncodingException {
         ResourcesSetCssAdapter rsa = (ResourcesSetCssAdapter) rsAdapter;
 
         Reader reader = super.getReader(rsa, file);
