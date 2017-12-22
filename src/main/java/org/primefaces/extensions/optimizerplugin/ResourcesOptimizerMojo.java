@@ -50,7 +50,7 @@ import java.util.Set;
  */
 public class ResourcesOptimizerMojo extends AbstractMojo {
 
-    private static final String[] DEFAULT_INCLUDES = {"**/*.css", "**/*.js"};
+    private static final String[] DEFAULT_INCLUDES = { "**/*.css", "**/*.js" };
 
     private static final String[] DEFAULT_EXCLUDES = {};
 
@@ -64,7 +64,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     /**
      * Images directories according to JSF spec.
      *
-     * @parameter default-value="${project.basedir}${file.separator}src${file.separator}main${file.separator}webapp${file.separator}resources, ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}META-INF${file.separator}resources"
+     * @parameter default-value="${project.basedir}${file.separator}src${file.separator}main${file.separator}webapp${file.separator}resources,
+     *            ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}META-INF${file.separator}resources"
      */
     private String imagesDir;
 
@@ -140,13 +141,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private SourceMap sourceMap;
 
     /**
-     * Default output directory for created source maps and original source files.
-     * This value is used internally in this class.
+     * Default output directory for created source maps and original source files. This value is used internally in this class.
      *
      * @parameter default-value="${project.build.directory}${file.separator}sourcemap${file.separator}"
      */
     private String smapOutputDir;
-
 
     /**
      * Language mode for input javascript.
@@ -185,7 +184,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      * @throws MojoFailureException
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
-        //getLog().info("Optimization of resources is started ...");
+        // getLog().info("Optimization of resources is started ...");
 
         try {
             if (resourcesSets == null || resourcesSets.isEmpty()) {
@@ -196,7 +195,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                 if (aggregations == null || aggregations.length < 1) {
                     aggrs = new Aggregation[1];
                     aggrs[0] = null;
-                } else {
+                }
+                else {
                     aggrs = aggregations;
                 }
 
@@ -219,30 +219,29 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                     ResourcesScanner subDirScanner = new ResourcesScanner();
                                     subDirScanner.scan(file, DEFAULT_INCLUDES, DEFAULT_EXCLUDES);
 
-                                    Set<File> subDirCssFiles =
-                                            filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
+                                    Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
                                     if (!subDirCssFiles.isEmpty()) {
-                                        DataUriTokenResolver dataUriTokenResolver =
-                                                (useDataUri ? getDataUriTokenResolver() : null);
+                                        DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
 
                                         // handle CSS files
                                         processCssFiles(file, subDirCssFiles, dataUriTokenResolver,
-                                                getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
-                                                null);
+                                                    getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
+                                                    null);
                                     }
 
                                     Set<File> subDirJsFiles = filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
                                     if (!subDirJsFiles.isEmpty()) {
                                         // handle JavaScript files
                                         processJsFiles(file, subDirJsFiles,
-                                                getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
-                                                getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
-                                                resolveSourceMap(null), null, getLanguageIn(languageIn), getLanguageOut(languageOut));
+                                                    getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
+                                                    getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
+                                                    resolveSourceMap(null), null, getLanguageIn(languageIn), getLanguageOut(languageOut));
                                     }
                                 }
                             }
                         }
-                    } else {
+                    }
+                    else {
                         if (!scanner.getCssFiles().isEmpty()) {
                             DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
 
@@ -253,29 +252,34 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         if (!scanner.getJsFiles().isEmpty()) {
                             // handle JavaScript files
                             processJsFiles(dir, scanner.getJsFiles(), aggr, getCompilationLevel(compilationLevel),
-                                    getWarningLevel(warningLevel), resolveSourceMap(null), suffix,
-                                    getLanguageIn(languageIn), getLanguageOut(languageOut));
+                                        getWarningLevel(warningLevel), resolveSourceMap(null), suffix,
+                                        getLanguageIn(languageIn), getLanguageOut(languageOut));
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 for (ResourcesSet rs : resourcesSets) {
                     // iterate over all resources sets
                     String[] incls;
                     if (rs.getIncludes() != null && rs.getIncludes().length > 0) {
                         incls = rs.getIncludes();
-                    } else if (includes != null && includes.length > 0) {
+                    }
+                    else if (includes != null && includes.length > 0) {
                         incls = includes;
-                    } else {
+                    }
+                    else {
                         incls = DEFAULT_INCLUDES;
                     }
 
                     String[] excls;
                     if (rs.getExcludes() != null && rs.getExcludes().length > 0) {
                         excls = rs.getExcludes();
-                    } else if (excludes != null && excludes.length > 0) {
+                    }
+                    else if (excludes != null && excludes.length > 0) {
                         excls = excludes;
-                    } else {
+                    }
+                    else {
                         excls = DEFAULT_EXCLUDES;
                     }
 
@@ -284,10 +288,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         if (aggregations == null || aggregations.length < 1) {
                             aggrs = new Aggregation[1];
                             aggrs[0] = null;
-                        } else {
+                        }
+                        else {
                             aggrs = aggregations;
                         }
-                    } else {
+                    }
+                    else {
                         aggrs = rs.getAggregations();
                     }
 
@@ -313,34 +319,31 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                         ResourcesScanner subDirScanner = new ResourcesScanner();
                                         subDirScanner.scan(file, DEFAULT_INCLUDES, DEFAULT_EXCLUDES);
 
-                                        Set<File> subDirCssFiles =
-                                                filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
+                                        Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
                                         if (!subDirCssFiles.isEmpty()) {
-                                            DataUriTokenResolver dataUriTokenResolver =
-                                                    (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
+                                            DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
 
                                             // handle CSS files
                                             processCssFiles(file, subDirCssFiles, dataUriTokenResolver,
-                                                    getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
-                                                    null);
+                                                        getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
+                                                        null);
                                         }
 
-                                        Set<File> subDirJsFiles =
-                                                filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
+                                        Set<File> subDirJsFiles = filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
                                         if (!subDirJsFiles.isEmpty()) {
                                             // handle JavaScript files
                                             processJsFiles(file, subDirJsFiles,
-                                                    getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
-                                                    resolveCompilationLevel(rs), resolveWarningLevel(rs),
-                                                    resolveSourceMap(rs), null, resolveLanguageIn(rs), resolveLanguageOut(rs));
+                                                        getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
+                                                        resolveCompilationLevel(rs), resolveWarningLevel(rs),
+                                                        resolveSourceMap(rs), null, resolveLanguageIn(rs), resolveLanguageOut(rs));
                                         }
                                     }
                                 }
                             }
-                        } else {
+                        }
+                        else {
                             if (!scanner.getCssFiles().isEmpty()) {
-                                DataUriTokenResolver dataUriTokenResolver =
-                                        (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
+                                DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
 
                                 // handle CSS files
                                 processCssFiles(dir, scanner.getCssFiles(), dataUriTokenResolver, aggr, suffix);
@@ -349,16 +352,18 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                             if (!scanner.getJsFiles().isEmpty()) {
                                 // handle JavaScript files
                                 processJsFiles(dir, scanner.getJsFiles(), aggr, resolveCompilationLevel(rs),
-                                        resolveWarningLevel(rs), resolveSourceMap(rs), suffix,
-                                        resolveLanguageIn(rs), resolveLanguageOut(rs));
+                                            resolveWarningLevel(rs), resolveSourceMap(rs), suffix,
+                                            resolveLanguageIn(rs), resolveLanguageOut(rs));
                             }
                         }
                     }
                 }
             }
-        } catch (MojoExecutionException e) {
+        }
+        catch (MojoExecutionException e) {
             throw e;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new MojoExecutionException("Error while executing the mojo " + getClass(), e);
         }
 
@@ -368,15 +373,15 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
             return;
         }
 
-        //getLog().info("Optimization of resources has been finished successfully.");
+        // getLog().info("Optimization of resources has been finished successfully.");
         outputStatistic();
     }
 
     private void processCssFiles(File inputDir, Set<File> cssFiles, DataUriTokenResolver dataUriTokenResolver,
-                                 Aggregation aggr, String suffix) throws MojoExecutionException {
+                Aggregation aggr, String suffix) throws MojoExecutionException {
         resFound = true;
         ResourcesSetAdapter rsa = new ResourcesSetCssAdapter(
-                inputDir, cssFiles, dataUriTokenResolver, aggr, encoding, failOnWarning, suffix);
+                    inputDir, cssFiles, dataUriTokenResolver, aggr, encoding, failOnWarning, suffix);
 
         YuiCompressorOptimizer yuiOptimizer = new YuiCompressorOptimizer();
         yuiOptimizer.optimize(rsa, getLog());
@@ -386,12 +391,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     }
 
     private void processJsFiles(File inputDir, Set<File> jsFiles, Aggregation aggr, CompilationLevel compilationLevel,
-                                WarningLevel warningLevel, SourceMap sourceMap, String suffix,
-                                LanguageMode languageIn, LanguageMode languageOut) throws MojoExecutionException {
+                WarningLevel warningLevel, SourceMap sourceMap, String suffix,
+                LanguageMode languageIn, LanguageMode languageOut) throws MojoExecutionException {
         resFound = true;
         ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
-                inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
-                failOnWarning, suffix, languageIn, languageOut);
+                    inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
+                    failOnWarning, suffix, languageIn, languageOut);
 
         ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
         closureOptimizer.optimize(rsa, getLog());
@@ -407,10 +412,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
         if (aggregation.isSubDirMode() && aggregation.getOutputFile() != null) {
             final String errMsg = "At least one aggregation tag is ambiguous because both " +
-                    "'subDirMode' and 'outputFile' were set";
+                        "'subDirMode' and 'outputFile' were set";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
-            } else {
+            }
+            else {
                 getLog().warn(errMsg);
                 getLog().warn("Using 'outputFile' as aggregation");
                 aggregation.setSubDirMode(false);
@@ -420,12 +426,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
 
         if (!aggregation.isSubDirMode() && aggregation.getOutputFile() == null) {
-            final String errMsg =
-                    "An aggregation tag is available, but no valid aggregation was configured. " +
-                            "Check 'subDirMode' and 'outputFile'";
+            final String errMsg = "An aggregation tag is available, but no valid aggregation was configured. " +
+                        "Check 'subDirMode' and 'outputFile'";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
-            } else {
+            }
+            else {
                 getLog().warn(errMsg);
             }
 
@@ -452,7 +458,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         CompilationLevel compLevel;
         if (rs.getCompilationLevel() != null) {
             compLevel = getCompilationLevel(rs.getCompilationLevel());
-        } else {
+        }
+        else {
             compLevel = getCompilationLevel(compilationLevel);
         }
 
@@ -463,7 +470,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         WarningLevel warnLevel;
         if (rs.getWarningLevel() != null) {
             warnLevel = getWarningLevel(rs.getWarningLevel());
-        } else {
+        }
+        else {
             warnLevel = getWarningLevel(warningLevel);
         }
 
@@ -474,10 +482,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         SourceMap smap;
         if (rs != null && rs.getSourceMap() != null) {
             smap = rs.getSourceMap();
-        } else {
+        }
+        else {
             smap = sourceMap;
         }
-        
+
         if (smap == null || !smap.isCreate()) {
             return null;
         }
@@ -502,7 +511,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         LanguageMode langIn;
         if (rs.getLanguageIn() != null) {
             langIn = getLanguageIn(rs.getLanguageIn());
-        } else {
+        }
+        else {
             langIn = getLanguageIn(languageIn);
         }
 
@@ -513,7 +523,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         LanguageMode langOut;
         if (rs.getLanguageOut() != null) {
             langOut = getLanguageOut(rs.getLanguageOut());
-        } else {
+        }
+        else {
             langOut = getLanguageIn(languageOut);
         }
 
@@ -523,13 +534,14 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private CompilationLevel getCompilationLevel(String compilationLevel) throws MojoExecutionException {
         try {
             return CompilationLevel.valueOf(compilationLevel);
-        } catch (Exception e) {
-            final String errMsg =
-                    "Compilation level '" + compilationLevel + "' is wrong. Valid constants are: " +
-                            "'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS', 'ADVANCED_OPTIMIZATIONS'";
+        }
+        catch (Exception e) {
+            final String errMsg = "Compilation level '" + compilationLevel + "' is wrong. Valid constants are: " +
+                        "'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS', 'ADVANCED_OPTIMIZATIONS'";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
-            } else {
+            }
+            else {
                 getLog().warn(errMsg);
                 getLog().warn("Using 'SIMPLE_OPTIMIZATIONS' as compilation level");
 
@@ -541,12 +553,13 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private WarningLevel getWarningLevel(String warningLevel) throws MojoExecutionException {
         try {
             return WarningLevel.valueOf(warningLevel);
-        } catch (Exception e) {
-            final String errMsg =
-                    "Warning level '" + warningLevel + "' is wrong. Valid constants are: 'QUIET', 'DEFAULT', 'VERBOSE'";
+        }
+        catch (Exception e) {
+            final String errMsg = "Warning level '" + warningLevel + "' is wrong. Valid constants are: 'QUIET', 'DEFAULT', 'VERBOSE'";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
-            } else {
+            }
+            else {
                 getLog().warn(errMsg);
                 getLog().warn("Using 'QUIET' as warning level");
 
@@ -558,14 +571,15 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private LanguageMode getLanguageIn(String languageIn) throws MojoExecutionException {
         try {
             return LanguageMode.valueOf(languageIn);
-        } catch (Exception e) {
-            final String errMsg =
-                    "Input language spec'" + languageIn + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
-                            "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT6','ECMASCRIPT6_STRICT'," +
-                            "'ECMASCRIPT6_TYPED'";
+        }
+        catch (Exception e) {
+            final String errMsg = "Input language spec'" + languageIn + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
+                        "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT6','ECMASCRIPT6_STRICT'," +
+                        "'ECMASCRIPT6_TYPED'";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
-            } else {
+            }
+            else {
                 getLog().warn(errMsg);
                 getLog().warn("Using 'QUIET' as warning level");
 
@@ -577,13 +591,14 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private LanguageMode getLanguageOut(String languageOut) throws MojoExecutionException {
         try {
             return LanguageMode.valueOf(languageOut);
-        } catch (Exception e) {
-            final String errMsg =
-                    "Output language spec'" + languageOut + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
-                            "'ECMASCRIPT5', 'ECMASCRIPT5_STRICT', 'ECMASCRIPT6_TYPED' (experimental)";
+        }
+        catch (Exception e) {
+            final String errMsg = "Output language spec'" + languageOut + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
+                        "'ECMASCRIPT5', 'ECMASCRIPT5_STRICT', 'ECMASCRIPT6_TYPED' (experimental)";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
-            } else {
+            }
+            else {
                 getLog().warn(errMsg);
                 getLog().warn("Using 'QUIET' as warning level");
 
@@ -600,10 +615,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         String[] arrImagesDir = imagesDir.split(",");
         File[] fileImagesDir = new File[arrImagesDir.length];
         for (int i = 0; i < arrImagesDir.length; i++) {
+            File file = new File(arrImagesDir[i]);
+            getLog().info("Data URI Directory: " + file.toString());
             fileImagesDir[i] = new File(arrImagesDir[i]);
         }
 
-        dataUriTokenResolver = new DataUriTokenResolver(fileImagesDir);
+        dataUriTokenResolver = new DataUriTokenResolver(getLog(), fileImagesDir);
 
         return dataUriTokenResolver;
     }
@@ -631,17 +648,21 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
         if (originalFilesSize <= 1024) {
             originalSizeTotal = originalFilesSize + " Bytes";
-        } else if (originalFilesSize <= oneMB) {
+        }
+        else if (originalFilesSize <= oneMB) {
             originalSizeTotal = round((double) originalFilesSize / 1024, 3) + " KB";
-        } else {
+        }
+        else {
             originalSizeTotal = round((double) originalFilesSize / oneMB, 3) + " MB";
         }
 
         if (optimizedFilesSize <= 1024) {
             optimizedSizeTotal = optimizedFilesSize + " Bytes";
-        } else if (optimizedFilesSize <= oneMB) {
+        }
+        else if (optimizedFilesSize <= oneMB) {
             optimizedSizeTotal = round((double) optimizedFilesSize / 1024, 3) + " KB";
-        } else {
+        }
+        else {
             optimizedSizeTotal = round((double) optimizedFilesSize / oneMB, 3) + " MB";
         }
 
@@ -650,7 +671,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
             getLog().info("Size before optimization = " + originalSizeTotal);
             getLog().info("Size after optimization = " + optimizedSizeTotal);
             getLog().info("Optimized resources have " + round(((optimizedFilesSize * 100.0) / originalFilesSize), 2)
-                    + "% of original size");
+                        + "% of original size");
             getLog().info("=========================================================");
         }
     }

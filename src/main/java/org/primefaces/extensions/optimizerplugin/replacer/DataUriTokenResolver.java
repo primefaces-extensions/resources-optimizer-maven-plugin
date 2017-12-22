@@ -19,6 +19,8 @@
 package org.primefaces.extensions.optimizerplugin.replacer;
 
 import com.google.common.io.Files;
+
+import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.Base64;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -39,6 +41,7 @@ public class DataUriTokenResolver implements TokenResolver {
 
 	/** directories where to look for images from */
 	private File[] imagesDir;
+	private Log log;
 
 	private static Pattern pattern = Pattern.compile("[\\s'\":/\\\\]+");
 
@@ -54,8 +57,9 @@ public class DataUriTokenResolver implements TokenResolver {
 		supportedTypes.put("svg", "image/svg+xml");
 	}
 
-	public DataUriTokenResolver(final File[] imagesDir) {
+	public DataUriTokenResolver(Log log, final File[] imagesDir) {
 		this.imagesDir = imagesDir;
+		this.log = log;
 	}
 
 	public String resolveToken(final String token) throws IOException {
@@ -118,6 +122,7 @@ public class DataUriTokenResolver implements TokenResolver {
 			return null;
 		}
 
+		log.info("Data URI conversion for: " + imageFile);
 		// generate dataURI
 		final byte[] bytes = Files.toByteArray(imageFile);
 		StringBuilder dataUriBilder = new StringBuilder();
