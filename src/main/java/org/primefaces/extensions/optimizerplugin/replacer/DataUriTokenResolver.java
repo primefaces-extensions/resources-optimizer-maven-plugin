@@ -99,6 +99,9 @@ public class DataUriTokenResolver implements TokenResolver {
 		File imageFile = null;
 		String extension = null;
 		for (File imageDir : imagesDir) {
+		    if (!imageDir.isDirectory()) {
+                continue;
+            }
 			String fullPath = imageDir.getCanonicalPath() + path;
 
 			imageFile = new File(fullPath);

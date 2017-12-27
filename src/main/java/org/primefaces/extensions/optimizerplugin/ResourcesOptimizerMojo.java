@@ -616,8 +616,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         File[] fileImagesDir = new File[arrImagesDir.length];
         for (int i = 0; i < arrImagesDir.length; i++) {
             File file = new File(arrImagesDir[i]);
-            getLog().info("Data URI Directory: " + file.toString());
-            fileImagesDir[i] = new File(arrImagesDir[i]);
+            if (file.isDirectory()) {
+                getLog().info("Data URI Directory: " + file.toString());
+                fileImagesDir[i] = new File(arrImagesDir[i]);
+            }
         }
 
         dataUriTokenResolver = new DataUriTokenResolver(getLog(), fileImagesDir);
