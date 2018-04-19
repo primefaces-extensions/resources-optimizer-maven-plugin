@@ -166,6 +166,7 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
                 // delete single files if necessary
                 deleteFilesIfNecessary(rsa, log);
+                deleteDirectoryIfNecessary(rsa, log);
 
                 // rename aggregated file if necessary
                 renameOutputFileIfNecessary(rsa, outputFile);

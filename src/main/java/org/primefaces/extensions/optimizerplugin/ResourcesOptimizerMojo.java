@@ -445,6 +445,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         Aggregation subDirAggr = new Aggregation();
         subDirAggr.setPrependedFile(aggr.getPrependedFile());
         subDirAggr.setRemoveIncluded(aggr.isRemoveIncluded());
+        subDirAggr.setRemoveEmptyDirectories(aggr.isRemoveEmptyDirectories());
         subDirAggr.setWithoutCompress(aggr.isWithoutCompress());
         subDirAggr.setSubDirMode(true);
 

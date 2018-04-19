@@ -47,6 +47,13 @@ public class Aggregation {
      * @parameter
      */
     private boolean removeIncluded = true;
+    
+    /**
+     * Flag whether the directories of the source files, if they are empty after the aggregation, should be removed.
+     *
+     * @parameter
+     */
+    private boolean removeEmptyDirectories = false;
 
     /**
      * Flag whether included files must be compressed or not.
@@ -91,6 +98,14 @@ public class Aggregation {
 
     public void setRemoveIncluded(boolean removeIncluded) {
         this.removeIncluded = removeIncluded;
+    }
+
+    public boolean isRemoveEmptyDirectories() {
+        return removeEmptyDirectories;
+    }
+
+    public void setRemoveEmptyDirectories(boolean removeEmptyDirectories) {
+        this.removeEmptyDirectories = removeEmptyDirectories;
     }
 
     public boolean isWithoutCompress() {

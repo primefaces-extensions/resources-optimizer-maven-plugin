@@ -190,6 +190,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                     // delete single files if necessary
                     deleteFilesIfNecessary(rsa, log);
+                    deleteDirectoryIfNecessary(rsa, log);
 
                     // write the compiled content into a new file
                     Files.touch(outputFile);
@@ -218,6 +219,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                 } else {
                     // delete single files if necessary
                     deleteFilesIfNecessary(rsa, log);
+                    deleteDirectoryIfNecessary(rsa, log);
 
                     // rename aggregated file if necessary
                     renameOutputFileIfNecessary(rsa, aggrOutputFile);
