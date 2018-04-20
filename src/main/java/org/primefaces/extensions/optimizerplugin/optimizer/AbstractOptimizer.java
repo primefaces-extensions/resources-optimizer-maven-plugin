@@ -112,23 +112,21 @@ public abstract class AbstractOptimizer {
         }
     }
     
-    protected void deleteDirectoryIfNecessary(ResourcesSetAdapter rsa, Log log) {
+    protected void deleteDirectoryIfNecessary(ResourcesSetAdapter rsa, Log log) {        
         if (rsa.getAggregation().isRemoveEmptyDirectories()&& rsa.getFiles().size() > 0) {
             for (File file : rsa.getFiles()) {
-                if (file.isDirectory() && file.listFiles().length == 0) {
-                    if (!file.delete()) {
+                File directory = file.isDirectory() ? file : file.getParentFile();
+                while (directory != null && directory.isDirectory() && directory.listFiles().length == 0){
+                    if (!directory.delete()) {
                         log.warn("File " + file.getName() + " could not be deleted after aggregation.");
                     }
-                }
-                else if (file.getParentFile().isDirectory() && file.getParentFile().listFiles().length == 0) {
-                    if (!file.getParentFile().delete()) {
-                        log.warn("File " + file.getParentFile().getName() + " could not be deleted after aggregation.");
-                    }
+
+                    directory = directory.getParentFile();
                 }
             }
         }
     }
-
+    
     protected void renameOutputFileIfNecessary(ResourcesSetAdapter rsa, File outputFile) throws IOException {
         if (outputFile != null && outputFile.exists()) {
             FileUtils.rename(outputFile, rsa.getAggregation().getOutputFile());
