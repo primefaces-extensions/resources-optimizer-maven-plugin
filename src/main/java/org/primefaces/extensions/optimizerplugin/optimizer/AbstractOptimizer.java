@@ -116,7 +116,7 @@ public abstract class AbstractOptimizer {
         if (rsa.getAggregation().isRemoveEmptyDirectories()&& rsa.getFiles().size() > 0) {
             for (File file : rsa.getFiles()) {
                 File directory = file.isDirectory() ? file : file.getParentFile();
-                while (directory != null && directory.isDirectory() && directory.listFiles().length == 0){
+                while (directory != null && directory.isDirectory() && directory.listFiles().length == 0) {
                     if (!directory.delete()) {
                         log.warn("File " + file.getName() + " could not be deleted after aggregation.");
                     }
