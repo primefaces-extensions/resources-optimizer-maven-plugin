@@ -575,8 +575,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
         catch (Exception e) {
             final String errMsg = "Input language spec'" + languageIn + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
-                        "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT6','ECMASCRIPT6_STRICT'," +
-                        "'ECMASCRIPT6_TYPED'";
+                        "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT_2015','ECMASCRIPT_2016'," +
+                        "'ECMASCRIPT_2017','ECMASCRIPT_2018','ECMASCRIPT_NEXT','ECMASCRIPT6_TYPED'";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
             }
@@ -595,7 +595,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
         catch (Exception e) {
             final String errMsg = "Output language spec'" + languageOut + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
-                        "'ECMASCRIPT5', 'ECMASCRIPT5_STRICT', 'ECMASCRIPT6_TYPED' (experimental)";
+                    "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT_2015','ECMASCRIPT_2016'," +
+                    "'ECMASCRIPT_2017','ECMASCRIPT_2018','ECMASCRIPT_NEXT','ECMASCRIPT6_TYPED'";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
             }
