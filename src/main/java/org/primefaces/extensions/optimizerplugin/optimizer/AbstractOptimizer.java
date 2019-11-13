@@ -18,6 +18,7 @@
 
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
+import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -91,11 +92,11 @@ public abstract class AbstractOptimizer {
 
             if (delimeters && outputFile.length() > 0) {
                 // append semicolon to the new file in order to avoid invalid JS code
-                Files.append(";", outputFile, cset);
+                Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(";");
             }
 
             // write / append content into / to the new file
-            Files.append(writer.toString(), outputFile, cset);
+            Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
             IOUtil.close(in);
         }
 
@@ -142,7 +143,7 @@ public abstract class AbstractOptimizer {
         writer.write(System.getProperty("line.separator"));
 
         // write / append compiled content into / to the new file
-        Files.append(writer.toString(), outputFile, cset);
+        Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
         IOUtil.close(in);
     }
 

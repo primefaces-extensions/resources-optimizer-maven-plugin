@@ -19,6 +19,7 @@
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
@@ -116,13 +117,13 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                     // compile
                     List<SourceFile> interns = new ArrayList<SourceFile>();
-                    interns.add(SourceFile.fromFile(sourceFile, cset));
+                    interns.add(SourceFile.fromPath(sourceFile.toPath(), cset));
                     Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
 
                     if (StringUtils.isNotBlank(rsa.getSuffix())) {
                         // write compiled content into the new file
                         File outputFile = getFileWithSuffix(path, rsa.getSuffix());
-                        Files.write(compiler.toSource(), outputFile, cset);
+                        Files.asCharSink(outputFile, cset).write(compiler.toSource());
 
                         if (sourceMapFile != null) {
                             // write sourceMappingURL into the minified file
@@ -140,7 +141,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         Files.touch(outputFile);
 
                         // write compiled content into the new file and rename it (overwrite the original file)
-                        Files.write(compiler.toSource(), outputFile, cset);
+                        Files.asCharSink(outputFile, cset).write(compiler.toSource());
                         FileUtils.rename(outputFile, file);
 
                         if (sourceMapFile != null) {
@@ -185,7 +186,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                     // compile
                     List<SourceFile> interns = new ArrayList<SourceFile>();
-                    interns.add(SourceFile.fromFile(aggrOutputFile, cset));
+                    interns.add(SourceFile.fromPath(aggrOutputFile.toPath(), cset));
                     Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
 
                     // delete single files if necessary
@@ -194,7 +195,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                     // write the compiled content into a new file
                     Files.touch(outputFile);
-                    Files.write(compiler.toSource(), outputFile, cset);
+                    Files.asCharSink(outputFile, cset).write(compiler.toSource());
 
                     if (outputFilePath != null && sourceMapFile != null) {
                         // write sourceMappingURL into the minified file
@@ -255,7 +256,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
             }
         }
 
-        if (result.warnings != null && result.warnings.length > 0 && failOnWarning) {
+        if (result.warnings != null && result.warnings.size() > 0 && failOnWarning) {
             throw new MojoExecutionException("Resources optimization failure. Please fix warnings and try again.");
         }
 
@@ -265,7 +266,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
             }
         }
 
-        if (result.errors != null && result.errors.length > 0) {
+        if (result.errors != null && result.errors.size() > 0) {
             throw new MojoExecutionException("Resources optimization failure. Please fix errors and try again.");
         }
 
@@ -290,8 +291,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
             prefix = prefix.replace('\\', '/');
         }
 
-        List<SourceMap.LocationMapping> sourceMapLocationMappings =
-                ImmutableList.of(new SourceMap.LocationMapping(prefix, ""));
+        List<SourceMap.PrefixLocationMapping> sourceMapLocationMappings =
+                ImmutableList.of(new SourceMap.PrefixLocationMapping(prefix, ""));
         options.setSourceMapLocationMappings(sourceMapLocationMappings);
 
         return sourceMapFile;
@@ -329,8 +330,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         try {
             // write sourceMappingURL
             String smRoot = (sourceMapRoot != null ? sourceMapRoot : "");
-            Files.append(System.getProperty("line.separator"), minifiedFile, cset);
-            Files.append("//# sourceMappingURL=" + smRoot + sourceMapFile.getName(), minifiedFile, cset);
+            Files.asCharSink(minifiedFile, cset, FileWriteMode.APPEND).write(System.getProperty("line.separator"));
+            Files.asCharSink(minifiedFile, cset, FileWriteMode.APPEND).write("//# sourceMappingURL=" + smRoot + sourceMapFile.getName());
         } catch (IOException e) {
             log.error("//# sourceMappingURL for the minified file " + minifiedFile + " could not be written", e);
         }

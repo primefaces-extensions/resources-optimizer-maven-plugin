@@ -35,6 +35,7 @@ import org.primefaces.extensions.optimizerplugin.replacer.TokenReplacingReader;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetCssAdapter;
 
+import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 
 /**
@@ -150,7 +151,7 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
                     }
 
                     // write / append compiled content into / to the output file
-                    Files.append(baos.toString(rsa.getEncoding()), outputFile, cset);
+                    Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(baos.toString(rsa.getEncoding()));
 
                     // statistic
                     addToOptimizedSize(outputFile.length() - sizeBefore);
