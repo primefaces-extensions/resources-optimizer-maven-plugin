@@ -18,6 +18,12 @@
 
 package org.primefaces.extensions.optimizerplugin;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.WarningLevel;
@@ -35,11 +41,6 @@ import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetCssAdapter;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetJsAdapter;
 
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Entry point for this plugin.
  *
@@ -50,7 +51,7 @@ import java.util.Set;
  */
 public class ResourcesOptimizerMojo extends AbstractMojo {
 
-    private static final String[] DEFAULT_INCLUDES = { "**/*.css", "**/*.js" };
+    private static final String[] DEFAULT_INCLUDES = {"**/*.css", "**/*.js"};
 
     private static final String[] DEFAULT_EXCLUDES = {};
 
@@ -65,7 +66,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      * Images directories according to JSF spec.
      *
      * @parameter default-value="${project.basedir}${file.separator}src${file.separator}main${file.separator}webapp${file.separator}resources,
-     *            ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}META-INF${file.separator}resources"
+     * ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}META-INF${file.separator}resources"
      */
     private String imagesDir;
 
@@ -96,7 +97,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    private boolean failOnWarning = false;
+    private boolean failOnWarning;
 
     /**
      * Suffix for compressed / merged files.
@@ -110,7 +111,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    private boolean useDataUri = false;
+    private boolean useDataUri;
 
     /**
      * Files to be included. Files selectors follow patterns specified in {@link org.codehaus.plexus.util.DirectoryScanner}.
@@ -166,7 +167,6 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      *
      * @parameter
      */
-
     private List<ResourcesSet> resourcesSets;
 
     private DataUriTokenResolver dataUriTokenResolver;
@@ -183,15 +183,15 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      * @throws MojoExecutionException
      * @throws MojoFailureException
      */
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    @Override public void execute() throws MojoExecutionException, MojoFailureException {
         // getLog().info("Optimization of resources is started ...");
 
         try {
             if (resourcesSets == null || resourcesSets.isEmpty()) {
-                String[] incls = (includes != null && includes.length > 0) ? includes : DEFAULT_INCLUDES;
-                String[] excls = (excludes != null && excludes.length > 0) ? excludes : DEFAULT_EXCLUDES;
+                final String[] incls = (includes != null && includes.length > 0) ? includes : DEFAULT_INCLUDES;
+                final String[] excls = (excludes != null && excludes.length > 0) ? excludes : DEFAULT_EXCLUDES;
 
-                Aggregation[] aggrs;
+                final Aggregation[] aggrs;
                 if (aggregations == null || aggregations.length < 1) {
                     aggrs = new Aggregation[1];
                     aggrs[0] = null;
@@ -204,24 +204,24 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                     aggr = checkAggregation(aggr) ? null : aggr;
 
                     // evaluate inputDir
-                    File dir = (aggr != null && aggr.getInputDir() != null) ? aggr.getInputDir() : inputDir;
+                    final File dir = (aggr != null && aggr.getInputDir() != null) ? aggr.getInputDir() : inputDir;
 
                     // prepare CSS und JavaScript files
-                    ResourcesScanner scanner = new ResourcesScanner();
+                    final ResourcesScanner scanner = new ResourcesScanner();
                     scanner.scan(dir, incls, excls);
 
                     if (aggr != null && aggr.getOutputFile() == null) {
                         // subDirMode = true ==> aggregation for each subfolder
-                        File[] files = dir.listFiles();
+                        final File[] files = dir.listFiles();
                         if (files != null) {
-                            for (File file : files) {
+                            for (final File file : files) {
                                 if (file.isDirectory()) {
-                                    ResourcesScanner subDirScanner = new ResourcesScanner();
+                                    final ResourcesScanner subDirScanner = new ResourcesScanner();
                                     subDirScanner.scan(file, DEFAULT_INCLUDES, DEFAULT_EXCLUDES);
 
-                                    Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
+                                    final Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
                                     if (!subDirCssFiles.isEmpty()) {
-                                        DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
+                                        final DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
 
                                         // handle CSS files
                                         processCssFiles(file, subDirCssFiles, dataUriTokenResolver,
@@ -229,7 +229,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                                     null);
                                     }
 
-                                    Set<File> subDirJsFiles = filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
+                                    final Set<File> subDirJsFiles = filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
                                     if (!subDirJsFiles.isEmpty()) {
                                         // handle JavaScript files
                                         processJsFiles(file, subDirJsFiles,
@@ -243,7 +243,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                     }
                     else {
                         if (!scanner.getCssFiles().isEmpty()) {
-                            DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
+                            final DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
 
                             // handle CSS files
                             processCssFiles(dir, scanner.getCssFiles(), dataUriTokenResolver, aggr, suffix);
@@ -259,9 +259,9 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                 }
             }
             else {
-                for (ResourcesSet rs : resourcesSets) {
+                for (final ResourcesSet rs : resourcesSets) {
                     // iterate over all resources sets
-                    String[] incls;
+                    final String[] incls;
                     if (rs.getIncludes() != null && rs.getIncludes().length > 0) {
                         incls = rs.getIncludes();
                     }
@@ -272,7 +272,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         incls = DEFAULT_INCLUDES;
                     }
 
-                    String[] excls;
+                    final String[] excls;
                     if (rs.getExcludes() != null && rs.getExcludes().length > 0) {
                         excls = rs.getExcludes();
                     }
@@ -283,7 +283,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         excls = DEFAULT_EXCLUDES;
                     }
 
-                    Aggregation[] aggrs;
+                    final Aggregation[] aggrs;
                     if (rs.getAggregations() == null || rs.getAggregations().length < 1) {
                         if (aggregations == null || aggregations.length < 1) {
                             aggrs = new Aggregation[1];
@@ -307,21 +307,23 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         }
 
                         // prepare CSS und JavaScript files
-                        ResourcesScanner scanner = new ResourcesScanner();
+                        final ResourcesScanner scanner = new ResourcesScanner();
                         scanner.scan(dir, incls, excls);
 
                         if (aggr != null && aggr.getOutputFile() == null) {
                             // subDirMode = true ==> aggregation for each subfolder
-                            File[] files = dir.listFiles();
+                            final File[] files = dir.listFiles();
                             if (files != null) {
-                                for (File file : files) {
+                                for (final File file : files) {
                                     if (file.isDirectory()) {
-                                        ResourcesScanner subDirScanner = new ResourcesScanner();
+                                        final ResourcesScanner subDirScanner = new ResourcesScanner();
                                         subDirScanner.scan(file, DEFAULT_INCLUDES, DEFAULT_EXCLUDES);
 
-                                        Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
+                                        final Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
                                         if (!subDirCssFiles.isEmpty()) {
-                                            DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
+                                            final DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ?
+                                                        getDataUriTokenResolver() :
+                                                        null);
 
                                             // handle CSS files
                                             processCssFiles(file, subDirCssFiles, dataUriTokenResolver,
@@ -329,7 +331,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                                         null);
                                         }
 
-                                        Set<File> subDirJsFiles = filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
+                                        final Set<File> subDirJsFiles = filterSubDirFiles(scanner.getJsFiles(), subDirScanner.getJsFiles());
                                         if (!subDirJsFiles.isEmpty()) {
                                             // handle JavaScript files
                                             processJsFiles(file, subDirJsFiles,
@@ -343,7 +345,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         }
                         else {
                             if (!scanner.getCssFiles().isEmpty()) {
-                                DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
+                                final DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
 
                                 // handle CSS files
                                 processCssFiles(dir, scanner.getCssFiles(), dataUriTokenResolver, aggr, suffix);
@@ -360,10 +362,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                 }
             }
         }
-        catch (MojoExecutionException e) {
+        catch (final MojoExecutionException e) {
             throw e;
         }
-        catch (Exception e) {
+        catch (final Exception e) {
             throw new MojoExecutionException("Error while executing the mojo " + getClass(), e);
         }
 
@@ -377,35 +379,35 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         outputStatistic();
     }
 
-    private void processCssFiles(File inputDir, Set<File> cssFiles, DataUriTokenResolver dataUriTokenResolver,
-                Aggregation aggr, String suffix) throws MojoExecutionException {
+    private void processCssFiles(final File inputDir, final Set<File> cssFiles, final DataUriTokenResolver dataUriTokenResolver,
+                final Aggregation aggr, final String suffix) throws MojoExecutionException {
         resFound = true;
-        ResourcesSetAdapter rsa = new ResourcesSetCssAdapter(
+        final ResourcesSetAdapter rsa = new ResourcesSetCssAdapter(
                     inputDir, cssFiles, dataUriTokenResolver, aggr, encoding, failOnWarning, suffix);
 
-        YuiCompressorOptimizer yuiOptimizer = new YuiCompressorOptimizer();
+        final YuiCompressorOptimizer yuiOptimizer = new YuiCompressorOptimizer();
         yuiOptimizer.optimize(rsa, getLog());
 
         originalFilesSize += yuiOptimizer.getTotalOriginalSize();
         optimizedFilesSize += yuiOptimizer.getTotalOptimizedSize();
     }
 
-    private void processJsFiles(File inputDir, Set<File> jsFiles, Aggregation aggr, CompilationLevel compilationLevel,
-                WarningLevel warningLevel, SourceMap sourceMap, String suffix,
-                LanguageMode languageIn, LanguageMode languageOut) throws MojoExecutionException {
+    private void processJsFiles(final File inputDir, final Set<File> jsFiles, final Aggregation aggr, final CompilationLevel compilationLevel,
+                final WarningLevel warningLevel, final SourceMap sourceMap, final String suffix,
+                final LanguageMode languageIn, final LanguageMode languageOut) throws MojoExecutionException {
         resFound = true;
-        ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
+        final ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
                     inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
                     failOnWarning, suffix, languageIn, languageOut);
 
-        ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
+        final ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
         closureOptimizer.optimize(rsa, getLog());
 
         originalFilesSize += closureOptimizer.getTotalOriginalSize();
         optimizedFilesSize += closureOptimizer.getTotalOptimizedSize();
     }
 
-    private boolean checkAggregation(Aggregation aggregation) throws MojoExecutionException {
+    private boolean checkAggregation(final Aggregation aggregation) throws MojoExecutionException {
         if (aggregation == null) {
             return true;
         }
@@ -441,22 +443,22 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return false;
     }
 
-    private Aggregation getSubDirAggregation(File dir, Aggregation aggr, String fileExtension) {
-        Aggregation subDirAggr = new Aggregation();
+    private Aggregation getSubDirAggregation(final File dir, final Aggregation aggr, final String fileExtension) {
+        final Aggregation subDirAggr = new Aggregation();
         subDirAggr.setPrependedFile(aggr.getPrependedFile());
         subDirAggr.setRemoveIncluded(aggr.isRemoveIncluded());
         subDirAggr.setRemoveEmptyDirectories(aggr.isRemoveEmptyDirectories());
         subDirAggr.setWithoutCompress(aggr.isWithoutCompress());
         subDirAggr.setSubDirMode(true);
 
-        File outputFile = new File(dir, dir.getName() + "." + fileExtension);
+        final File outputFile = new File(dir, dir.getName() + "." + fileExtension);
         subDirAggr.setOutputFile(outputFile);
 
         return subDirAggr;
     }
 
-    private CompilationLevel resolveCompilationLevel(ResourcesSet rs) throws MojoExecutionException {
-        CompilationLevel compLevel;
+    private CompilationLevel resolveCompilationLevel(final ResourcesSet rs) throws MojoExecutionException {
+        final CompilationLevel compLevel;
         if (rs.getCompilationLevel() != null) {
             compLevel = getCompilationLevel(rs.getCompilationLevel());
         }
@@ -467,8 +469,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return compLevel;
     }
 
-    private WarningLevel resolveWarningLevel(ResourcesSet rs) throws MojoExecutionException {
-        WarningLevel warnLevel;
+    private WarningLevel resolveWarningLevel(final ResourcesSet rs) throws MojoExecutionException {
+        final WarningLevel warnLevel;
         if (rs.getWarningLevel() != null) {
             warnLevel = getWarningLevel(rs.getWarningLevel());
         }
@@ -479,8 +481,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return warnLevel;
     }
 
-    private SourceMap resolveSourceMap(ResourcesSet rs) {
-        SourceMap smap;
+    private SourceMap resolveSourceMap(final ResourcesSet rs) {
+        final SourceMap smap;
         if (rs != null && rs.getSourceMap() != null) {
             smap = rs.getSourceMap();
         }
@@ -508,8 +510,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return smap;
     }
 
-    private LanguageMode resolveLanguageIn(ResourcesSet rs) throws MojoExecutionException {
-        LanguageMode langIn;
+    private LanguageMode resolveLanguageIn(final ResourcesSet rs) throws MojoExecutionException {
+        final LanguageMode langIn;
         if (rs.getLanguageIn() != null) {
             langIn = getLanguageIn(rs.getLanguageIn());
         }
@@ -520,8 +522,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return langIn;
     }
 
-    private LanguageMode resolveLanguageOut(ResourcesSet rs) throws MojoExecutionException {
-        LanguageMode langOut;
+    private LanguageMode resolveLanguageOut(final ResourcesSet rs) throws MojoExecutionException {
+        final LanguageMode langOut;
         if (rs.getLanguageOut() != null) {
             langOut = getLanguageOut(rs.getLanguageOut());
         }
@@ -532,11 +534,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return langOut;
     }
 
-    private CompilationLevel getCompilationLevel(String compilationLevel) throws MojoExecutionException {
+    private CompilationLevel getCompilationLevel(final String compilationLevel) throws MojoExecutionException {
         try {
             return CompilationLevel.valueOf(compilationLevel);
         }
-        catch (Exception e) {
+        catch (final Exception e) {
             final String errMsg = "Compilation level '" + compilationLevel + "' is wrong. Valid constants are: " +
                         "'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS', 'ADVANCED_OPTIMIZATIONS'";
             if (failOnWarning) {
@@ -551,11 +553,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
     }
 
-    private WarningLevel getWarningLevel(String warningLevel) throws MojoExecutionException {
+    private WarningLevel getWarningLevel(final String warningLevel) throws MojoExecutionException {
         try {
             return WarningLevel.valueOf(warningLevel);
         }
-        catch (Exception e) {
+        catch (final Exception e) {
             final String errMsg = "Warning level '" + warningLevel + "' is wrong. Valid constants are: 'QUIET', 'DEFAULT', 'VERBOSE'";
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
@@ -569,14 +571,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
     }
 
-    private LanguageMode getLanguageIn(String languageIn) throws MojoExecutionException {
+    private LanguageMode getLanguageIn(final String languageIn) throws MojoExecutionException {
         try {
             return LanguageMode.valueOf(languageIn);
         }
-        catch (Exception e) {
-            final String errMsg = "Input language spec'" + languageIn + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
-                        "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT_2015','ECMASCRIPT_2016'," +
-                        "'ECMASCRIPT_2017','ECMASCRIPT_2018','ECMASCRIPT_NEXT','ECMASCRIPT6_TYPED'";
+        catch (final Exception e) {
+            final String errMsg = "Input language spec'" + languageIn + "' is wrong. Valid constants are: " + Arrays.toString(LanguageMode.values());
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
             }
@@ -589,14 +589,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
     }
 
-    private LanguageMode getLanguageOut(String languageOut) throws MojoExecutionException {
+    private LanguageMode getLanguageOut(final String languageOut) throws MojoExecutionException {
         try {
             return LanguageMode.valueOf(languageOut);
         }
-        catch (Exception e) {
-            final String errMsg = "Output language spec'" + languageOut + "' is wrong. Valid constants are: 'ECMASCRIPT3', " +
-                    "'ECMASCRIPT5','ECMASCRIPT5_STRICT','ECMASCRIPT_2015','ECMASCRIPT_2016'," +
-                    "'ECMASCRIPT_2017','ECMASCRIPT_2018','ECMASCRIPT_NEXT','ECMASCRIPT6_TYPED'";
+        catch (final Exception e) {
+            final String errMsg = "Output language spec'" + languageOut + "' is wrong. Valid constants are: " + Arrays.toString(LanguageMode.values());
             if (failOnWarning) {
                 throw new MojoExecutionException(errMsg);
             }
@@ -614,10 +612,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
             return dataUriTokenResolver;
         }
 
-        String[] arrImagesDir = imagesDir.split(",");
-        File[] fileImagesDir = new File[arrImagesDir.length];
+        final String[] arrImagesDir = imagesDir.split(",");
+        final File[] fileImagesDir = new File[arrImagesDir.length];
         for (int i = 0; i < arrImagesDir.length; i++) {
-            File file = new File(arrImagesDir[i]);
+            final File file = new File(arrImagesDir[i]);
             if (file.isDirectory()) {
                 getLog().info("Data URI Directory: " + file.toString());
                 fileImagesDir[i] = new File(arrImagesDir[i]);
@@ -629,14 +627,14 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         return dataUriTokenResolver;
     }
 
-    private Set<File> filterSubDirFiles(Set<File> resSetFiles, Set<File> subDirFiles) {
-        Set<File> filteredFiles = new LinkedHashSet<File>();
+    private Set<File> filterSubDirFiles(final Set<File> resSetFiles, final Set<File> subDirFiles) {
+        final Set<File> filteredFiles = new LinkedHashSet<>();
 
         if (subDirFiles == null || subDirFiles.isEmpty() || resSetFiles == null || resSetFiles.isEmpty()) {
             return filteredFiles;
         }
 
-        for (File subDirFile : subDirFiles) {
+        for (final File subDirFile : subDirFiles) {
             if (resSetFiles.contains(subDirFile)) {
                 filteredFiles.add(subDirFile);
             }
@@ -648,7 +646,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private void outputStatistic() {
         final String originalSizeTotal;
         final String optimizedSizeTotal;
-        long oneMB = 1024 * 1024;
+        final long oneMB = 1024 * 1024;
 
         if (originalFilesSize <= 1024) {
             originalSizeTotal = originalFilesSize + " Bytes";
@@ -680,10 +678,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
     }
 
-    private double round(double value, int places) {
-        double roundedValue;
-        double factor = Math.pow(10.0, places);
-        double temp = Math.round(value * factor * factor) / factor;
+    private double round(final double value, final int places) {
+        final double roundedValue;
+        final double factor = Math.pow(10.0, places);
+        final double temp = Math.round(value * factor * factor) / factor;
         roundedValue = Math.round(temp) / factor;
 
         return roundedValue;

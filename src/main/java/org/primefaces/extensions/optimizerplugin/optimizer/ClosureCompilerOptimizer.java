@@ -18,26 +18,6 @@
 
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.FileWriteMode;
-import com.google.common.io.Files;
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
-import com.google.javascript.jscomp.JSError;
-import com.google.javascript.jscomp.Result;
-import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.jscomp.SourceMap;
-import com.google.javascript.jscomp.WarningLevel;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.StringUtils;
-import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
-import org.primefaces.extensions.optimizerplugin.util.ResourcesSetJsAdapter;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -46,6 +26,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.FileWriteMode;
+import com.google.common.io.Files;
+import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.*;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.StringUtils;
+import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
+import org.primefaces.extensions.optimizerplugin.util.ResourcesSetJsAdapter;
+
 /**
  * Class for Google Closure Compiler doing JavaScript optimization.
  *
@@ -53,8 +47,7 @@ import java.util.logging.Level;
  */
 public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
-    // Note: empty externs, probably CommandLineRunner.getDefaultExterns() would be better
-    private static final List<SourceFile> EXTERNS_EMPTY = new ArrayList<SourceFile>();
+    private static final List<SourceFile> EXTERNS_EMPTY = new ArrayList<>();
 
     private static final String OPTIMIZED_FILE_EXTENSION = ".optjs";
 
@@ -62,39 +55,39 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
     @Override
     public void optimize(final ResourcesSetAdapter rsAdapter, final Log log) throws MojoExecutionException {
-        ResourcesSetJsAdapter rsa = (ResourcesSetJsAdapter) rsAdapter;
-        CompilationLevel compLevel = rsa.getCompilationLevel();
-        CompilerOptions options = new CompilerOptions();
+        final ResourcesSetJsAdapter rsa = (ResourcesSetJsAdapter) rsAdapter;
+        final CompilationLevel compLevel = rsa.getCompilationLevel();
+        final CompilerOptions options = new CompilerOptions();
         compLevel.setOptionsForCompilationLevel(options);
 
-        WarningLevel warnLevel = rsa.getWarningLevel();
+        final WarningLevel warnLevel = rsa.getWarningLevel();
         warnLevel.setOptionsForWarningLevel(options);
 
-        LanguageMode langIn = rsa.getLanguageIn();
+        final LanguageMode langIn = rsa.getLanguageIn();
         options.setLanguageIn(langIn);
 
-        LanguageMode langOut = rsa.getLanguageOut();
+        final LanguageMode langOut = rsa.getLanguageOut();
         options.setLanguageOut(langOut);
         Compiler.setLoggingLevel(Level.WARNING);
 
         try {
-            Charset cset = Charset.forName(rsa.getEncoding());
+            final Charset cset = Charset.forName(rsa.getEncoding());
 
             if (rsa.getAggregation() == null) {
                 // no aggregation
-                for (File file : rsa.getFiles()) {
+                for (final File file : rsa.getFiles()) {
                     log.info("Optimize JS file " + file.getName() + " ...");
 
                     // statistic
                     addToOriginalSize(file);
 
                     // path of the original file
-                    String path = file.getCanonicalPath();
+                    final String path = file.getCanonicalPath();
 
                     String outputFilePath = null;
                     String outputSourceMapDir = null;
                     File sourceMapFile = null;
-                    File sourceFile;
+                    final File sourceFile;
 
                     if (rsa.getSourceMap() != null) {
                         // setup source map
@@ -107,22 +100,24 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         if (StringUtils.isNotBlank(rsa.getSuffix())) {
                             // rename original file as ...source.js
                             FileUtils.rename(file, sourceFile);
-                        } else {
+                        }
+                        else {
                             // copy content of the original file to the ...source.js
                             FileUtils.copyFile(file, sourceFile);
                         }
-                    } else {
+                    }
+                    else {
                         sourceFile = file;
                     }
 
                     // compile
-                    List<SourceFile> interns = new ArrayList<SourceFile>();
+                    final List<SourceFile> interns = new ArrayList<>();
                     interns.add(SourceFile.fromPath(sourceFile.toPath(), cset));
-                    Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
+                    final Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
 
                     if (StringUtils.isNotBlank(rsa.getSuffix())) {
                         // write compiled content into the new file
-                        File outputFile = getFileWithSuffix(path, rsa.getSuffix());
+                        final File outputFile = getFileWithSuffix(path, rsa.getSuffix());
                         Files.asCharSink(outputFile, cset).write(compiler.toSource());
 
                         if (sourceMapFile != null) {
@@ -132,12 +127,13 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                         // statistic
                         addToOptimizedSize(outputFile);
-                    } else {
+                    }
+                    else {
                         // path of temp. file
-                        String pathOptimized = FileUtils.removeExtension(path) + OPTIMIZED_FILE_EXTENSION;
+                        final String pathOptimized = FileUtils.removeExtension(path) + OPTIMIZED_FILE_EXTENSION;
 
                         // create a new temp. file
-                        File outputFile = new File(pathOptimized);
+                        final File outputFile = new File(pathOptimized);
                         Files.touch(outputFile);
 
                         // write compiled content into the new file and rename it (overwrite the original file)
@@ -162,17 +158,18 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         moveToSourceMapDir(sourceFile, outputSourceMapDir, log);
                     }
                 }
-            } else if (rsa.getAggregation().getOutputFile() != null) {
+            }
+            else if (rsa.getAggregation().getOutputFile() != null) {
                 // aggregation to one output file
-                File outputFile = rsa.getAggregation().getOutputFile();
-                File aggrOutputFile = aggregateFiles(rsa, cset, true);
+                final File outputFile = rsa.getAggregation().getOutputFile();
+                final File aggrOutputFile = aggregateFiles(rsa, cset, true);
 
                 // statistic
-                long sizeBefore = addToOriginalSize(aggrOutputFile);
+                final long sizeBefore = addToOriginalSize(aggrOutputFile);
 
                 if (!rsa.getAggregation().isWithoutCompress()) {
                     // compressing
-                    for (File file : rsa.getFiles()) {
+                    for (final File file : rsa.getFiles()) {
                         log.info("Optimize JS file " + file.getName() + " ...");
                     }
 
@@ -185,9 +182,9 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     }
 
                     // compile
-                    List<SourceFile> interns = new ArrayList<SourceFile>();
+                    final List<SourceFile> interns = new ArrayList<>();
                     interns.add(SourceFile.fromPath(aggrOutputFile.toPath(), cset));
-                    Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
+                    final Compiler compiler = compile(log, interns, options, rsa.isFailOnWarning());
 
                     // delete single files if necessary
                     deleteFilesIfNecessary(rsa, log);
@@ -202,13 +199,14 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         writeSourceMappingURL(outputFile, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset, log);
 
                         // write the source map
-                        String outputSourceMapDir = rsa.getSourceMap().getOutputDir();
+                        final String outputSourceMapDir = rsa.getSourceMap().getOutputDir();
                         Files.touch(sourceMapFile);
                         writeSourceMap(sourceMapFile, outputFilePath, compiler.getSourceMap(), outputSourceMapDir, log);
 
                         // move the source file
                         moveToSourceMapDir(aggrOutputFile, outputSourceMapDir, log);
-                    } else {
+                    }
+                    else {
                         // delete the temp. aggregated file ...source.js
                         if (aggrOutputFile.exists() && !aggrOutputFile.delete()) {
                             log.warn("Temporary file " + aggrOutputFile.getName() + " could not be deleted.");
@@ -217,7 +215,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                     // statistic
                     addToOptimizedSize(sizeBefore - outputFile.length());
-                } else {
+                }
+                else {
                     // delete single files if necessary
                     deleteFilesIfNecessary(rsa, log);
                     deleteDirectoryIfNecessary(rsa, log);
@@ -228,20 +227,22 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     // statistic
                     addToOptimizedSize(sizeBefore);
                 }
-            } else {
+            }
+            else {
                 // should not happen
                 log.error("Wrong plugin's internal state.");
             }
-        } catch (Exception e) {
+        }
+        catch (final Exception e) {
             throw new MojoExecutionException("Resources optimization failure: " + e.getLocalizedMessage(), e);
         }
     }
 
-    protected Compiler compile(Log log, List<SourceFile> interns, CompilerOptions options, boolean failOnWarning)
-    throws MojoExecutionException {
+    protected Compiler compile(final Log log, final List<SourceFile> interns, final CompilerOptions options, final boolean failOnWarning)
+                throws MojoExecutionException {
         // compile
-        Compiler compiler = new Compiler();
-        Result result = compiler.compile(EXTERNS_EMPTY, interns, options);
+        final Compiler compiler = new Compiler();
+        final Result result = compiler.compile(EXTERNS_EMPTY, interns, options);
 
         // evaluate result
         evalResult(result, log, failOnWarning);
@@ -249,9 +250,9 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         return compiler;
     }
 
-    protected void evalResult(Result result, Log log, boolean failOnWarning) throws MojoExecutionException {
+    protected void evalResult(final Result result, final Log log, final boolean failOnWarning) throws MojoExecutionException {
         if (result.warnings != null) {
-            for (JSError warning : result.warnings) {
+            for (final JSError warning : result.warnings) {
                 log.warn(warning.toString());
             }
         }
@@ -261,7 +262,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
 
         if (result.errors != null) {
-            for (JSError error : result.errors) {
+            for (final JSError error : result.errors) {
                 log.error(error.toString());
             }
         }
@@ -275,13 +276,13 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
     }
 
-    private File setupSourceMapFile(CompilerOptions options, org.primefaces.extensions.optimizerplugin.model.SourceMap sourceMap,
-                                    String outputFilePath) throws IOException {
+    private File setupSourceMapFile(final CompilerOptions options, final org.primefaces.extensions.optimizerplugin.model.SourceMap sourceMap,
+                final String outputFilePath) throws IOException {
         // set options for source map
         options.setSourceMapDetailLevel(SourceMap.DetailLevel.valueOf(sourceMap.getDetailLevel()));
         options.setSourceMapFormat(SourceMap.Format.valueOf(sourceMap.getFormat()));
 
-        File sourceMapFile = new File(outputFilePath + SOURCE_MAP_FILE_EXTENSION);
+        final File sourceMapFile = new File(outputFilePath + SOURCE_MAP_FILE_EXTENSION);
         options.setSourceMapOutputPath(sourceMapFile.getCanonicalPath());
 
         String prefix = outputFilePath.substring(0, outputFilePath.lastIndexOf(File.separator) + 1);
@@ -291,20 +292,21 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
             prefix = prefix.replace('\\', '/');
         }
 
-        List<SourceMap.PrefixLocationMapping> sourceMapLocationMappings =
-                ImmutableList.of(new SourceMap.PrefixLocationMapping(prefix, ""));
+        final List<SourceMap.PrefixLocationMapping> sourceMapLocationMappings =
+                    ImmutableList.of(new SourceMap.PrefixLocationMapping(prefix, ""));
         options.setSourceMapLocationMappings(sourceMapLocationMappings);
 
         return sourceMapFile;
     }
 
-    private void writeSourceMap(File sourceMapFile, String sourceFileName, SourceMap sourceMap, String outputDir, Log log) {
+    private void writeSourceMap(final File sourceMapFile, final String sourceFileName, final SourceMap sourceMap, final String outputDir, final Log log) {
         try {
-            FileWriter out = new FileWriter(sourceMapFile);
+            final FileWriter out = new FileWriter(sourceMapFile);
             sourceMap.appendTo(out, sourceFileName);
             out.flush();
             IOUtil.close(out);
-        } catch (Exception e) {
+        }
+        catch (final Exception e) {
             log.error("Failed to write an JavaScript Source Map file for " + sourceFileName, e);
         }
 
@@ -312,27 +314,29 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         moveToSourceMapDir(sourceMapFile, outputDir, log);
     }
 
-    private void moveToSourceMapDir(File file, String outputDir, Log log) {
+    private void moveToSourceMapDir(final File file, final String outputDir, final Log log) {
         try {
-            String name = file.getName();
-            String target = outputDir + name;
-            File targetFile = new File(target);
-            if(!file.equals(targetFile)) {
+            final String name = file.getName();
+            final String target = outputDir + name;
+            final File targetFile = new File(target);
+            if (!file.equals(targetFile)) {
                 Files.createParentDirs(targetFile);
                 Files.move(file, targetFile);
             }
-        } catch (Exception e) {
+        }
+        catch (final Exception e) {
             log.error("File " + file + " could not be moved to " + outputDir, e);
         }
     }
 
-    private void writeSourceMappingURL(File minifiedFile, File sourceMapFile, String sourceMapRoot, Charset cset, Log log) {
+    private void writeSourceMappingURL(final File minifiedFile, final File sourceMapFile, final String sourceMapRoot, final Charset cset, final Log log) {
         try {
             // write sourceMappingURL
-            String smRoot = (sourceMapRoot != null ? sourceMapRoot : "");
+            final String smRoot = (sourceMapRoot != null ? sourceMapRoot : "");
             Files.asCharSink(minifiedFile, cset, FileWriteMode.APPEND).write(System.getProperty("line.separator"));
             Files.asCharSink(minifiedFile, cset, FileWriteMode.APPEND).write("//# sourceMappingURL=" + smRoot + sourceMapFile.getName());
-        } catch (IOException e) {
+        }
+        catch (final IOException e) {
             log.error("//# sourceMappingURL for the minified file " + minifiedFile + " could not be written", e);
         }
     }

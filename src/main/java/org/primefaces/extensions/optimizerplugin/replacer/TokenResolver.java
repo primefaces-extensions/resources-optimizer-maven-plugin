@@ -23,9 +23,9 @@ import java.io.IOException;
 /**
  * Interface for resolving of tokens found via {@link TokenReplacingReader}.
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public interface TokenResolver {
 
-	String resolveToken(String token) throws IOException;
+    String resolveToken(String token) throws IOException;
 }

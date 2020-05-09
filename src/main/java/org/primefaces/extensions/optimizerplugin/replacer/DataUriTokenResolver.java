@@ -18,130 +18,129 @@
 
 package org.primefaces.extensions.optimizerplugin.replacer;
 
-import com.google.common.io.Files;
-
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.Base64;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.google.common.io.Files;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.Base64;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
+
 /**
  * Implementation of the interface {@link TokenResolver} to replace JSF based image references #{resource[...]} in CSS files by
  * embedded dataURIs (encoded base64 string).
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class DataUriTokenResolver implements TokenResolver {
 
-	/** directories where to look for images from */
-	private File[] imagesDir;
-	private Log log;
+    /**
+     * directories where to look for images from
+     */
+    private final File[] imagesDir;
+    private final Log log;
 
-	private static Pattern pattern = Pattern.compile("[\\s'\":/\\\\]+");
+    private static final Pattern pattern = Pattern.compile("[\\s'\":/\\\\]+");
 
-	private static final int SIZE_LIMIT = 32 * 1024;
+    private static final int SIZE_LIMIT = 32 * 1024;
 
-	private static final Map<String, String> supportedTypes = new HashMap<String, String>();
+    private static final Map<String, String> supportedTypes = new HashMap<>();
 
-	static {
-		supportedTypes.put("gif", "image/gif");
-		supportedTypes.put("jpg", "image/jpeg");
-		supportedTypes.put("jpeg", "image/jpeg");
-		supportedTypes.put("png", "image/png");
-		supportedTypes.put("svg", "image/svg+xml");
-	}
+    static {
+        supportedTypes.put("gif", "image/gif");
+        supportedTypes.put("jpg", "image/jpeg");
+        supportedTypes.put("jpeg", "image/jpeg");
+        supportedTypes.put("png", "image/png");
+        supportedTypes.put("svg", "image/svg+xml");
+    }
 
-	public DataUriTokenResolver(Log log, final File[] imagesDir) {
-		this.imagesDir = imagesDir;
-		this.log = log;
-	}
+    public DataUriTokenResolver(final Log log, final File[] imagesDir) {
+        this.imagesDir = imagesDir;
+        this.log = log;
+    }
 
-	public String resolveToken(final String token) throws IOException {
-		if (token == null || token.length() < 1) {
-			return token;
-		}
+    @Override public String resolveToken(final String token) throws IOException {
+        if (token == null || token.length() < 1) {
+            return token;
+        }
 
-		String[] pathParts = pattern.split(token);
-		if (pathParts == null || pathParts.length < 1) {
-			return null;
-		}
+        final String[] pathParts = pattern.split(token);
+        if (pathParts == null || pathParts.length < 1) {
+            return null;
+        }
 
-		final String separator = System.getProperty("file.separator");
-		StringBuilder sb = new StringBuilder();
-		sb.append(separator);
+        final String separator = System.getProperty("file.separator");
+        final StringBuilder sb = new StringBuilder();
+        sb.append(separator);
 
-		for (int i = 0; i < pathParts.length; i++) {
-			if (StringUtils.isNotBlank(pathParts[i])) {
-				sb.append(pathParts[i]);
-				if (i + 1 < pathParts.length) {
-					sb.append(separator);
-				}
-			}
-		}
+        for (int i = 0; i < pathParts.length; i++) {
+            if (StringUtils.isNotBlank(pathParts[i])) {
+                sb.append(pathParts[i]);
+                if (i + 1 < pathParts.length) {
+                    sb.append(separator);
+                }
+            }
+        }
 
-		String path = sb.toString();
-		if (path.length() == 1) {
-			return null;
-		}
+        String path = sb.toString();
+        if (path.length() == 1) {
+            return null;
+        }
 
-		if (path.endsWith(separator)) {
-			path = path.substring(0, path.length() - 1);
-		}
+        if (path.endsWith(separator)) {
+            path = path.substring(0, path.length() - 1);
+        }
 
-		// build image full path and check if image exists and has supported mime-type
-		boolean found = false;
-		File imageFile = null;
-		String extension = null;
-		for (File imageDir : imagesDir) {
-		    if (!imageDir.isDirectory()) {
+        // build image full path and check if image exists and has supported mime-type
+        boolean found = false;
+        File imageFile = null;
+        String extension = null;
+        for (final File imageDir : imagesDir) {
+            if (!imageDir.isDirectory()) {
                 continue;
             }
-			String fullPath = imageDir.getCanonicalPath() + path;
+            final String fullPath = imageDir.getCanonicalPath() + path;
 
-			imageFile = new File(fullPath);
-			if (!imageFile.exists()) {
-				// file doesn't exist
-				continue;
-			}
+            imageFile = new File(fullPath);
+            if (!imageFile.exists()) {
+                // file doesn't exist
+                continue;
+            }
 
-			extension = FileUtils.extension(fullPath);
-			if (extension == null || !supportedTypes.containsKey(extension)) {
-				// not supported image mime-type
-				continue;
-			}
+            extension = FileUtils.extension(fullPath);
+            if (!supportedTypes.containsKey(extension)) {
+                // not supported image mime-type
+                continue;
+            }
 
-			found = true;
+            found = true;
 
-			break;
-		}
+            break;
+        }
 
-		if (!found) {
-			return null;
-		}
+        if (!found) {
+            return null;
+        }
 
-		log.info("Data URI conversion for: " + imageFile);
-		// generate dataURI
-		final byte[] bytes = Files.toByteArray(imageFile);
-		StringBuilder dataUriBilder = new StringBuilder();
-		dataUriBilder.append("data:");
-		dataUriBilder.append(supportedTypes.get(extension));
-		dataUriBilder.append(";base64,");
-		dataUriBilder.append(new String(Base64.encodeBase64(bytes)));
+        log.info("Data URI conversion for: " + imageFile);
+        // generate dataURI
+        final byte[] bytes = Files.toByteArray(imageFile);
 
-		String dataUri = dataUriBilder.toString();
+        final String dataUri = "data:" +
+                    supportedTypes.get(extension) +
+                    ";base64," +
+                    new String(Base64.encodeBase64(bytes));
 
-		// Check if the size of dataURI is limited to 32KB (because IE8 has a 32KB limitation)
-		boolean exceedLimit = dataUri.length() >= SIZE_LIMIT;
-		if (exceedLimit) {
-			return null;
-		}
+        // Check if the size of dataURI is limited to 32KB (because IE8 has a 32KB limitation)
+        final boolean exceedLimit = dataUri.length() >= SIZE_LIMIT;
+        if (exceedLimit) {
+            return null;
+        }
 
-		return dataUri;
-	}
+        return dataUri;
+    }
 }

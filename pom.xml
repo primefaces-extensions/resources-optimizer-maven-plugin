@@ -1,17 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.primefaces.extensions</groupId>
         <artifactId>master-pom</artifactId>
-        <version>7.0.3</version>
+        <version>8.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>resources-optimizer-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <version>2.3.4-SNAPSHOT</version>
-    <name>resources-optimizer-maven-plugin</name>
+    <name>PrimeFaces Extensions Resource Optimizer Plugin</name>
     <description>
-		<![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
+        <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
     </description>
 
     <scm>
@@ -40,7 +41,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20191111</version>
+            <version>v20200504</version>
         </dependency>
     </dependencies>
 
@@ -63,34 +64,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <additionalparam>${javadoc.opts}</additionalparam>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>java8-doclint-disabled</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-            <properties>
-                <javadoc.opts>-Xdoclint:none</javadoc.opts>
-            </properties>
-        </profile>
-    </profiles>
 </project>
