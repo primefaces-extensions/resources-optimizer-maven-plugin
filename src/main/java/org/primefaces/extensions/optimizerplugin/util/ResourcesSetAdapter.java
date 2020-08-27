@@ -18,10 +18,10 @@
 
 package org.primefaces.extensions.optimizerplugin.util;
 
-import org.primefaces.extensions.optimizerplugin.model.Aggregation;
-
 import java.io.File;
 import java.util.Set;
+
+import org.primefaces.extensions.optimizerplugin.model.Aggregation;
 
 /**
  * Container class containing all needed infos for a resource set.
@@ -30,20 +30,20 @@ import java.util.Set;
  */
 public abstract class ResourcesSetAdapter {
 
-    private File inputDir;
+    private final File inputDir;
 
-    private Set<File> files;
+    private final Set<File> files;
 
-    private Aggregation aggregation;
+    private final Aggregation aggregation;
 
-    private String encoding;
+    private final String encoding;
 
-    private boolean failOnWarning;
+    private final boolean failOnWarning;
 
-    private String suffix;
+    private final String suffix;
 
     public ResourcesSetAdapter(File inputDir, Set<File> files, Aggregation aggregation, String encoding,
-                               boolean failOnWarning, String suffix) {
+                boolean failOnWarning, String suffix) {
         this.inputDir = inputDir;
         this.files = files;
         this.aggregation = aggregation;

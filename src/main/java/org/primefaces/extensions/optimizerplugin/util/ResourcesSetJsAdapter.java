@@ -18,14 +18,14 @@
 
 package org.primefaces.extensions.optimizerplugin.util;
 
+import java.io.File;
+import java.util.Set;
+
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.WarningLevel;
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
 import org.primefaces.extensions.optimizerplugin.model.SourceMap;
-
-import java.io.File;
-import java.util.Set;
 
 /**
  * Container class containing all needed infos for a resource set describing JavaScript files..
@@ -34,19 +34,19 @@ import java.util.Set;
  */
 public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
-    private CompilationLevel compilationLevel;
+    private final CompilationLevel compilationLevel;
 
-    private WarningLevel warningLevel;
+    private final WarningLevel warningLevel;
 
-    private SourceMap sourceMap;
+    private final SourceMap sourceMap;
 
-    private LanguageMode languageIn;
+    private final LanguageMode languageIn;
 
-    private LanguageMode languageOut;
+    private final LanguageMode languageOut;
 
     public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation, CompilationLevel compilationLevel,
-                                 WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
-                                 String suffix, LanguageMode languageIn, LanguageMode languageOut) {
+                WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
+                String suffix, LanguageMode languageIn, LanguageMode languageOut) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.compilationLevel = compilationLevel;
         this.warningLevel = warningLevel;

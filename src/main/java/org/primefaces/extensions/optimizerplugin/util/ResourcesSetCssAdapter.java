@@ -18,24 +18,24 @@
 
 package org.primefaces.extensions.optimizerplugin.util;
 
-import org.primefaces.extensions.optimizerplugin.model.Aggregation;
-import org.primefaces.extensions.optimizerplugin.replacer.DataUriTokenResolver;
-
 import java.io.File;
 import java.util.Set;
+
+import org.primefaces.extensions.optimizerplugin.model.Aggregation;
+import org.primefaces.extensions.optimizerplugin.replacer.DataUriTokenResolver;
 
 /**
  * Container class containing all needed infos for a resource set describing CSS files.
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class ResourcesSetCssAdapter extends ResourcesSetAdapter {
 
-    private DataUriTokenResolver dataUriTokenResolver;
+    private final DataUriTokenResolver dataUriTokenResolver;
 
     public ResourcesSetCssAdapter(File inputDir, Set<File> files, DataUriTokenResolver dataUriTokenResolver,
-                                  Aggregation aggregation, String encoding, boolean failOnWarning,
-                                  String suffix) {
+                Aggregation aggregation, String encoding, boolean failOnWarning,
+                String suffix) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.dataUriTokenResolver = dataUriTokenResolver;
     }

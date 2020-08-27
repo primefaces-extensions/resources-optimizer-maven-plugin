@@ -171,9 +171,9 @@ public abstract class AbstractOptimizer {
     }
 
     protected long addToOriginalSize(File file) {
-        long lenght = file.length();
-        sizeTotalOriginal = sizeTotalOriginal + lenght;
-        return lenght;
+        long length = file.length();
+        sizeTotalOriginal = sizeTotalOriginal + length;
+        return length;
     }
 
     protected void addToOptimizedSize(File file) {
