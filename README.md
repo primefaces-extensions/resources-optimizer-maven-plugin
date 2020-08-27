@@ -2,6 +2,7 @@
 [![Javadocs](http://javadoc.io/badge/org.primefaces.extensions/resources-optimizer-maven-plugin.svg)](http://javadoc.io/doc/org.primefaces.extensions/resources-optimizer-maven-plugin)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Join the chat at https://gitter.im/primefaces-extensions/primefaces-extensions](https://badges.gitter.im/primefaces-extensions/primefaces-extensions.svg)](https://gitter.im/primefaces-extensions/primefaces-extensions?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Stackoverflow](https://img.shields.io/badge/StackOverflow-primefaces-chocolate.svg)](https://stackoverflow.com/questions/tagged/primefaces-extensions)
 
 Resources Optimizer Plugin
 ================================
