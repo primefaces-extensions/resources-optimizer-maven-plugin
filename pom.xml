@@ -5,7 +5,7 @@
     <groupId>org.primefaces.extensions</groupId>
     <artifactId>resources-optimizer-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>2.3.5-SNAPSHOT</version>
+    <version>2.3.5</version>
     <name>PrimeFaces Extensions Resource Optimizer Plugin</name>
     <description>
         <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
@@ -78,4 +78,35 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
