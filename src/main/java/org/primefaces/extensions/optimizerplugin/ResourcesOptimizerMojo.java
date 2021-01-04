@@ -163,6 +163,14 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private String languageOut;
 
     /**
+     * Flag whether plugin execution should be skipped.
+     *
+     * @parameter
+     */
+    private boolean skip;
+
+
+    /**
      * Compile sets.
      *
      * @parameter
@@ -184,6 +192,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
      * @throws MojoFailureException
      */
     @Override public void execute() throws MojoExecutionException, MojoFailureException {
+
+        if (skip) {
+            getLog().info("Skipping the execution.");
+            return;
+        }
+
         // getLog().info("Optimization of resources is started ...");
 
         try {
