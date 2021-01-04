@@ -1,5 +1,4 @@
 [![Maven](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg)](https://repo1.maven.org/maven2/org/primefaces/extensions/resources-optimizer-maven-plugin/)
-[![Javadocs](http://javadoc.io/badge/org.primefaces.extensions/resources-optimizer-maven-plugin.svg)](http://javadoc.io/doc/org.primefaces.extensions/resources-optimizer-maven-plugin)
 [![License](http://img.shields.io/:license-apache-yellow.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Discord Chat](https://img.shields.io/discord/591914197219016707.svg?color=7289da&label=chat&logo=discord&style=flat-square)](https://discord.gg/gzKFYnpmCY)
 [![Actions Status](https://github.com/primefaces-extensions/resources-optimizer-maven-plugin/workflows/Java%20CI/badge.svg)](https://github.com/primefaces-extensions/resources-optimizer-maven-plugin/actions)
