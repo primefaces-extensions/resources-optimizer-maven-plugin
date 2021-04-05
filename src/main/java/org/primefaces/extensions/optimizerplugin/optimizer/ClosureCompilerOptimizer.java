@@ -18,20 +18,12 @@
 
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.FileWriteMode;
-import com.google.common.io.Files;
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.*;
-import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
@@ -39,6 +31,19 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetJsAdapter;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.FileWriteMode;
+import com.google.common.io.Files;
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.JSError;
+import com.google.javascript.jscomp.Result;
+import com.google.javascript.jscomp.SourceFile;
+import com.google.javascript.jscomp.SourceMap;
+import com.google.javascript.jscomp.WarningLevel;
 
 /**
  * Class for Google Closure Compiler doing JavaScript optimization.
@@ -95,7 +100,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                         outputSourceMapDir = rsa.getSourceMap().getOutputDir();
                         sourceMapFile = setupSourceMapFile(options, rsa.getSourceMap(), outputFilePath);
                         // create an empty file with ...source.js from the original one
-                        sourceFile = getFileWithSuffix(path, OUTPUT_FILE_SUFFIX);
+                        sourceFile = getFileWithSuffix(path, AbstractOptimizer.OUTPUT_FILE_SUFFIX);
 
                         if (StringUtils.isNotBlank(rsa.getSuffix())) {
                             // rename original file as ...source.js
@@ -122,7 +127,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                         if (sourceMapFile != null) {
                             // write sourceMappingURL into the minified file
-                            writeSourceMappingURL(outputFile, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset, log);
+                            writeSourceMappingURL(outputFile, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(),
+                                        cset, log);
                         }
 
                         // statistic
@@ -142,14 +148,15 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
                         if (sourceMapFile != null) {
                             // write sourceMappingURL into the minified file
-                            writeSourceMappingURL(file, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset, log);
+                            writeSourceMappingURL(file, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset,
+                                        log);
                         }
 
                         // statistic
                         addToOptimizedSize(file);
                     }
 
-                    if (outputFilePath != null && sourceMapFile != null) {
+                    if (outputFilePath != null) {
                         // write the source map
                         Files.touch(sourceMapFile);
                         writeSourceMap(sourceMapFile, outputFilePath, compiler.getSourceMap(), outputSourceMapDir, log);
@@ -194,9 +201,10 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
                     Files.touch(outputFile);
                     Files.asCharSink(outputFile, cset).write(compiler.toSource());
 
-                    if (outputFilePath != null && sourceMapFile != null) {
+                    if (outputFilePath != null) {
                         // write sourceMappingURL into the minified file
-                        writeSourceMappingURL(outputFile, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset, log);
+                        writeSourceMappingURL(outputFile, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset,
+                                    log);
 
                         // write the source map
                         final String outputSourceMapDir = rsa.getSourceMap().getOutputDir();
@@ -238,7 +246,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
     }
 
-    protected Compiler compile(final Log log, final List<SourceFile> interns, final CompilerOptions options, final boolean failOnWarning)
+    protected Compiler compile(final Log log, final List<SourceFile> interns, final CompilerOptions options,
+                final boolean failOnWarning)
                 throws MojoExecutionException {
         // compile
         final Compiler compiler = new Compiler();
@@ -250,7 +259,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         return compiler;
     }
 
-    protected void evalResult(final Result result, final Log log, final boolean failOnWarning) throws MojoExecutionException {
+    protected void evalResult(final Result result, final Log log, final boolean failOnWarning)
+                throws MojoExecutionException {
         if (result.warnings != null) {
             for (final JSError warning : result.warnings) {
                 log.warn(warning.toString());
@@ -276,7 +286,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
     }
 
-    private File setupSourceMapFile(final CompilerOptions options, final org.primefaces.extensions.optimizerplugin.model.SourceMap sourceMap,
+    private File setupSourceMapFile(final CompilerOptions options,
+                final org.primefaces.extensions.optimizerplugin.model.SourceMap sourceMap,
                 final String outputFilePath) throws IOException {
         // set options for source map
         options.setSourceMapDetailLevel(SourceMap.DetailLevel.valueOf(sourceMap.getDetailLevel()));
@@ -299,7 +310,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         return sourceMapFile;
     }
 
-    private void writeSourceMap(final File sourceMapFile, final String sourceFileName, final SourceMap sourceMap, final String outputDir, final Log log) {
+    private void writeSourceMap(final File sourceMapFile, final String sourceFileName, final SourceMap sourceMap,
+                final String outputDir, final Log log) {
         try {
             final FileWriter out = new FileWriter(sourceMapFile);
             sourceMap.appendTo(out, sourceFileName);
@@ -329,12 +341,14 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         }
     }
 
-    private void writeSourceMappingURL(final File minifiedFile, final File sourceMapFile, final String sourceMapRoot, final Charset cset, final Log log) {
+    private void writeSourceMappingURL(final File minifiedFile, final File sourceMapFile, final String sourceMapRoot,
+                final Charset cset, final Log log) {
         try {
             // write sourceMappingURL
             final String smRoot = (sourceMapRoot != null ? sourceMapRoot : "");
             Files.asCharSink(minifiedFile, cset, FileWriteMode.APPEND).write(System.getProperty("line.separator"));
-            Files.asCharSink(minifiedFile, cset, FileWriteMode.APPEND).write("//# sourceMappingURL=" + smRoot + sourceMapFile.getName());
+            Files.asCharSink(minifiedFile, cset, FileWriteMode.APPEND)
+                        .write("//# sourceMappingURL=" + smRoot + sourceMapFile.getName());
         }
         catch (final IOException e) {
             log.error("//# sourceMappingURL for the minified file " + minifiedFile + " could not be written", e);

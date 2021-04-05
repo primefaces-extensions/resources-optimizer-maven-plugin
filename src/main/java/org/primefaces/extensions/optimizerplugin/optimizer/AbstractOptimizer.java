@@ -18,8 +18,10 @@
 
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
-import com.google.common.io.FileWriteMode;
-import com.google.common.io.Files;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Objects;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
@@ -27,20 +29,13 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import com.google.common.io.FileWriteMode;
+import com.google.common.io.Files;
 
 /**
  * Basis abstract class for Google Closure Compiler / YUI Compressor Optimizers.
  *
- * @author  Oleg Varaksin (ovaraksin@googlemail.com)
+ * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public abstract class AbstractOptimizer {
 
@@ -112,12 +107,13 @@ public abstract class AbstractOptimizer {
             }
         }
     }
-    
-    protected void deleteDirectoryIfNecessary(ResourcesSetAdapter rsa, Log log) {        
-        if (rsa.getAggregation().isRemoveEmptyDirectories()&& rsa.getFiles().size() > 0) {
+
+    protected void deleteDirectoryIfNecessary(ResourcesSetAdapter rsa, Log log) {
+        if (rsa.getAggregation().isRemoveEmptyDirectories() && rsa.getFiles().size() > 0) {
             for (File file : rsa.getFiles()) {
                 File directory = file.isDirectory() ? file : file.getParentFile();
-                while (directory != null && directory.isDirectory() && directory.listFiles().length == 0) {
+                while (directory != null && directory.isDirectory() &&
+                            Objects.requireNonNull(directory.listFiles()).length == 0) {
                     if (!directory.delete()) {
                         log.warn("File " + file.getName() + " could not be deleted after aggregation.");
                     }
@@ -127,7 +123,7 @@ public abstract class AbstractOptimizer {
             }
         }
     }
-    
+
     protected void renameOutputFileIfNecessary(ResourcesSetAdapter rsa, File outputFile) throws IOException {
         if (outputFile != null && outputFile.exists()) {
             FileUtils.rename(outputFile, rsa.getAggregation().getOutputFile());
@@ -135,7 +131,7 @@ public abstract class AbstractOptimizer {
     }
 
     protected void prependFile(File prependedFile, File outputFile, Charset cset,
-                               ResourcesSetAdapter rsa) throws IOException {
+                ResourcesSetAdapter rsa) throws IOException {
         Reader in = getReader(rsa, prependedFile);
         StringWriter writer = new StringWriter();
         IOUtil.copy(in, writer);
@@ -161,12 +157,12 @@ public abstract class AbstractOptimizer {
 
         Files.createParentDirs(aggrFile);
         Files.touch(aggrFile);
-
+ 
         return aggrFile;
     }
 
     protected Reader getReader(ResourcesSetAdapter rsAdapter, File file)
-    throws FileNotFoundException, UnsupportedEncodingException {
+                throws FileNotFoundException, UnsupportedEncodingException {
         return new InputStreamReader(new FileInputStream(file), rsAdapter.getEncoding());
     }
 
