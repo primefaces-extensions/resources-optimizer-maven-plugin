@@ -312,11 +312,9 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
     private void writeSourceMap(final File sourceMapFile, final String sourceFileName, final SourceMap sourceMap,
                 final String outputDir, final Log log) {
-        try {
-            final FileWriter out = new FileWriter(sourceMapFile);
+        try (final FileWriter out = new FileWriter(sourceMapFile)) {
             sourceMap.appendTo(out, sourceFileName);
             out.flush();
-            IOUtil.close(out);
         }
         catch (final Exception e) {
             log.error("Failed to write an JavaScript Source Map file for " + sourceFileName, e);

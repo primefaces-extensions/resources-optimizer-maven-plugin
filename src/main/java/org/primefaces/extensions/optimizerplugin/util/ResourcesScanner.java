@@ -28,7 +28,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
- * Scans JavaScript and CSS resources by specifing includes / excludes and prepares two sets with file objects.
+ * Scans JavaScript and CSS resources by specifying includes / excludes and prepares two sets with file objects.
  *
  * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */

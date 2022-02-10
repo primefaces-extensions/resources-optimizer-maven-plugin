@@ -17,9 +17,11 @@
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -129,11 +131,11 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
                         compressor.compress(osw, 500);
 
                         // close stream
-                        IOUtil.close(in);
+                        closeStream(in);
                     }
 
                     // close stream
-                    IOUtil.close(osw);
+                    closeStream(osw);
 
                     if (rsa.getAggregation().getPrependedFile() != null) {
                         // statistic
@@ -199,7 +201,17 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
     }
 
     protected void closeStreams(Reader in, Writer out) {
-        IOUtil.close(in);
-        IOUtil.close(out);
+        closeStream(in);
+        closeStream(out);
+    }
+
+    private void closeStream(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException var2) {
+                // exit it
+            }
+        }
     }
 }

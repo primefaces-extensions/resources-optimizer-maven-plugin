@@ -81,18 +81,18 @@ public abstract class AbstractOptimizer {
         }
 
         for (File file : rsa.getFiles()) {
-            Reader in = getReader(rsa, file);
-            StringWriter writer = new StringWriter();
-            IOUtil.copy(in, writer);
+            try (Reader in = getReader(rsa, file)) {
+                StringWriter writer = new StringWriter();
+                IOUtil.copy(in, writer);
 
-            if (delimeters && outputFile.length() > 0) {
-                // append semicolon to the new file in order to avoid invalid JS code
-                Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(";");
+                if (delimeters && outputFile.length() > 0) {
+                    // append semicolon to the new file in order to avoid invalid JS code
+                    Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(";");
+                }
+
+                // write / append content into / to the new file
+                Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
             }
-
-            // write / append content into / to the new file
-            Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
-            IOUtil.close(in);
         }
 
         return outputFile;
@@ -132,15 +132,15 @@ public abstract class AbstractOptimizer {
 
     protected void prependFile(File prependedFile, File outputFile, Charset cset,
                 ResourcesSetAdapter rsa) throws IOException {
-        Reader in = getReader(rsa, prependedFile);
-        StringWriter writer = new StringWriter();
-        IOUtil.copy(in, writer);
+        try (Reader in = getReader(rsa, prependedFile)) {
+            StringWriter writer = new StringWriter();
+            IOUtil.copy(in, writer);
 
-        writer.write(System.getProperty("line.separator"));
+            writer.write(System.getProperty("line.separator"));
 
-        // write / append compiled content into / to the new file
-        Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
-        IOUtil.close(in);
+            // write / append compiled content into / to the new file
+            Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
+        }
     }
 
     protected File getOutputFile(ResourcesSetAdapter rsa) throws IOException {

@@ -118,14 +118,14 @@ public class TokenReplacingReader extends Reader {
         }
 
         if (endOfSource) {
-            resolvedToken = tokenStartMarker + tokenBuffer.toString();
+            resolvedToken = tokenStartMarker + tokenBuffer;
         }
         else {
             // try to resolve token
             resolvedToken = tokenResolver.resolveToken(tokenBuffer.toString());
             if (resolvedToken == null) {
                 // token was not resolved
-                resolvedToken = tokenStartMarker + tokenBuffer.toString() + tokenEndMarker;
+                resolvedToken = tokenStartMarker + tokenBuffer + tokenEndMarker;
             }
         }
 
