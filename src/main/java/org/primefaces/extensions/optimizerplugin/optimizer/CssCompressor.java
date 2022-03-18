@@ -144,7 +144,8 @@ public class CssCompressor {
 		}
 		css = sb.toString();
 
-		css = preserveToken(css, "url", "(?i)url\\(\\s*([\"']?)data\\:", true, preservedTokens);
+		css = preserveToken(css, "url", "(?i)url\\(\\s*([\"']?)data\\:\\s*image/svg\\+xml", false, preservedTokens);
+		css = preserveToken(css, "url", "(?i)url\\(\\s*([\"']?)data\\:\\s*(?!(image/svg\\+xml))", true, preservedTokens);
 		css = preserveToken(css, "calc", "(?i)calc\\(\\s*([\"']?)", false, preservedTokens);
 		css = preserveToken(css, "progid:DXImageTransform.Microsoft.Matrix",
 				"(?i)progid:DXImageTransform.Microsoft.Matrix\\s*([\"']?)", false, preservedTokens);
