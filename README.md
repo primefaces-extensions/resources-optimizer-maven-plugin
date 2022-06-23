@@ -20,3 +20,9 @@ Maven plugin for web resource optimization of JS/CSS including:
 See [Wiki][Wiki] documentation for the configuration and usage of the plugin. 
 
 [Wiki]: https://github.com/primefaces-extensions/primefaces-extensions.github.com/wiki/Maven-plugin-for-web-resource-optimization
+
+## JDK 8
+Plugin version 2.4.0 is the last to support JDK8 because of Google Closure Compiler support.
+
+## JDK 11+
+Plugin version 2.5.0+ is for JDK11 only
