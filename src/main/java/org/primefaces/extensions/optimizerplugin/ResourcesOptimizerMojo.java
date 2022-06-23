@@ -631,7 +631,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         for (int i = 0; i < arrImagesDir.length; i++) {
             final File file = new File(arrImagesDir[i]);
             if (file.isDirectory()) {
-                getLog().info("Data URI Directory: " + file.toString());
+                getLog().info("Data URI Directory: " + file);
                 fileImagesDir[i] = new File(arrImagesDir[i]);
             }
         }

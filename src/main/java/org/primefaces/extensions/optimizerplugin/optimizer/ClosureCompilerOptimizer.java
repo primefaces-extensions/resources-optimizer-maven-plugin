@@ -18,7 +18,9 @@
 
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,6 @@ import java.util.logging.Level;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetJsAdapter;

@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Reader for inplace token replacements. It does not use as much memory as the String.replace() method. Got the idea from
- * http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html
+ * <a href="http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html">...</a>
  *
  * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */

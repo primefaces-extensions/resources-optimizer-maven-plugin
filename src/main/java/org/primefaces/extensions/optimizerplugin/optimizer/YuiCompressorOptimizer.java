@@ -31,7 +31,6 @@ import java.nio.charset.Charset;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.primefaces.extensions.optimizerplugin.replacer.TokenReplacingReader;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
