@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public class CssCompressor {
 
-	private final StringBuffer srcsb = new StringBuffer();
+	private final StringBuilder srcsb = new StringBuilder();
 
 	public CssCompressor(Reader in) throws IOException {
 		// Read the stream...
@@ -50,7 +50,7 @@ public class CssCompressor {
 		int maxIndex = css.length() - 1;
 		int appendIndex = 0;
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		Pattern p = Pattern.compile(tokenRegex);
 		Matcher m = p.matcher(css);
@@ -127,7 +127,7 @@ public class CssCompressor {
 		int totallen = css.length();
 		String placeholder;
 
-		StringBuffer sb = new StringBuffer(css);
+		StringBuilder sb = new StringBuilder(css);
 
 		// collect all comment blocks...
 		while ((startIndex = sb.indexOf("/*", startIndex)) >= 0) {
@@ -151,7 +151,7 @@ public class CssCompressor {
 				"(?i)progid:DXImageTransform.Microsoft.Matrix\\s*([\"']?)", false, preservedTokens);
 
 		// preserve strings so their content doesn't get accidentally minified
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile("(\"([^\\\\\"]|\\\\.|\\\\)*\")|(\'([^\\\\\']|\\\\.|\\\\)*\')");
 		m = p.matcher(css);
 		while (m.find()) {
@@ -235,7 +235,7 @@ public class CssCompressor {
 		// Remove the spaces before the things that should not have spaces before them.
 		// But, be careful not to turn "p :link {...}" into "p:link{...}"
 		// Swap out any pseudo-class colons with the token, and then swap back.
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile("(^|\\})((^|([^\\{:])+):)+([^\\{]*\\{)");
 		m = p.matcher(css);
 		while (m.find()) {
@@ -254,7 +254,7 @@ public class CssCompressor {
 		css = css.replaceAll("___YUICSSMIN_PSEUDOCLASSCOLON___", ":");
 
 		// retain space for special IE6 cases
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile("(?i):first\\-(line|letter)(\\{|,)");
 		m = p.matcher(css);
 		while (m.find()) {
@@ -267,7 +267,7 @@ public class CssCompressor {
 		css = css.replaceAll("\\*/ ", "*/");
 
 		// If there are multiple @charset directives, push them to the top of the file.
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile("(?i)^(.*)(@charset)( \"[^\"]*\";)");
 		m = p.matcher(css);
 		while (m.find()) {
@@ -279,7 +279,7 @@ public class CssCompressor {
 
 		// When all @charset are at the top, remove the second and after (as they are
 		// completely ignored).
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile("(?i)^((\\s*)(@charset)( [^;]+;\\s*))+");
 		m = p.matcher(css);
 		while (m.find()) {
@@ -289,7 +289,7 @@ public class CssCompressor {
 		css = sb.toString();
 
 		// lowercase some popular @directives (@charset is done right above)
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile(
 				"(?i)@(font-face|import|(?:-(?:atsc|khtml|moz|ms|o|wap|webkit)-)?keyframe|media|page|namespace)");
 		m = p.matcher(css);
@@ -300,7 +300,7 @@ public class CssCompressor {
 		css = sb.toString();
 
 		// lowercase some more common pseudo-elements
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile(
 				"(?i):(active|after|before|checked|disabled|empty|enabled|first-(?:child|of-type)|focus|hover|last-(?:child|of-type)|link|only-(?:child|of-type)|root|:selection|target|visited)");
 		m = p.matcher(css);
@@ -311,7 +311,7 @@ public class CssCompressor {
 		css = sb.toString();
 
 		// lowercase some more common functions
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile(
 				"(?i):(lang|not|nth-child|nth-last-child|nth-last-of-type|nth-of-type|(?:-(?:moz|webkit)-)?any)\\(");
 		m = p.matcher(css);
@@ -324,7 +324,7 @@ public class CssCompressor {
 		// lower case some common function that can be values
 		// NOTE: rgb() isn't useful as we replace with #hex later, as well as and() is
 		// already done for us right after this
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile(
 				"(?i)([:,\\( ]\\s*)(attr|color-stop|from|rgba|to|url|(?:-(?:atsc|khtml|moz|ms|o|wap|webkit)-)?(?:calc|max|min|(?:repeating-)?(?:linear|radial)-gradient)|-webkit-gradient)");
 		m = p.matcher(css);
@@ -389,7 +389,7 @@ public class CssCompressor {
 
 		// Replace background-position:0; with background-position:0 0;
 		// same for transform-origin
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile(
 				"(?i)(background-position|webkit-mask-position|transform-origin|webkit-transform-origin|moz-transform-origin|o-transform-origin|ms-transform-origin):0(;|})");
 		m = p.matcher(css);
@@ -406,10 +406,10 @@ public class CssCompressor {
 		// This makes it more likely that it'll get further compressed in the next step.
 		p = Pattern.compile("rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\)");
 		m = p.matcher(css);
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		while (m.find()) {
 			String[] rgbcolors = m.group(1).split(",");
-			StringBuffer hexcolor = new StringBuffer("#");
+			StringBuilder hexcolor = new StringBuilder("#");
 			for (i = 0; i < rgbcolors.length; i++) {
 				int val = Integer.parseInt(rgbcolors[i]);
 				if (val < 16) {
@@ -444,7 +444,7 @@ public class CssCompressor {
 						+ "(:?\\}|[^0-9a-fA-F{][^{]*?\\})");
 
 		m = p.matcher(css);
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		int index = 0;
 
 		while (m.find(index)) {
@@ -491,7 +491,7 @@ public class CssCompressor {
 		css = css.replaceAll("(:|\\s)(#800000)(;|})", "$1maroon$3");
 
 		// border: none -> border:0
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern
 				.compile("(?i)(border|border-top|border-right|border-bottom|border-left|outline|background):none(;|})");
 		m = p.matcher(css);
@@ -523,7 +523,7 @@ public class CssCompressor {
 			// that case to split long lines after a specific column.
 			i = 0;
 			int linestartpos = 0;
-			sb = new StringBuffer(css);
+			sb = new StringBuilder(css);
 			while (i < sb.length()) {
 				char c = sb.charAt(i++);
 				if (c == '}' && i - linestartpos > linebreakpos) {
@@ -547,7 +547,7 @@ public class CssCompressor {
 		// Add spaces back in between operators for css calc function
 		// https://developer.mozilla.org/en-US/docs/Web/CSS/calc
 		// Added by Eric Arnol-Martin (earnolmartin@gmail.com)
-		sb = new StringBuffer();
+		sb = new StringBuilder();
 		p = Pattern.compile("calc\\([^\\)]*\\)");
 		m = p.matcher(css);
 		while (m.find()) {
