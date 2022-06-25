@@ -337,6 +337,7 @@ public class CssCompressor {
 		// Put the space back in some cases, to support stuff like
 		// @media screen and (-webkit-min-device-pixel-ratio:0){
 		css = css.replaceAll("(?i)\\band\\(", "and (");
+		css = css.replaceAll("(?i)\\bor\\(", "or (");
 
 		// Remove the spaces after the things that should not have spaces after them.
 		css = css.replaceAll("([!{}:;>+\\(\\[,])\\s+", "$1");

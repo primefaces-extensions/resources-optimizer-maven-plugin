@@ -1,0 +1,1 @@
+.foo{@supports(backdrop-filter:blur(10px)) or (-webkit-backdrop-filter:blur(10px)){background:rgba(69,69,69,0.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}}
