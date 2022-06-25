@@ -1,0 +1,6 @@
+.test-calc {
+	left:calc(50%-(100px * 2));
+	width: calc( 25% +10px);
+	/*right: calc(((100% - 1200px) /2) + 16px); https://github.com/primefaces-extensions/resources-optimizer-maven-plugin/issues/75 */
+	height:calc(50% + 4px)
+}

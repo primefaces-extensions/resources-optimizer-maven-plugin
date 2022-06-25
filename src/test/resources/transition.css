@@ -1,0 +1,31 @@
+.transition-test {
+	transition: all 0s ease 0s;
+	transition-delay: 0s;
+	transition-duration: 0s;
+	transition-delay: 0ms;
+	transition-duration: 0ms;
+}
+
+.transition-test-one-decimal-place {
+	transition: all 0.0s ease 0.0s;
+	transition-delay: 0.0s;
+	transition-duration: 0.0s;
+	transition-delay: 0.0ms;
+	transition-duration: 0.0ms;
+}
+
+.transition-test-two-decimal-places {
+	transition: all 0.00s ease 0.00s;
+	transition-delay: 0.00s;
+	transition-duration: 0.00s;
+	transition-delay: 0.00ms;
+	transition-duration: 0.00ms;
+}
+
+.rotating-test {
+	-webkit-animation: loadpspin 0s infinite linear;
+	-moz-animation: loadpspin 0.0s infinite linear;
+	-ms-animation: loadpspin 0.00s infinite linear;
+	animation: loadpspin 1.0s infinite linear;
+	transform-origin: 50% 50%;
+}

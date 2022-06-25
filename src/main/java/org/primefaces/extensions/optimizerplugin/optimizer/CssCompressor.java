@@ -552,6 +552,8 @@ public class CssCompressor {
 		m = p.matcher(css);
 		while (m.find()) {
 			String s = m.group();
+			s = s.replaceAll("\\s+", "");
+			System.out.println(s);
 
 			s = s.replaceAll("(?<=[-|%|px|em|rem|vw|\\d])\\+", " + ");
 			s = s.replaceAll("(?<=[-|%|px|em|rem|vw|\\d])\\-", " - ");
