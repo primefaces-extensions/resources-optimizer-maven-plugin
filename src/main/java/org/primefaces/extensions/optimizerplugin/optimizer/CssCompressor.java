@@ -549,15 +549,15 @@ public class CssCompressor {
 		// https://developer.mozilla.org/en-US/docs/Web/CSS/calc
 		// Added by Eric Arnol-Martin (earnolmartin@gmail.com)
 		sb = new StringBuilder();
-		p = Pattern.compile("calc\\([^\\)]*\\)");
+		p = Pattern.compile("calc\\([^;]*\\)");
 		m = p.matcher(css);
 		while (m.find()) {
 			String s = m.group();
 			s = s.replaceAll("\\s+", "");
-			s = s.replaceAll("(?<=[-|%|px|em|rem|vw|\\d])\\+", " + ");
-			s = s.replaceAll("(?<=[-|%|px|em|rem|vw|\\d])\\-", " - ");
-			s = s.replaceAll("(?<=[-|%|px|em|rem|vw|\\d])\\*", " * ");
-			s = s.replaceAll("(?<=[-|%|px|em|rem|vw|\\d])\\/", " / ");
+			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vw|\\d])\\+", " + ");
+			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vw|\\d])\\-", " - ");
+			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vw|\\d])\\*", " * ");
+			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vw|\\d])\\/", " / ");
 
 			m.appendReplacement(sb, s);
 		}
