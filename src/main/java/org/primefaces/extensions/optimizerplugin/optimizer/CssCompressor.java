@@ -392,7 +392,7 @@ public class CssCompressor {
 		// same for transform-origin
 		sb = new StringBuilder();
 		p = Pattern.compile(
-				"(?i)(background-position|webkit-mask-position|transform-origin|webkit-transform-origin|moz-transform-origin|o-transform-origin|ms-transform-origin):0(;|})");
+				"(?i)(background-position|webkit-mask-position|transform-origin|webkit-transform-origin|moz-transform-origin|o-transform-origin|ms-transform-origin|box-shadow|text-shadow):0(;|})");
 		m = p.matcher(css);
 		while (m.find()) {
 			m.appendReplacement(sb, m.group(1).toLowerCase() + ":0 0" + m.group(2));
