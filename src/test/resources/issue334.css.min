@@ -1,0 +1,1 @@
+@media screen and (-ms-high-contrast:none){body :focus{outline:2px solid #5e9ed6}}@media screen and (-ms-high-contrast:none){.content :not(.test){outline:2px solid #5e9ed6}}

@@ -305,10 +305,10 @@ public class CssCompressor {
 				"(?i):(active|after|before|checked|disabled|empty|enabled|first-(?:child|of-type)|focus|hover|last-(?:child|of-type)|link|only-(?:child|of-type)|root|:selection|target|visited)");
 		m = p.matcher(css);
 		while (m.find()) {
-			m.appendReplacement(sb, ':' + m.group(1).toLowerCase());
+			m.appendReplacement(sb, " :" + m.group(1).toLowerCase());
 		}
 		m.appendTail(sb);
-		css = sb.toString();
+		css = normalizeSpace(sb.toString());
 
 		// lowercase some more common functions
 		sb = new StringBuilder();
@@ -316,10 +316,10 @@ public class CssCompressor {
 				"(?i):(lang|not|nth-child|nth-last-child|nth-last-of-type|nth-of-type|(?:-(?:moz|webkit)-)?any)\\(");
 		m = p.matcher(css);
 		while (m.find()) {
-			m.appendReplacement(sb, ':' + m.group(1).toLowerCase() + '(');
+			m.appendReplacement(sb, " :" + m.group(1).toLowerCase() + '(');
 		}
 		m.appendTail(sb);
-		css = sb.toString();
+		css = normalizeSpace(sb.toString());
 
 		// lower case some common function that can be values
 		// NOTE: rgb() isn't useful as we replace with #hex later, as well as and() is
@@ -569,5 +569,36 @@ public class CssCompressor {
 
 		// Write the output...
 		out.write(css);
+	}
+
+	public static String normalizeSpace(final String str) {
+		// LANG-1020: Improved performance significantly by normalizing manually instead of using regex
+		// See https://github.com/librucha/commons-lang-normalizespaces-benchmark for performance test
+		if (str == null || str.length() == 0) {
+			return str;
+		}
+		final int size = str.length();
+		final char[] newChars = new char[size];
+		int count = 0;
+		int whitespacesCount = 0;
+		boolean startWhitespaces = true;
+		for (int i = 0; i < size; i++) {
+			final char actualChar = str.charAt(i);
+			final boolean isWhitespace = Character.isWhitespace(actualChar);
+			if (isWhitespace) {
+				if (whitespacesCount == 0 && !startWhitespaces) {
+					newChars[count++] = " ".charAt(0);
+				}
+				whitespacesCount++;
+			} else {
+				startWhitespaces = false;
+				newChars[count++] = (actualChar == 160 ? 32 : actualChar);
+				whitespacesCount = 0;
+			}
+		}
+		if (startWhitespaces) {
+			return "";
+		}
+		return new String(newChars, 0, count - (whitespacesCount > 0 ? 1 : 0)).trim();
 	}
 }
