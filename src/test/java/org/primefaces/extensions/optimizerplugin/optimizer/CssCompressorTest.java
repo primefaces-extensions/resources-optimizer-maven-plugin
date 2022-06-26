@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+/**
+ * CSS test compares .css file to its .css.min file in the directory after compression.
+ */
 class CssCompressorTest {
 
     public static  List<Path> provideCssFiles() throws IOException {
@@ -44,7 +47,7 @@ class CssCompressorTest {
         String expected = new String(expectedFileBytes, StandardCharsets.UTF_8);
         String actual = outputStream.toString(StandardCharsets.UTF_8);
 
-        assertEquals(expected, actual, "The content in the strings should match");
+        assertEquals(expected, actual, "The content in the CSS should match");
     }
 
 
