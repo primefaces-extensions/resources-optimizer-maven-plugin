@@ -305,7 +305,7 @@ public class CssCompressor {
 				"(?i):(active|after|before|checked|disabled|empty|enabled|first-(?:child|of-type)|focus|hover|last-(?:child|of-type)|link|only-(?:child|of-type)|root|:selection|target|visited)");
 		m = p.matcher(css);
 		while (m.find()) {
-			m.appendReplacement(sb, " :" + m.group(1).toLowerCase());
+			m.appendReplacement(sb, ":" + m.group(1).toLowerCase());
 		}
 		m.appendTail(sb);
 		css = normalizeSpace(sb.toString());
@@ -316,7 +316,7 @@ public class CssCompressor {
 				"(?i):(lang|not|nth-child|nth-last-child|nth-last-of-type|nth-of-type|(?:-(?:moz|webkit)-)?any)\\(");
 		m = p.matcher(css);
 		while (m.find()) {
-			m.appendReplacement(sb, " :" + m.group(1).toLowerCase() + '(');
+			m.appendReplacement(sb, ":" + m.group(1).toLowerCase() + '(');
 		}
 		m.appendTail(sb);
 		css = normalizeSpace(sb.toString());
