@@ -558,6 +558,7 @@ public class CssCompressor {
 			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vh|vw|\\d])\\-", " - ");
 			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vh|vw|\\d])\\*", " * ");
 			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vh|vw|\\d])\\/", " / ");
+			s = s.replaceAll("(var\\(-\\s-\\s)", "var(--");
 
 			m.appendReplacement(sb, s);
 		}
