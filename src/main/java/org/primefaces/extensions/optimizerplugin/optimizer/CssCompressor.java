@@ -152,7 +152,7 @@ public class CssCompressor {
 
 		// preserve strings so their content doesn't get accidentally minified
 		sb = new StringBuilder();
-		p = Pattern.compile("\"([^\"\r\n\f\\\\]|\\\\[^0-9a-fA-f]|\\\\[0-9a-fA-F]{1,6}(?>\r\n|[ \t\r\n\f])?)*+\"|'([^'\r\n\f\\\\]|\\\\[^0-9a-fA-f]|\\\\[0-9a-fA-F]{1,6}(?>\r\n|[ \t\r\n\f])?)*+'");
+		p = Pattern.compile("\"([^\"\r\n\f\\\\]|\\\\[^0-9a-fA-F]|\\\\[0-9a-fA-F]{1,6}(?>\r\n|[ \t\r\n\f])?)*+\"|'([^'\r\n\f\\\\]|\\\\[^0-9a-fA-F]|\\\\[0-9a-fA-F]{1,6}(?>\r\n|[ \t\r\n\f])?)*+'");
 		m = p.matcher(css);
 		while (m.find()) {
 			token = m.group();
