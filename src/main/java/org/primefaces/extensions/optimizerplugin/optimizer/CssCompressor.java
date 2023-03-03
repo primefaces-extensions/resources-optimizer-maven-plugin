@@ -236,7 +236,7 @@ public class CssCompressor {
 		// But, be careful not to turn "p :link {...}" into "p:link{...}"
 		// Swap out any pseudo-class colons with the token, and then swap back.
 		sb = new StringBuilder();
-		p = Pattern.compile("(^|\\})((^|([^\\{:])+):)+([^\\{]*\\{)");
+		p = Pattern.compile("(^|})((^|([^{:])+):)+([^{]*\\{)");
 		m = p.matcher(css);
 		while (m.find()) {
 			String s = m.group();
@@ -247,7 +247,7 @@ public class CssCompressor {
 		m.appendTail(sb);
 		css = sb.toString();
 		// Remove spaces before the things that should not have spaces before them.
-		css = css.replaceAll("\\s+([!{};:>+\\(\\)\\],])", "$1");
+		css = css.replaceAll("\\s+([!{};:>+()\\],])", "$1");
 		// Restore spaces for !important
 		css = css.replaceAll("!important", " !important");
 		// bring back the colon
@@ -255,7 +255,7 @@ public class CssCompressor {
 
 		// retain space for special IE6 cases
 		sb = new StringBuilder();
-		p = Pattern.compile("(?i):first\\-(line|letter)(\\{|,)");
+		p = Pattern.compile("(?i):first-(line|letter)([{,])");
 		m = p.matcher(css);
 		while (m.find()) {
 			m.appendReplacement(sb, ":first-" + m.group(1).toLowerCase() + " " + m.group(2));
@@ -326,7 +326,7 @@ public class CssCompressor {
 		// already done for us right after this
 		sb = new StringBuilder();
 		p = Pattern.compile(
-				"(?i)([:,\\( ]\\s*)(attr|color-stop|from|rgba|to|url|(?:-(?:atsc|khtml|moz|ms|o|wap|webkit)-)?(?:calc|max|min|(?:repeating-)?(?:linear|radial)-gradient)|-webkit-gradient)");
+				"(?i)([:,( ]\\s*)(attr|color-stop|from|rgba|to|url|(?:-(?:atsc|khtml|moz|ms|o|wap|webkit)-)?(?:calc|max|min|(?:repeating-)?(?:linear|radial)-gradient)|-webkit-gradient)");
 		m = p.matcher(css);
 		while (m.find()) {
 			m.appendReplacement(sb, m.group(1) + m.group(2).toLowerCase());
@@ -340,7 +340,7 @@ public class CssCompressor {
 		css = css.replaceAll("(?i)\\bor\\(", "or (");
 
 		// Remove the spaces after the things that should not have spaces after them.
-		css = css.replaceAll("([!{}:;>+\\(\\[,])\\s+", "$1");
+		css = css.replaceAll("([!{}:;>+(\\[,])\\s+", "$1");
 
 		// remove unnecessary semicolons
 		css = css.replaceAll(";+}", "}");
@@ -355,7 +355,7 @@ public class CssCompressor {
 		} while (!css.equals(oldCss));
 
 		// We do the same with % but don't replace the 0% in keyframes
-		p = Pattern.compile("(?i)(: ?)((?:[0-9a-z-.]+ )*?)?(?:0?\\.)?0(?:%)");
+		p = Pattern.compile("(?i)(: ?)((?:[0-9a-z-.]+ )*?)?(?:0?\\.)?0%");
 		do {
 			oldCss = css;
 			m = p.matcher(css);
@@ -363,7 +363,7 @@ public class CssCompressor {
 		} while (!(css.equals(oldCss)));
 
 		//Replace the keyframe 100% step with 'to' which is shorter
-		p = Pattern.compile("(?i)(^|,|\\{) ?(?:100% ?\\{)");
+		p = Pattern.compile("(?i)(^|,|\\{) ?100% ?\\{");
 		do {
 			oldCss = css;
 			m = p.matcher(css);
@@ -384,15 +384,15 @@ public class CssCompressor {
 		css = css.replaceAll("([0-9])\\.0(px|em|%|in|cm|mm|pc|pt|ex|deg|m?s|g?rad|k?hz| |;)", "$1$2");
 
 		// Replace 0 0 0 0; with 0.
-		css = css.replaceAll(":0 0 0 0(;|})", ":0$1");
-		css = css.replaceAll(":0 0 0(;|})", ":0$1");
-		css = css.replaceAll("(?<!flex):0 0(;|})", ":0$1");
+		css = css.replaceAll(":0 0 0 0([;}])", ":0$1");
+		css = css.replaceAll(":0 0 0([;}])", ":0$1");
+		css = css.replaceAll("(?<!flex):0 0([;}])", ":0$1");
 
 		// Replace background-position:0; with background-position:0 0;
 		// same for transform-origin
 		sb = new StringBuilder();
 		p = Pattern.compile(
-				"(?i)(background-position|webkit-mask-position|transform-origin|webkit-transform-origin|moz-transform-origin|o-transform-origin|ms-transform-origin|box-shadow|text-shadow):0(;|})");
+				"(?i)(background-position|webkit-mask-position|transform-origin|webkit-transform-origin|moz-transform-origin|o-transform-origin|ms-transform-origin|box-shadow|text-shadow):0([;}])");
 		m = p.matcher(css);
 		while (m.find()) {
 			m.appendReplacement(sb, m.group(1).toLowerCase() + ":0 0" + m.group(2));
@@ -441,8 +441,8 @@ public class CssCompressor {
 		// not id selectors ( #FAABAC {} )
 		// We also want to avoid compressing invalid values (e.g. #AABBCCD to #ABCD)
 		p = Pattern.compile(
-				"(\\=\\s*?[\"']?)?" + "#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])"
-						+ "(:?\\}|[^0-9a-fA-F{][^{]*?\\})");
+				"(=\\s*?[\"']?)?" + "#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])"
+						+ "(:?}|[^0-9a-fA-F{][^{]*?})");
 
 		m = p.matcher(css);
 		sb = new StringBuilder();
@@ -480,21 +480,21 @@ public class CssCompressor {
 		css = sb.toString();
 
 		// Replace #f00 -> red
-		css = css.replaceAll("(:|\\s)(#f00)(;|})", "$1red$3");
+		css = css.replaceAll("(:|\\s)(#f00)([;}])", "$1red$3");
 		// Replace other short color keywords
-		css = css.replaceAll("(:|\\s)(#000080)(;|})", "$1navy$3");
-		css = css.replaceAll("(:|\\s)(#808080)(;|})", "$1gray$3");
-		css = css.replaceAll("(:|\\s)(#808000)(;|})", "$1olive$3");
-		css = css.replaceAll("(:|\\s)(#800080)(;|})", "$1purple$3");
-		css = css.replaceAll("(:|\\s)(#c0c0c0)(;|})", "$1silver$3");
-		css = css.replaceAll("(:|\\s)(#008080)(;|})", "$1teal$3");
-		css = css.replaceAll("(:|\\s)(#ffa500)(;|})", "$1orange$3");
-		css = css.replaceAll("(:|\\s)(#800000)(;|})", "$1maroon$3");
+		css = css.replaceAll("(:|\\s)(#000080)([;}])", "$1navy$3");
+		css = css.replaceAll("(:|\\s)(#808080)([;}])", "$1gray$3");
+		css = css.replaceAll("(:|\\s)(#808000)([;}])", "$1olive$3");
+		css = css.replaceAll("(:|\\s)(#800080)([;}])", "$1purple$3");
+		css = css.replaceAll("(:|\\s)(#c0c0c0)([;}])", "$1silver$3");
+		css = css.replaceAll("(:|\\s)(#008080)([;}])", "$1teal$3");
+		css = css.replaceAll("(:|\\s)(#ffa500)([;}])", "$1orange$3");
+		css = css.replaceAll("(:|\\s)(#800000)([;}])", "$1maroon$3");
 
 		// border: none -> border:0
 		sb = new StringBuilder();
 		p = Pattern
-				.compile("(?i)(border|border-top|border-right|border-bottom|border-left|outline|background):none(;|})");
+				.compile("(?i)(border|border-top|border-right|border-bottom|border-left|outline|background):none([;}])");
 		m = p.matcher(css);
 		while (m.find()) {
 			m.appendReplacement(sb, m.group(1).toLowerCase() + ":0" + m.group(2));
@@ -507,10 +507,10 @@ public class CssCompressor {
 
 		// Find a fraction that is used for Opera's -o-device-pixel-ratio query
 		// Add token to add the "\" back in later
-		css = css.replaceAll("\\(([\\-A-Za-z]+):([0-9]+)\\/([0-9]+)\\)", "($1:$2___YUI_QUERY_FRACTION___$3)");
+		css = css.replaceAll("\\(([\\-A-Za-z]+):([0-9]+)/([0-9]+)\\)", "($1:$2___YUI_QUERY_FRACTION___$3)");
 
 		// Remove empty rules.
-		css = css.replaceAll("[^\\}\\{/;]+\\{\\}", "");
+		css = css.replaceAll("[^}{/;]+\\{}", "");
 
 		// Add "\" back to fix Opera -o-device-pixel-ratio query
 		css = css.replaceAll("___YUI_QUERY_FRACTION___", "/");
@@ -536,7 +536,7 @@ public class CssCompressor {
 			css = sb.toString();
 		}
 
-		// Replace multiple semi-colons in a row by a single one
+		// Replace multiple semicolons in a row by a single one
 		// See SF bug #1980989
 		css = css.replaceAll(";;+", ";");
 
@@ -554,10 +554,10 @@ public class CssCompressor {
 		while (m.find()) {
 			String s = m.group();
 			s = s.replaceAll("\\s+", "");
-			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vh|vw|\\d])\\+", " + ");
-			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vh|vw|\\d])\\-", " - ");
-			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vh|vw|\\d])\\*", " * ");
-			s = s.replaceAll("(?<=[-|%|)|px|em|rem|vh|vw|\\d])\\/", " / ");
+			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])\\+", " + ");
+			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])-", " - ");
+			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])\\*", " * ");
+			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])/", " / ");
 			s = s.replaceAll("(var\\(-\\s-\\s)", "var(--");
 
 			m.appendReplacement(sb, s);
@@ -588,7 +588,7 @@ public class CssCompressor {
 			final boolean isWhitespace = Character.isWhitespace(actualChar);
 			if (isWhitespace) {
 				if (whitespacesCount == 0 && !startWhitespaces) {
-					newChars[count++] = " ".charAt(0);
+					newChars[count++] = ' ';
 				}
 				whitespacesCount++;
 			} else {
