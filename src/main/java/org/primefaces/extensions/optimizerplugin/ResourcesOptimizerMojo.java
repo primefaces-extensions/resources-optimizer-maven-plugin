@@ -100,6 +100,13 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private boolean failOnWarning;
 
     /**
+     * Flag whether to add 'use strict'; to JS files.
+     *
+     * @parameter
+     */
+    private boolean emitUseStrict;
+
+    /**
      * Suffix for compressed / merged files.
      *
      * @parameter
@@ -249,7 +256,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                         processJsFiles(file, subDirJsFiles,
                                                     getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                     getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
-                                                    resolveSourceMap(null), null, getLanguageIn(languageIn), getLanguageOut(languageOut));
+                                                    resolveSourceMap(null), null, getLanguageIn(languageIn), getLanguageOut(languageOut), emitUseStrict);
                                     }
                                 }
                             }
@@ -267,7 +274,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                             // handle JavaScript files
                             processJsFiles(dir, scanner.getJsFiles(), aggr, getCompilationLevel(compilationLevel),
                                         getWarningLevel(warningLevel), resolveSourceMap(null), suffix,
-                                        getLanguageIn(languageIn), getLanguageOut(languageOut));
+                                        getLanguageIn(languageIn), getLanguageOut(languageOut), emitUseStrict);
                         }
                     }
                 }
@@ -351,7 +358,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                             processJsFiles(file, subDirJsFiles,
                                                         getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                         resolveCompilationLevel(rs), resolveWarningLevel(rs),
-                                                        resolveSourceMap(rs), null, resolveLanguageIn(rs), resolveLanguageOut(rs));
+                                                        resolveSourceMap(rs), null, resolveLanguageIn(rs), resolveLanguageOut(rs), emitUseStrict);
                                         }
                                     }
                                 }
@@ -369,7 +376,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                 // handle JavaScript files
                                 processJsFiles(dir, scanner.getJsFiles(), aggr, resolveCompilationLevel(rs),
                                             resolveWarningLevel(rs), resolveSourceMap(rs), suffix,
-                                            resolveLanguageIn(rs), resolveLanguageOut(rs));
+                                            resolveLanguageIn(rs), resolveLanguageOut(rs), emitUseStrict);
                             }
                         }
                     }
@@ -408,11 +415,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
     private void processJsFiles(final File inputDir, final Set<File> jsFiles, final Aggregation aggr, final CompilationLevel compilationLevel,
                 final WarningLevel warningLevel, final SourceMap sourceMap, final String suffix,
-                final LanguageMode languageIn, final LanguageMode languageOut) throws MojoExecutionException {
+                final LanguageMode languageIn, final LanguageMode languageOut, boolean emitUseStrict) throws MojoExecutionException {
         resFound = true;
         final ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
                     inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
-                    failOnWarning, suffix, languageIn, languageOut);
+                    failOnWarning, suffix, languageIn, languageOut, emitUseStrict);
 
         final ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
         closureOptimizer.optimize(rsa, getLog());
