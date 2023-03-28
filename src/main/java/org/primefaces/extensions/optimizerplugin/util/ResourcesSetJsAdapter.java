@@ -44,15 +44,18 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     private final LanguageMode languageOut;
 
+    private final boolean emitUseStrict;
+
     public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation, CompilationLevel compilationLevel,
                 WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
-                String suffix, LanguageMode languageIn, LanguageMode languageOut) {
+                String suffix, LanguageMode languageIn, LanguageMode languageOut, boolean emitUseStrict) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.compilationLevel = compilationLevel;
         this.warningLevel = warningLevel;
         this.sourceMap = sourceMap;
         this.languageIn = languageIn;
         this.languageOut = languageOut;
+        this.emitUseStrict = emitUseStrict;
     }
 
     public CompilationLevel getCompilationLevel() {
@@ -73,5 +76,9 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     public LanguageMode getLanguageOut() {
         return languageOut;
+    }
+
+    public boolean isEmitUseStrict() {
+        return emitUseStrict;
     }
 }
