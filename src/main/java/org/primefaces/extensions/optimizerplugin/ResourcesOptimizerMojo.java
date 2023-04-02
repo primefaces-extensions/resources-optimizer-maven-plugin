@@ -94,49 +94,49 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     /**
      * Flag whether this plugin must stop/fail on warnings.
      */
-    @Parameter()
+    @Parameter
     private boolean failOnWarning;
 
     /**
      * Flag whether to add 'use strict'; to JS files.
      */
-    @Parameter()
+    @Parameter
     private boolean emitUseStrict;
 
     /**
      * Suffix for compressed / merged files.
      */
-    @Parameter()
+    @Parameter
     private String suffix;
 
     /**
      * Flag if images referenced in CSS files (size < 32KB) should be converted to data URIs.
      */
-    @Parameter()
+    @Parameter
     private boolean useDataUri;
 
     /**
      * Files to be included. Files selectors follow patterns specified in {@link org.codehaus.plexus.util.DirectoryScanner}.
      */
-    @Parameter()
+    @Parameter
     private String[] includes;
 
     /**
      * Files to be excluded. Files selectors follow patterns specified in {@link org.codehaus.plexus.util.DirectoryScanner}.
      */
-    @Parameter()
+    @Parameter
     private String[] excludes;
 
     /**
      * Configuration for aggregations.
      */
-    @Parameter()
+    @Parameter
     private Aggregation[] aggregations;
 
     /**
      * Configuration for source maps.
      */
-    @Parameter()
+    @Parameter
     private SourceMap sourceMap;
 
     /**
@@ -166,9 +166,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
     /**
      * Compile sets.
-     *
-     * @parameter
      */
+    @Parameter
     private List<ResourcesSet> resourcesSets;
 
     private DataUriTokenResolver dataUriTokenResolver;
