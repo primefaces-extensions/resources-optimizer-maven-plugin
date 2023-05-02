@@ -77,6 +77,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         Compiler.setLoggingLevel(Level.WARNING);
 
         options.setEmitUseStrict(rsa.isEmitUseStrict());
+        options.setEnvironment(CompilerOptions.Environment.BROWSER);
 
         try {
             final Charset cset = Charset.forName(rsa.getEncoding());
