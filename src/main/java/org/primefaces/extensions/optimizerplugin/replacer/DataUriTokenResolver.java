@@ -44,7 +44,7 @@ public class DataUriTokenResolver implements TokenResolver {
     private final File[] imagesDir;
     private final Log log;
 
-    private static final Pattern pattern = Pattern.compile("[\\s'\":/\\\\]+");
+    private static final Pattern PATTERN = Pattern.compile("[\\s'\":/\\\\]+");
 
     private static final int SIZE_LIMIT = 32 * 1024;
 
@@ -56,6 +56,7 @@ public class DataUriTokenResolver implements TokenResolver {
         supportedTypes.put("jpeg", "image/jpeg");
         supportedTypes.put("png", "image/png");
         supportedTypes.put("svg", "image/svg+xml");
+        supportedTypes.put("webp", "image/webp");
     }
 
     public DataUriTokenResolver(final Log log, final File[] imagesDir) {
@@ -68,7 +69,7 @@ public class DataUriTokenResolver implements TokenResolver {
             return token;
         }
 
-        final String[] pathParts = pattern.split(token);
+        final String[] pathParts = PATTERN.split(token);
         if (pathParts == null || pathParts.length < 1) {
             return null;
         }
