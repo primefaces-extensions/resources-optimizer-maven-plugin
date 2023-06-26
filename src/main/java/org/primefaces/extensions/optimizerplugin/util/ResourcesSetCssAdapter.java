@@ -31,16 +31,16 @@ import org.primefaces.extensions.optimizerplugin.replacer.DataUriTokenResolver;
  */
 public class ResourcesSetCssAdapter extends ResourcesSetAdapter {
 
-    private final DataUriTokenResolver dataUriTokenResolver;
+    private final DataUriTokenResolver projectDataUriTokenResolver;
 
-    public ResourcesSetCssAdapter(File inputDir, Set<File> files, DataUriTokenResolver dataUriTokenResolver,
+    public ResourcesSetCssAdapter(File inputDir, Set<File> files, DataUriTokenResolver projectDataUriTokenResolver,
                 Aggregation aggregation, String encoding, boolean failOnWarning,
                 String suffix) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
-        this.dataUriTokenResolver = dataUriTokenResolver;
+        this.projectDataUriTokenResolver = projectDataUriTokenResolver;
     }
 
-    public DataUriTokenResolver getDataUriTokenResolver() {
-        return dataUriTokenResolver;
+    public DataUriTokenResolver getProjectDataUriTokenResolver() {
+        return projectDataUriTokenResolver;
     }
 }

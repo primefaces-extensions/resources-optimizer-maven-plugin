@@ -45,7 +45,13 @@ public abstract class AbstractOptimizer {
 
     private long sizeTotalOptimized = 0;
 
-    public abstract void optimize(final ResourcesSetAdapter rsa, final Log log) throws MojoExecutionException;
+    protected final Log log;
+
+    protected AbstractOptimizer(Log log) {
+        this.log = log;
+    }
+
+    public abstract void optimize(final ResourcesSetAdapter rsa) throws MojoExecutionException;
 
     public long getTotalOriginalSize() {
         return sizeTotalOriginal;
@@ -98,7 +104,7 @@ public abstract class AbstractOptimizer {
         return outputFile;
     }
 
-    protected void deleteFilesIfNecessary(ResourcesSetAdapter rsa, Log log) {
+    protected void deleteFilesIfNecessary(ResourcesSetAdapter rsa) {
         if (rsa.getAggregation().isRemoveIncluded() && rsa.getFiles().size() > 0) {
             for (File file : rsa.getFiles()) {
                 if (file.exists() && !file.delete()) {
@@ -108,7 +114,7 @@ public abstract class AbstractOptimizer {
         }
     }
 
-    protected void deleteDirectoryIfNecessary(ResourcesSetAdapter rsa, Log log) {
+    protected void deleteDirectoryIfNecessary(ResourcesSetAdapter rsa) {
         if (rsa.getAggregation().isRemoveEmptyDirectories() && rsa.getFiles().size() > 0) {
             for (File file : rsa.getFiles()) {
                 File directory = file.isDirectory() ? file : file.getParentFile();

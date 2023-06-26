@@ -21,6 +21,7 @@ package org.primefaces.extensions.optimizerplugin.replacer;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -41,12 +42,10 @@ public class DataUriTokenResolver implements TokenResolver {
     /**
      * directories where to look for images from
      */
-    private final File[] imagesDir;
+    public final List<File> imagesDir;
     private final Log log;
 
     private static final Pattern PATTERN = Pattern.compile("[\\s'\":/\\\\]+");
-
-    private static final int SIZE_LIMIT = 32 * 1024;
 
     private static final Map<String, String> supportedTypes = new HashMap<>();
 
@@ -59,7 +58,7 @@ public class DataUriTokenResolver implements TokenResolver {
         supportedTypes.put("webp", "image/webp");
     }
 
-    public DataUriTokenResolver(final Log log, final File[] imagesDir) {
+    public DataUriTokenResolver(final Log log, final List<File> imagesDir) {
         this.imagesDir = imagesDir;
         this.log = log;
     }
@@ -69,6 +68,9 @@ public class DataUriTokenResolver implements TokenResolver {
             return token;
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Resolving resource " + token);
+        }
         final String[] pathParts = PATTERN.split(token);
         if (pathParts == null || pathParts.length < 1) {
             return null;
@@ -124,6 +126,8 @@ public class DataUriTokenResolver implements TokenResolver {
         }
 
         if (!found) {
+            log.warn("Failed to resolve resource: " + token
+                    + (imagesDir.size() == 1 ? (" at " + imageFile) : ""));
             return null;
         }
 
@@ -131,17 +135,9 @@ public class DataUriTokenResolver implements TokenResolver {
         // generate dataURI
         final byte[] bytes = Files.toByteArray(imageFile);
 
-        final String dataUri = "data:" +
-                    supportedTypes.get(extension) +
-                    ";base64," +
-                    new String(Base64.encodeBase64(bytes));
-
-        // Check if the size of dataURI is limited to 32KB (because IE8 has a 32KB limitation)
-        final boolean exceedLimit = dataUri.length() >= SIZE_LIMIT;
-        if (exceedLimit) {
-            return null;
-        }
-
-        return dataUri;
+        return "data:" +
+                supportedTypes.get(extension) +
+                ";base64," +
+                new String(Base64.encodeBase64(bytes));
     }
 }
