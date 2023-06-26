@@ -27,12 +27,15 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
-import org.primefaces.extensions.optimizerplugin.replacer.TokenReplacingReader;
+import org.primefaces.extensions.optimizerplugin.replacer.CSSRelativeURLReplacingReader;
+import org.primefaces.extensions.optimizerplugin.replacer.DataUriTokenResolver;
+import org.primefaces.extensions.optimizerplugin.replacer.FixedMarkerTokenReplacingReader;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetCssAdapter;
 
@@ -48,12 +51,16 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
 
     private static final String OPTIMIZED_FILE_EXTENSION = ".optcss";
 
-    private static final String DATA_URI_START_MARKER = "#{resource[";
+    private static final String JSF_RESOURCE_DATA_URI_START_MARKER = "#{resource[";
 
-    private static final String DATA_URI_END_MARKER = "]}";
+    private static final String JSF_RESOURCE_DATA_URI_END_MARKER = "]}";
+
+    public YuiCompressorOptimizer(Log log) {
+        super(log);
+    }
 
     @Override
-    public void optimize(final ResourcesSetAdapter rsAdapter, final Log log) throws MojoExecutionException {
+    public void optimize(final ResourcesSetAdapter rsAdapter) throws MojoExecutionException {
         ResourcesSetCssAdapter rsa = (ResourcesSetCssAdapter) rsAdapter;
         Reader in = null;
         OutputStreamWriter out = null;
@@ -167,8 +174,8 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
                 }
 
                 // delete single files if necessary
-                deleteFilesIfNecessary(rsa, log);
-                deleteDirectoryIfNecessary(rsa, log);
+                deleteFilesIfNecessary(rsa);
+                deleteDirectoryIfNecessary(rsa);
 
                 // rename aggregated file if necessary
                 renameOutputFileIfNecessary(rsa, outputFile);
@@ -192,9 +199,15 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
         ResourcesSetCssAdapter rsa = (ResourcesSetCssAdapter) rsAdapter;
 
         Reader reader = super.getReader(rsa, file);
-        if (rsa.getDataUriTokenResolver() != null) {
-            reader = new TokenReplacingReader(rsa.getDataUriTokenResolver(), reader, DATA_URI_START_MARKER, DATA_URI_END_MARKER);
+        if (rsa.getProjectDataUriTokenResolver() != null) {
+            reader = new FixedMarkerTokenReplacingReader(log, rsa.getProjectDataUriTokenResolver(), reader,
+                    JSF_RESOURCE_DATA_URI_START_MARKER, JSF_RESOURCE_DATA_URI_END_MARKER);
         }
+
+        // this needs a resolver relative to current CSS file directory
+        File fileParentDir = new File(file.getParent());
+        DataUriTokenResolver fileRelativeResolver = new DataUriTokenResolver(log, List.of(fileParentDir));
+        reader = new CSSRelativeURLReplacingReader(log, fileRelativeResolver, reader);
 
         return reader;
     }

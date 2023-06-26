@@ -19,6 +19,7 @@
 package org.primefaces.extensions.optimizerplugin;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -30,12 +31,9 @@ import com.google.javascript.jscomp.WarningLevel;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Execute;
-import org.apache.maven.plugins.annotations.InstantiationStrategy;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
 import org.primefaces.extensions.optimizerplugin.model.ResourcesSet;
 import org.primefaces.extensions.optimizerplugin.model.SourceMap;
@@ -170,7 +168,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     @Parameter
     private List<ResourcesSet> resourcesSets;
 
-    private DataUriTokenResolver dataUriTokenResolver;
+    /**
+     * Resolved by known project-relative directories.
+     */
+    private DataUriTokenResolver projectDataUriTokenResolver;
 
     private long originalFilesSize = 0;
 
@@ -228,10 +229,10 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
                                     final Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
                                     if (!subDirCssFiles.isEmpty()) {
-                                        final DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
+                                        final DataUriTokenResolver projectDataUriTokenResolver = (useDataUri ? getProjectDataUriTokenResolver() : null);
 
                                         // handle CSS files
-                                        processCssFiles(file, subDirCssFiles, dataUriTokenResolver,
+                                        processCssFiles(file, subDirCssFiles, projectDataUriTokenResolver,
                                                 getSubDirAggregation(file, aggr, ResourcesScanner.CSS_FILE_EXTENSION),
                                                 null);
                                     }
@@ -249,7 +250,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                         }
                     } else {
                         if (!scanner.getCssFiles().isEmpty()) {
-                            final DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getDataUriTokenResolver() : null);
+                            final DataUriTokenResolver dataUriTokenResolver = (useDataUri ? getProjectDataUriTokenResolver() : null);
 
                             // handle CSS files
                             processCssFiles(dir, scanner.getCssFiles(), dataUriTokenResolver, aggr, suffix);
@@ -321,7 +322,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                         final Set<File> subDirCssFiles = filterSubDirFiles(scanner.getCssFiles(), subDirScanner.getCssFiles());
                                         if (!subDirCssFiles.isEmpty()) {
                                             final DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ?
-                                                    getDataUriTokenResolver() :
+                                                    getProjectDataUriTokenResolver() :
                                                     null);
 
                                             // handle CSS files
@@ -343,7 +344,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                             }
                         } else {
                             if (!scanner.getCssFiles().isEmpty()) {
-                                final DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ? getDataUriTokenResolver() : null);
+                                final DataUriTokenResolver dataUriTokenResolver = (useDataUri || rs.isUseDataUri() ? getProjectDataUriTokenResolver() : null);
 
                                 // handle CSS files
                                 processCssFiles(dir, scanner.getCssFiles(), dataUriTokenResolver, aggr, suffix);
@@ -375,14 +376,14 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         outputStatistic();
     }
 
-    private void processCssFiles(final File inputDir, final Set<File> cssFiles, final DataUriTokenResolver dataUriTokenResolver,
+    private void processCssFiles(final File inputDir, final Set<File> cssFiles, final DataUriTokenResolver projectDataUriTokenResolver,
                                  final Aggregation aggr, final String suffix) throws MojoExecutionException {
         resFound = true;
         final ResourcesSetAdapter rsa = new ResourcesSetCssAdapter(
-                inputDir, cssFiles, dataUriTokenResolver, aggr, encoding, failOnWarning, suffix);
+                inputDir, cssFiles, projectDataUriTokenResolver, aggr, encoding, failOnWarning, suffix);
 
-        final YuiCompressorOptimizer yuiOptimizer = new YuiCompressorOptimizer();
-        yuiOptimizer.optimize(rsa, getLog());
+        final YuiCompressorOptimizer yuiOptimizer = new YuiCompressorOptimizer(getLog());
+        yuiOptimizer.optimize(rsa);
 
         originalFilesSize += yuiOptimizer.getTotalOriginalSize();
         optimizedFilesSize += yuiOptimizer.getTotalOptimizedSize();
@@ -396,8 +397,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                 inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
                 failOnWarning, suffix, languageIn, languageOut, emitUseStrict);
 
-        final ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer();
-        closureOptimizer.optimize(rsa, getLog());
+        final ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer(getLog());
+        closureOptimizer.optimize(rsa);
 
         originalFilesSize += closureOptimizer.getTotalOriginalSize();
         optimizedFilesSize += closureOptimizer.getTotalOptimizedSize();
@@ -588,24 +589,24 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
         }
     }
 
-    private DataUriTokenResolver getDataUriTokenResolver() {
-        if (dataUriTokenResolver != null) {
-            return dataUriTokenResolver;
+    private DataUriTokenResolver getProjectDataUriTokenResolver() {
+        if (projectDataUriTokenResolver != null) {
+            return projectDataUriTokenResolver;
         }
 
         final String[] arrImagesDir = imagesDir.split(",");
-        final File[] fileImagesDir = new File[arrImagesDir.length];
-        for (int i = 0; i < arrImagesDir.length; i++) {
-            final File file = new File(arrImagesDir[i]);
+        final List<File> fileImagesDir = new ArrayList<>(arrImagesDir.length);
+        for (String imageDir : arrImagesDir) {
+            final File file = new File(imageDir);
             if (file.isDirectory()) {
-                getLog().info("Data URI Directory: " + file);
-                fileImagesDir[i] = new File(arrImagesDir[i]);
+                getLog().info("Project Data URI Directory: " + file);
+                fileImagesDir.add(file);
             }
         }
 
-        dataUriTokenResolver = new DataUriTokenResolver(getLog(), fileImagesDir);
+        projectDataUriTokenResolver = new DataUriTokenResolver(getLog(), fileImagesDir);
 
-        return dataUriTokenResolver;
+        return projectDataUriTokenResolver;
     }
 
     private Set<File> filterSubDirFiles(final Set<File> resSetFiles, final Set<File> subDirFiles) {
