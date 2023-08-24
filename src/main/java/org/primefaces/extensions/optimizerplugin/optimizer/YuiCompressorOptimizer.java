@@ -1,12 +1,12 @@
 /**
- * Copyright 2011-2017 PrimeFaces Extensions
- *
+ * Copyright 2011-2023 PrimeFaces Extensions
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -199,15 +199,17 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
         ResourcesSetCssAdapter rsa = (ResourcesSetCssAdapter) rsAdapter;
 
         Reader reader = super.getReader(rsa, file);
+
+        // only use Data URI's if toke resolver is set
         if (rsa.getProjectDataUriTokenResolver() != null) {
             reader = new FixedMarkerTokenReplacingReader(log, rsa.getProjectDataUriTokenResolver(), reader,
                     JSF_RESOURCE_DATA_URI_START_MARKER, JSF_RESOURCE_DATA_URI_END_MARKER);
-        }
 
-        // this needs a resolver relative to current CSS file directory
-        File fileParentDir = new File(file.getParent());
-        DataUriTokenResolver fileRelativeResolver = new DataUriTokenResolver(log, List.of(fileParentDir));
-        reader = new CSSRelativeURLReplacingReader(log, fileRelativeResolver, reader);
+            // this needs a resolver relative to current CSS file directory
+            File fileParentDir = new File(file.getParent());
+            DataUriTokenResolver fileRelativeResolver = new DataUriTokenResolver(log, List.of(fileParentDir));
+            reader = new CSSRelativeURLReplacingReader(log, fileRelativeResolver, reader);
+        }
 
         return reader;
     }
