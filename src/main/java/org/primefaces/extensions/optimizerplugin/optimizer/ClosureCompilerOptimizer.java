@@ -83,6 +83,8 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
         options.setEmitUseStrict(rsa.isEmitUseStrict());
         options.setEnvironment(CompilerOptions.Environment.BROWSER);
 
+        options.setProcessCommonJSModules(rsa.isProcessCommonJSModules());
+
         try {
             final Charset cset = Charset.forName(rsa.getEncoding());
 

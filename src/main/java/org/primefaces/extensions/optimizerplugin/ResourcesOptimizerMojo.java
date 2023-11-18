@@ -102,6 +102,12 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
     private boolean emitUseStrict;
 
     /**
+     * Flag rewrites CommonJS modules so that modules can be concatenated together, by renaming all globals to avoid conflicting with other modules.
+     */
+    @Parameter
+    private boolean processCommonJSModules;
+
+    /**
      * Suffix for compressed / merged files.
      */
     @Parameter
@@ -243,7 +249,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                         processJsFiles(file, subDirJsFiles,
                                                 getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                 getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
-                                                resolveSourceMap(null), null, getLanguageIn(languageIn), getLanguageOut(languageOut), emitUseStrict);
+                                                resolveSourceMap(null), null, getLanguageIn(languageIn), getLanguageOut(languageOut), emitUseStrict, processCommonJSModules);
                                     }
                                 }
                             }
@@ -260,7 +266,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                             // handle JavaScript files
                             processJsFiles(dir, scanner.getJsFiles(), aggr, getCompilationLevel(compilationLevel),
                                     getWarningLevel(warningLevel), resolveSourceMap(null), suffix,
-                                    getLanguageIn(languageIn), getLanguageOut(languageOut), emitUseStrict);
+                                    getLanguageIn(languageIn), getLanguageOut(languageOut), emitUseStrict, processCommonJSModules);
                         }
                     }
                 }
@@ -337,7 +343,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                             processJsFiles(file, subDirJsFiles,
                                                     getSubDirAggregation(file, aggr, ResourcesScanner.JS_FILE_EXTENSION),
                                                     resolveCompilationLevel(rs), resolveWarningLevel(rs),
-                                                    resolveSourceMap(rs), null, resolveLanguageIn(rs), resolveLanguageOut(rs), emitUseStrict);
+                                                    resolveSourceMap(rs), null, resolveLanguageIn(rs), resolveLanguageOut(rs), emitUseStrict, processCommonJSModules);
                                         }
                                     }
                                 }
@@ -354,7 +360,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
                                 // handle JavaScript files
                                 processJsFiles(dir, scanner.getJsFiles(), aggr, resolveCompilationLevel(rs),
                                         resolveWarningLevel(rs), resolveSourceMap(rs), suffix,
-                                        resolveLanguageIn(rs), resolveLanguageOut(rs), emitUseStrict);
+                                        resolveLanguageIn(rs), resolveLanguageOut(rs), emitUseStrict, processCommonJSModules);
                             }
                         }
                     }
@@ -391,11 +397,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 
     private void processJsFiles(final File inputDir, final Set<File> jsFiles, final Aggregation aggr, final CompilationLevel compilationLevel,
                                 final WarningLevel warningLevel, final SourceMap sourceMap, final String suffix,
-                                final LanguageMode languageIn, final LanguageMode languageOut, boolean emitUseStrict) throws MojoExecutionException {
+                                final LanguageMode languageIn, final LanguageMode languageOut, boolean emitUseStrict, boolean processCommonJSModules) throws MojoExecutionException {
         resFound = true;
         final ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(
                 inputDir, jsFiles, aggr, compilationLevel, warningLevel, sourceMap, encoding,
-                failOnWarning, suffix, languageIn, languageOut, emitUseStrict);
+                failOnWarning, suffix, languageIn, languageOut, emitUseStrict, processCommonJSModules);
 
         final ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer(getLog());
         closureOptimizer.optimize(rsa);

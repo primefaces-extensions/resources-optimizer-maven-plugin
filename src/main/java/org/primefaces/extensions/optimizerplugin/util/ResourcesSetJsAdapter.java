@@ -45,10 +45,11 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
     private final LanguageMode languageOut;
 
     private final boolean emitUseStrict;
+    private boolean processCommonJSModules;
 
     public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation, CompilationLevel compilationLevel,
                 WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
-                String suffix, LanguageMode languageIn, LanguageMode languageOut, boolean emitUseStrict) {
+                String suffix, LanguageMode languageIn, LanguageMode languageOut, boolean emitUseStrict, boolean processCommonJSModules) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.compilationLevel = compilationLevel;
         this.warningLevel = warningLevel;
@@ -56,6 +57,7 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
         this.languageIn = languageIn;
         this.languageOut = languageOut;
         this.emitUseStrict = emitUseStrict;
+        this.processCommonJSModules = processCommonJSModules;
     }
 
     public CompilationLevel getCompilationLevel() {
@@ -80,5 +82,9 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
     public boolean isEmitUseStrict() {
         return emitUseStrict;
+    }
+
+    public boolean isProcessCommonJSModules() {
+        return processCommonJSModules;
     }
 }
