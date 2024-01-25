@@ -1,0 +1,6 @@
+a{
+  margin: 0 calc(var(--month-margin) / 2) var(--month-margin) 0;
+  min-height: calc((var(--duration) * (var(--month-height) + var(--month-margin)) - var(--month-margin)));
+  top: calc(var(--month-offset) * (var(--month-height) + var(--month-margin)));
+  width: calc(100% - 2 * var(--current-date - border));
+}

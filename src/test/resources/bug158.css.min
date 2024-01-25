@@ -1,1 +1,0 @@
-a{margin:0 calc(var(--month-margin) / 2) var(--month-margin) 0}

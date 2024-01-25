@@ -559,7 +559,20 @@ public class CssCompressor {
 			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])\\*", " * ");
 			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])/", " / ");
 			s = s.replaceAll("(var\\(-\\s-\\s)", "var(--");
+			s = s.replaceAll("\\)(var\\(--)", ") var(--"); // #168
 
+			m.appendReplacement(sb, s);
+		}
+		m.appendTail(sb);
+		css = sb.toString();
+
+		// #168 remove spaces inside "var(--month - margin)"
+		sb = new StringBuilder();
+		p = Pattern.compile("var\\(--[^;})]*\\)");
+		m = p.matcher(css);
+		while (m.find()) {
+			String s = m.group();
+			s = s.replaceAll("\\s+", "");
 			m.appendReplacement(sb, s);
 		}
 		m.appendTail(sb);
