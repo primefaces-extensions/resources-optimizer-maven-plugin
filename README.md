@@ -4,7 +4,7 @@
 [![Actions Status](https://github.com/primefaces-extensions/resources-optimizer-maven-plugin/workflows/Java%20CI/badge.svg)](https://github.com/primefaces-extensions/resources-optimizer-maven-plugin/actions)
 [![Stackoverflow](https://img.shields.io/badge/StackOverflow-primefaces-chocolate.svg)](https://stackoverflow.com/questions/tagged/primefaces-extensions)
 
-Resources Optimizer Plugin
+Resources Optimizer Maven Plugin
 ================================
 
 Maven plugin for web resource optimization of JS/CSS including:
