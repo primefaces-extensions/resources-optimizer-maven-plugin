@@ -7,8 +7,6 @@
 Resources Optimizer Plugin
 ================================
 
-[![PrimeFaces Extensions Logo](http://primefaces-extensions.github.io/reports/images/title.png)](https://www.primefaces.org/showcase-ext/)
-
 Maven plugin for web resource optimization of JS/CSS including:
 - compressing Javascript
 - transpiling Javascript from one version to another (e.g. ECMASCRIPT3 to ECMASCRIPT2015)
