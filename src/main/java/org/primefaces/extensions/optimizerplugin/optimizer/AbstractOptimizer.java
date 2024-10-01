@@ -18,19 +18,26 @@
 
 package org.primefaces.extensions.optimizerplugin.optimizer;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
+import com.google.common.io.CharSink;
+import com.google.common.io.FileWriteMode;
+import com.google.common.io.Files;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.primefaces.extensions.optimizerplugin.util.ResourcesSetAdapter;
-
-import com.google.common.io.FileWriteMode;
-import com.google.common.io.Files;
 
 /**
  * Basis abstract class for Google Closure Compiler / YUI Compressor Optimizers.
@@ -91,13 +98,15 @@ public abstract class AbstractOptimizer {
                 StringWriter writer = new StringWriter();
                 IOUtil.copy(in, writer);
 
+                CharSink charSink = Files.asCharSink(outputFile, cset, FileWriteMode.APPEND);
+                charSink.write(System.lineSeparator());
                 if (delimeters && outputFile.length() > 0) {
                     // append semicolon to the new file in order to avoid invalid JS code
-                    Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(";");
+                    charSink.write(";");
                 }
 
                 // write / append content into / to the new file
-                Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
+                charSink.write(writer.toString());
             }
         }
 
@@ -105,7 +114,7 @@ public abstract class AbstractOptimizer {
     }
 
     protected void deleteFilesIfNecessary(ResourcesSetAdapter rsa) {
-        if (rsa.getAggregation().isRemoveIncluded() && rsa.getFiles().size() > 0) {
+        if (rsa.getAggregation().isRemoveIncluded() && !rsa.getFiles().isEmpty()) {
             for (File file : rsa.getFiles()) {
                 if (file.exists() && !file.delete()) {
                     log.warn("File " + file.getName() + " could not be deleted after aggregation.");
@@ -115,7 +124,7 @@ public abstract class AbstractOptimizer {
     }
 
     protected void deleteDirectoryIfNecessary(ResourcesSetAdapter rsa) {
-        if (rsa.getAggregation().isRemoveEmptyDirectories() && rsa.getFiles().size() > 0) {
+        if (rsa.getAggregation().isRemoveEmptyDirectories() && !rsa.getFiles().isEmpty()) {
             for (File file : rsa.getFiles()) {
                 File directory = file.isDirectory() ? file : file.getParentFile();
                 while (directory != null && directory.isDirectory() &&
@@ -142,7 +151,7 @@ public abstract class AbstractOptimizer {
             StringWriter writer = new StringWriter();
             IOUtil.copy(in, writer);
 
-            writer.write(System.getProperty("line.separator"));
+            writer.write(System.lineSeparator());
 
             // write / append compiled content into / to the new file
             Files.asCharSink(outputFile, cset, FileWriteMode.APPEND).write(writer.toString());
