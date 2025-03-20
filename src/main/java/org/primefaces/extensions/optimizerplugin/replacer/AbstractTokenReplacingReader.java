@@ -20,7 +20,6 @@ package org.primefaces.extensions.optimizerplugin.replacer;
 
 import org.apache.maven.plugin.logging.Log;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
@@ -124,12 +123,12 @@ public abstract class AbstractTokenReplacingReader extends Reader {
     }
 
     @Override
-    public final int read(@Nonnull final char[] cbuf) throws IOException {
+    public final int read(final char[] cbuf) throws IOException {
         return read(cbuf, 0, cbuf.length);
     }
 
     @Override
-    public final int read(@Nonnull final char[] cbuf, final int off, final int len) throws IOException {
+    public final int read(final char[] cbuf, final int off, final int len) throws IOException {
         int charsRead = 0;
         for (int i = 0; i < len; i++) {
             final int nextChar = read();
@@ -167,7 +166,7 @@ public abstract class AbstractTokenReplacingReader extends Reader {
     }
 
     @Override
-    public final int read(@Nonnull final CharBuffer target) {
+    public final int read(final CharBuffer target) {
         throw new UnsupportedOperationException("Method int read(CharBuffer target) is not supported");
     }
 
