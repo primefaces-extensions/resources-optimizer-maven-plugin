@@ -26,3 +26,7 @@ See [Wiki][Wiki] documentation for the configuration and usage of the plugin.
 ## JDK 11+
 > [!IMPORTANT]  
 > Plugin version 2.5.0+ is for JDK11+
+
+## JDK 21+
+> [!IMPORTANT]  
+> Plugin version 2.7.0+ is for JDK21+
