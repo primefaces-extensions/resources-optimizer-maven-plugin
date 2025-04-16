@@ -52,9 +52,9 @@
     </developers>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <junit.version>5.12.2</junit.version>
         <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
     </properties>
