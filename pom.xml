@@ -3,7 +3,7 @@
     <groupId>org.primefaces.extensions</groupId>
     <artifactId>resources-optimizer-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>2.7.1</version>
+    <version>2.7.0</version>
     <name>PrimeFaces Extensions Resource Optimizer Plugin</name>
     <description>
         <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]></description>
@@ -126,6 +126,30 @@
         </dependency>
     </dependencies>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.14.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.11.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -218,6 +242,7 @@
                                 </goals>
                                 <configuration>
                                     <attach>true</attach>
+                                    <doclint>none</doclint>
                                 </configuration>
                             </execution>
                         </executions>
