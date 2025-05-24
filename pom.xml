@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.primefaces.extensions</groupId>
     <artifactId>resources-optimizer-maven-plugin</artifactId>
@@ -8,10 +6,8 @@
     <version>2.7.0</version>
     <name>PrimeFaces Extensions Resource Optimizer Plugin</name>
     <description>
-        <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
-    </description>
+        <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]></description>
     <url>https://github.com/primefaces-extensions</url>
-
     <licenses>
         <license>
             <name>Apache 2</name>
@@ -20,25 +16,13 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
-
     <scm>
         <connection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</developerConnection>
         <url>https://github.com/primefaces-extensions/resources-optimizer-maven-plugin</url>
         <tag>HEAD</tag>
     </scm>
-
     <developers>
-        <developer>
-            <id>tandraschko</id>
-            <name>Thomas Andraschko</name>
-            <email>andraschko.thomas@gmail.com</email>
-            <roles>
-                <role>Owner</role>
-                <role>Developer</role>
-            </roles>
-            <timezone>+1</timezone>
-        </developer>
         <developer>
             <id>melloware</id>
             <name>Emil Lefkof</name>
@@ -49,8 +33,17 @@
             </roles>
             <timezone>America/New_York</timezone>
         </developer>
+        <developer>
+            <id>tandraschko</id>
+            <name>Thomas Andraschko</name>
+            <email>andraschko.thomas@gmail.com</email>
+            <roles>
+                <role>Owner</role>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
     </developers>
-
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -58,7 +51,6 @@
         <junit.version>5.12.2</junit.version>
         <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -70,7 +62,8 @@
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>3.15.1</version>
-            <scope>provided</scope> <!-- annotations are not used at runtime because @Retention(value=CLASS), they are needed only to build the plugin -->
+            <scope>provided</scope>
+            <!-- annotations are not used at runtime because @Retention(value=CLASS), they are needed only to build the plugin -->
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -132,7 +125,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -167,53 +159,81 @@
                 <version>3.5.3</version>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
-                <extensions>true</extensions>
+                <groupId>org.jreleaser</groupId>
+                <artifactId>jreleaser-maven-plugin</artifactId>
+                <version>1.18.0</version>
+                <inherited>false</inherited>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <jreleaser>
+                        <release>
+                            <github>
+                                <releaseName>{{projectVersion}}</releaseName>
+                                <overwrite>true</overwrite>
+                                <releaseNotes>
+                                    <enabled>true</enabled>
+                                </releaseNotes>
+                            </github>
+                        </release>
+                        <signing>
+                            <active>ALWAYS</active>
+                            <armored>true</armored>
+                        </signing>
+                        <deploy>
+                            <maven>
+                                <pomchecker>
+                                    <failOnWarning>false</failOnWarning>
+                                    <strict>false</strict>
+                                </pomchecker>
+                                <mavenCentral>
+                                    <sonatype>
+                                        <active>ALWAYS</active>
+                                        <url>https://central.sonatype.com/api/v1/publisher</url>
+                                        <stagingRepositories>target/staging-deploy</stagingRepositories>
+                                    </sonatype>
+                                </mavenCentral>
+                            </maven>
+                        </deploy>
+                    </jreleaser>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
-
     <profiles>
         <profile>
             <id>release</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
+            <properties>
+                <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+            </properties>
             <build>
+                <defaultGoal>deploy jreleaser:full-release</defaultGoal>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
+                        <artifactId>maven-javadoc-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
+                                <id>attach-javadocs</id>
                                 <goals>
-                                    <goal>sign</goal>
+                                    <goal>jar</goal>
                                 </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -221,5 +241,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>
