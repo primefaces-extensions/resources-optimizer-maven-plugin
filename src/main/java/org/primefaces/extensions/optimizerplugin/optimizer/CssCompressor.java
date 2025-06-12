@@ -64,7 +64,7 @@ public class CssCompressor {
 				continue;
 			}
 
-			if (terminator.length() == 0) {
+			if (terminator.isEmpty()) {
 				terminator = ")";
 			}
 
@@ -206,7 +206,7 @@ public class CssCompressor {
 
 			// keep empty comments after child selectors (IE7 hack)
 			// e.g. html >/**/ body
-			if (token.length() == 0) {
+			if (token.isEmpty()) {
 				startIndex = css.indexOf(placeholder);
 				if (startIndex > 2) {
 					if (css.charAt(startIndex - 3) == '>') {
@@ -566,6 +566,10 @@ public class CssCompressor {
 		m.appendTail(sb);
 		css = sb.toString();
 
+		// #240 add spaces after parens
+		css = css.replaceAll("\\)(?=[a-zA-Z0-9])", ") ")       // Add space after ')' if followed by letter/digit
+				 .replaceAll("(?<=[a-zA-Z0-9])(?=calc)", " "); // Add space before "calc" if preceded by a letter/digit
+
 		// #168 remove spaces inside "var(--month - margin)"
 		sb = new StringBuilder();
 		p = Pattern.compile("var\\(--[^;})]*\\)");
@@ -588,7 +592,7 @@ public class CssCompressor {
 	public static String normalizeSpace(final String str) {
 		// LANG-1020: Improved performance significantly by normalizing manually instead of using regex
 		// See https://github.com/librucha/commons-lang-normalizespaces-benchmark for performance test
-		if (str == null || str.length() == 0) {
+		if (str == null || str.isEmpty()) {
 			return str;
 		}
 		final int size = str.length();
