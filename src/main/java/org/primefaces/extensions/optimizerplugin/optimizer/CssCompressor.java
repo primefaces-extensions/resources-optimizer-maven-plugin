@@ -37,7 +37,7 @@ public class CssCompressor {
 	}
 
 	/**
-	 * @param css              - full css string
+	 * @param css              - full CSS string
 	 * @param preservedToken   - token to preserve
 	 * @param tokenRegex       - regex to find token
 	 * @param removeWhiteSpace - remove any white space in the token
@@ -570,6 +570,9 @@ public class CssCompressor {
 		css = css.replaceAll("\\)(?=[a-zA-Z0-9])", ") ")       // Add space after ')' if followed by letter/digit
 				 .replaceAll("(?<=[a-zA-Z0-9])(?=calc)", " "); // Add space before "calc" if preceded by a letter/digit
 
+		// #243 put spaces back around +
+		css = formatPlusInsideParens(css);
+
 		// #168 remove spaces inside "var(--month - margin)"
 		sb = new StringBuilder();
 		p = Pattern.compile("var\\(--[^;})]*\\)");
@@ -587,6 +590,37 @@ public class CssCompressor {
 
 		// Write the output...
 		out.write(css);
+	}
+
+	/**
+	 * Fix #243 add spaces around + side inside parens() like calc().
+	 * @param input the input the process
+	 * @return the CSS string output
+	 */
+	public static String formatPlusInsideParens(String input) {
+		Pattern parenPattern = Pattern.compile("(?<!url)\\(([^)]*?)\\)", Pattern.CASE_INSENSITIVE);
+		Matcher matcher = parenPattern.matcher(input);
+		StringBuilder result = new StringBuilder();
+
+		while (matcher.find()) {
+			// Ensure the opening paren is not preceded by "url"
+			int start = matcher.start();
+			boolean isUrl = false;
+			if (start >= 3) {
+				String prefix = input.substring(Math.max(0, start - 4), start).toLowerCase();
+				isUrl = prefix.endsWith("url");
+			}
+
+			if (isUrl) {
+				matcher.appendReplacement(result, matcher.group()); // Leave it unchanged
+			} else {
+				String inner = matcher.group(1);
+				String replaced = inner.replaceAll("\\s*\\+\\s*", " + ");
+				matcher.appendReplacement(result, "(" + Matcher.quoteReplacement(replaced) + ")");
+			}
+		}
+		matcher.appendTail(result);
+		return result.toString();
 	}
 
 	public static String normalizeSpace(final String str) {

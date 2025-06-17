@@ -1,0 +1,1 @@
+.example{width:clamp(2.5rem,1.6667rem + 4.1667vw,5rem);height:max(1rem + 5px,2rem - 8px)}
