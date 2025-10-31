@@ -1,0 +1,45 @@
+/* Example from: https://developer.mozilla.org/en-US/docs/Web/CSS/basic-shape/shape */
+.foo {
+    /* <fill-rule> */
+    clip-path: shape(nonzero from 0 0, line to 10px 10px);
+
+    /* <move-command>, <line-command>, and close */
+    offset-path: shape(from 10px 10px, move by 10px 5px, line by 20px 40%, close);
+
+    /* <hvline-command> */
+    offset-path: shape(from 10px 10px, hline by 50px, vline to 5rem);
+
+    /* <curve-command> */
+    offset-path: shape(
+            from 10px 10px,
+            curve to 80px 80px with 160px 1px / 20% 16px
+    );
+
+    /* <smooth-command> */
+    offset-path: shape(from 10px 10px, smooth to 100px 50pt);
+
+    /* <arc-command> */
+    offset-path: shape(
+            from 5% 0.5rem,
+            arc to 80px 1pt of 10% ccw large rotate 25deg
+    );
+
+    /* Using a CSS math function */
+    offset-path: shape(
+            from 5px -5%,
+            hline to 50px,
+            vline by calc(0% + 160px),
+            hline by 70.5px,
+            close,
+            vline by 60px
+    );
+
+    clip-path: shape(
+            evenodd from 10px 10px,
+            curve to 60px 20% with 40px 0,
+            smooth to 90px 0,
+            curve by -20px 60% with 10% 40px / 20% 20px,
+            smooth by -40% -10px with -10px 70px,
+            close
+    );
+}

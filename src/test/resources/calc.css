@@ -6,3 +6,8 @@
 	height:calc(50% + 4px);
 	bottom:calc(100vh - 20px);
 }
+
+.test-calc-edge-cases {
+    left: calc( 100% - calc( 50px + 10px ) );
+    right: calc(100% - calc(50px - -10px));
+}
