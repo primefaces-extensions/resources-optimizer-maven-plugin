@@ -1,1 +1,1 @@
-.test-calc{top:calc(-100vw + 4em) !important;left:calc(50% - (100px * 2));width:calc(25% + 10px);right:calc(((100% - 1200px) / 2) + 16px);height:calc(50% + 4px);bottom:calc(100vh - 20px)}
+.test-calc{top:calc(-100vw + 4em) !important;left:calc(50% - (100px * 2));width:calc(25% + 10px);right:calc(((100% - 1200px) / 2) + 16px);height:calc(50% + 4px);bottom:calc(100vh - 20px)}.test-calc-edge-cases{left:calc(100% - calc(50px + 10px));right:calc(100% - calc(50px - -10px))}
