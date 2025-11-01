@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.primefaces.extensions</groupId>
     <artifactId>resources-optimizer-maven-plugin</artifactId>
@@ -8,10 +6,8 @@
     <version>2.6.6</version>
     <name>PrimeFaces Extensions Resource Optimizer Plugin</name>
     <description>
-        <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]>
-    </description>
+        <![CDATA[Maven plugin to compress and merge resources like JavaScript and CSS files.]]></description>
     <url>https://github.com/primefaces-extensions</url>
-
     <licenses>
         <license>
             <name>Apache 2</name>
@@ -20,14 +16,12 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
-
     <scm>
         <connection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:primefaces-extensions/resources-optimizer-maven-plugin.git</developerConnection>
         <url>https://github.com/primefaces-extensions/resources-optimizer-maven-plugin</url>
         <tag>HEAD</tag>
     </scm>
-
     <developers>
         <developer>
             <id>tandraschko</id>
@@ -50,7 +44,6 @@
             <timezone>America/New_York</timezone>
         </developer>
     </developers>
-
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -58,7 +51,6 @@
         <junit.version>5.11.1</junit.version>
         <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -70,7 +62,8 @@
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>3.15.0</version>
-            <scope>provided</scope> <!-- annotations are not used at runtime because @Retention(value=CLASS), they are needed only to build the plugin -->
+            <scope>provided</scope>
+            <!-- annotations are not used at runtime because @Retention(value=CLASS), they are needed only to build the plugin -->
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -132,7 +125,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -167,19 +159,17 @@
                 <version>3.5.0</version>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>central-publisher</publishingServerId>
+                    <autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -190,8 +180,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
-
     <profiles>
         <profile>
             <id>release</id>
@@ -221,5 +209,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>
