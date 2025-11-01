@@ -1,0 +1,3 @@
+.info {
+  margin: calc(var(--spacing-3xl) * -1) calc(var(--spacing-2xl) * -1) 0 calc(var(--spacing-2xl) * -1);
+}

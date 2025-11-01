@@ -37,7 +37,7 @@ public class CssCompressor {
 	}
 
 	/**
-	 * @param css              - full css string
+	 * @param css              - full CSS string
 	 * @param preservedToken   - token to preserve
 	 * @param tokenRegex       - regex to find token
 	 * @param removeWhiteSpace - remove any white space in the token
@@ -64,7 +64,7 @@ public class CssCompressor {
 				continue;
 			}
 
-			if (terminator.length() == 0) {
+			if (terminator.isEmpty()) {
 				terminator = ")";
 			}
 
@@ -206,7 +206,7 @@ public class CssCompressor {
 
 			// keep empty comments after child selectors (IE7 hack)
 			// e.g. html >/**/ body
-			if (token.length() == 0) {
+			if (token.isEmpty()) {
 				startIndex = css.indexOf(placeholder);
 				if (startIndex > 2) {
 					if (css.charAt(startIndex - 3) == '>') {
@@ -545,26 +545,14 @@ public class CssCompressor {
 			css = css.replace("___YUICSSMIN_PRESERVED_TOKEN_" + i + "___", preservedTokens.get(i));
 		}
 
-		// Add spaces back in between operators for css calc function
-		// https://developer.mozilla.org/en-US/docs/Web/CSS/calc
-		// Added by Eric Arnol-Martin (earnolmartin@gmail.com)
-		sb = new StringBuilder();
-		p = Pattern.compile("calc\\([^;}]*\\)");
-		m = p.matcher(css);
-		while (m.find()) {
-			String s = m.group();
-			s = s.replaceAll("\\s+", "");
-			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])\\+", " + ");
-			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])-", " - ");
-			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])\\*", " * ");
-			s = s.replaceAll("(?<=[-|%)pxemrvhw\\d])/", " / ");
-			s = s.replaceAll("(var\\(-\\s-\\s)", "var(--");
-			s = s.replaceAll("\\)(var\\(--)", ") var(--"); // #168
+		css = performCalcCompressions(css);
 
-			m.appendReplacement(sb, s);
-		}
-		m.appendTail(sb);
-		css = sb.toString();
+		// #240 add spaces after parens
+		css = css.replaceAll("\\)(?=[a-zA-Z0-9])", ") ")       // Add space after ')' if followed by letter/digit
+				 .replaceAll("(?<=[a-zA-Z0-9])(?=calc)", " "); // Add space before "calc" if preceded by a letter/digit
+
+		// #243 put spaces back around +
+		css = formatPlusInsideParens(css);
 
 		// #168 remove spaces inside "var(--month - margin)"
 		sb = new StringBuilder();
@@ -585,10 +573,41 @@ public class CssCompressor {
 		out.write(css);
 	}
 
+	/**
+	 * Fix #243 add spaces around + side inside parens() like calc().
+	 * @param input the input the process
+	 * @return the CSS string output
+	 */
+	public static String formatPlusInsideParens(String input) {
+		Pattern parenPattern = Pattern.compile("(?<!url)\\(([^)]*?)\\)", Pattern.CASE_INSENSITIVE);
+		Matcher matcher = parenPattern.matcher(input);
+		StringBuilder result = new StringBuilder();
+
+		while (matcher.find()) {
+			// Ensure the opening paren is not preceded by "url"
+			int start = matcher.start();
+			boolean isUrl = false;
+			if (start >= 3) {
+				String prefix = input.substring(Math.max(0, start - 4), start).toLowerCase();
+				isUrl = prefix.endsWith("url");
+			}
+
+			if (isUrl) {
+				matcher.appendReplacement(result, matcher.group()); // Leave it unchanged
+			} else {
+				String inner = matcher.group(1);
+				String replaced = inner.replaceAll("\\s*\\+\\s*", " + ");
+				matcher.appendReplacement(result, "(" + Matcher.quoteReplacement(replaced) + ")");
+			}
+		}
+		matcher.appendTail(result);
+		return result.toString();
+	}
+
 	public static String normalizeSpace(final String str) {
 		// LANG-1020: Improved performance significantly by normalizing manually instead of using regex
 		// See https://github.com/librucha/commons-lang-normalizespaces-benchmark for performance test
-		if (str == null || str.length() == 0) {
+		if (str == null || str.isEmpty()) {
 			return str;
 		}
 		final int size = str.length();
@@ -614,5 +633,57 @@ public class CssCompressor {
 			return "";
 		}
 		return new String(newChars, 0, count - (whitespacesCount > 0 ? 1 : 0)).trim();
+	}
+
+	private static String performCalcCompressions(String css) {
+		StringBuilder compressed = new StringBuilder();
+		while (!css.isBlank())
+			css = seekNextCalcCompression(compressed, css);
+		return compressed.toString();
+	}
+
+	private static String seekNextCalcCompression(StringBuilder compressed, String css) {
+		int calcStartIndex = css.indexOf("calc(");
+		if (calcStartIndex >= 0)
+			return compressCalcFormAt(compressed, css, calcStartIndex);
+		compressed.append(css);
+		return "";
+	}
+
+	private static String compressCalcFormAt(StringBuilder compressed, String css, int calcStartIndex) {
+		compressed.append(css, 0, calcStartIndex);
+		css = css.substring(calcStartIndex);
+		String calcForm = readNextCalcForm(css);
+		compressed.append(compressCalcForm(calcForm));
+		return css.substring(calcForm.length());
+	}
+
+	private static String readNextCalcForm(String css) {
+		// Assumes "calc(" is at the head of the string
+		int cursor = 4;
+		int depth = 1;
+		while (++cursor < css.length()) {
+			char next = css.charAt(cursor);
+			if (next == '(') depth++;
+			else if (next == ')') depth--;
+			if (depth == 0) break;
+		}
+		cursor = Integer.min(cursor, css.length() - 1);
+		return css.substring(0, cursor + 1);
+	}
+
+	// Add spaces back in between operators for css calc function
+	// https://developer.mozilla.org/en-US/docs/Web/CSS/calc
+	// Added by Eric Arnol-Martin (earnolmartin@gmail.com)
+	private static String compressCalcForm(String calcForm) {
+		return calcForm
+				.replaceAll("\\s+", "")
+				.replaceAll("(?<=[-|%)pxemrvhw\\d])--", " - -")
+				.replaceAll("(?<=[-|%)pxemrvhw\\d])\\+", " + ")
+				.replaceAll("(?<=[-|%)pxemrvhw\\d])-", " - ")
+				.replaceAll("(?<=[-|%)pxemrvhw\\d])\\*", " * ")
+				.replaceAll("(?<=[-|%)pxemrvhw\\d])/", " / ")
+				.replaceAll("(var\\(-\\s-\\s)", "var(--")
+				.replaceAll("\\)(var\\(--)", ") var(--");
 	}
 }
