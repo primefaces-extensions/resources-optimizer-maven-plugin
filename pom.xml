@@ -170,16 +170,6 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
     <profiles>
         <profile>
             <id>release</id>
@@ -193,14 +183,12 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
+                        <artifactId>maven-source-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
+                                <id>attach-sources</id>
                                 <goals>
-                                    <goal>sign</goal>
+                                    <goal>jar-no-fork</goal>
                                 </goals>
                             </execution>
                         </executions>
