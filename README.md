@@ -19,6 +19,12 @@ See [Wiki][Wiki] documentation for the configuration and usage of the plugin.
 
 [Wiki]: https://github.com/primefaces-extensions/primefaces-extensions.github.com/wiki/Maven-plugin-for-web-resource-optimization
 
+Version  | Java version 
+------------ | ------------- |
+![2.4.x](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg?versionPrefix=2.4&color=cyan) | ![Java](https://img.shields.io/badge/Java%208+-blue.svg)
+![2.6.x](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg?versionPrefix=2.6&color=cyan) | ![Java](https://img.shields.io/badge/Java%2011+-blue.svg)
+![2.7.x](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg?versionPrefix=2.7&color=cyan) | ![Java](https://img.shields.io/badge/Java%2021+-blue.svg)
+
 ## JDK 8
 > [!WARNING]  
 > Plugin version 2.4.4 is the last to support JDK8 because of Google Closure Compiler stopped supporting JDK8.
