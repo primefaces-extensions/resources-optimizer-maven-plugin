@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20260107</version>
+            <version>v20260112</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
