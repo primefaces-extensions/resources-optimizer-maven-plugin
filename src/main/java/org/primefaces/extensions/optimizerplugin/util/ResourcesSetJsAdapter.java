@@ -21,70 +21,80 @@ package org.primefaces.extensions.optimizerplugin.util;
 import java.io.File;
 import java.util.Set;
 
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
-import com.google.javascript.jscomp.WarningLevel;
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
 import org.primefaces.extensions.optimizerplugin.model.SourceMap;
 
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.WarningLevel;
+
 /**
- * Container class containing all needed infos for a resource set describing JavaScript files..
+ * Container class containing all needed infos for a resource set describing
+ * JavaScript files..
  *
  * @author Oleg Varaksin (ovaraksin@googlemail.com)
  */
 public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
-    private final CompilationLevel compilationLevel;
+	private final CompilationLevel compilationLevel;
 
-    private final WarningLevel warningLevel;
+	private final WarningLevel warningLevel;
 
-    private final SourceMap sourceMap;
+	private final SourceMap sourceMap;
 
-    private final LanguageMode languageIn;
+	private final LanguageMode languageIn;
 
-    private final LanguageMode languageOut;
+	private final LanguageMode languageOut;
 
-    private final boolean emitUseStrict;
-    private boolean processCommonJSModules;
+	private final boolean emitUseStrict;
+	private boolean processCommonJSModules;
 
-    public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation, CompilationLevel compilationLevel,
-                WarningLevel warningLevel, SourceMap sourceMap, String encoding, boolean failOnWarning,
-                String suffix, LanguageMode languageIn, LanguageMode languageOut, boolean emitUseStrict, boolean processCommonJSModules) {
-        super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
-        this.compilationLevel = compilationLevel;
-        this.warningLevel = warningLevel;
-        this.sourceMap = sourceMap;
-        this.languageIn = languageIn;
-        this.languageOut = languageOut;
-        this.emitUseStrict = emitUseStrict;
-        this.processCommonJSModules = processCommonJSModules;
-    }
+	private boolean gzip;
 
-    public CompilationLevel getCompilationLevel() {
-        return compilationLevel;
-    }
+	public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation,
+			CompilationLevel compilationLevel, WarningLevel warningLevel, SourceMap sourceMap, String encoding,
+			boolean failOnWarning, String suffix, LanguageMode languageIn, LanguageMode languageOut,
+			boolean emitUseStrict, boolean processCommonJSModules, boolean gzip) {
+		super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
+		this.compilationLevel = compilationLevel;
+		this.warningLevel = warningLevel;
+		this.sourceMap = sourceMap;
+		this.languageIn = languageIn;
+		this.languageOut = languageOut;
+		this.emitUseStrict = emitUseStrict;
+		this.processCommonJSModules = processCommonJSModules;
+		this.gzip = gzip;
+	}
 
-    public WarningLevel getWarningLevel() {
-        return warningLevel;
-    }
+	public CompilationLevel getCompilationLevel() {
+		return compilationLevel;
+	}
 
-    public SourceMap getSourceMap() {
-        return sourceMap;
-    }
+	public WarningLevel getWarningLevel() {
+		return warningLevel;
+	}
 
-    public LanguageMode getLanguageIn() {
-        return languageIn;
-    }
+	public SourceMap getSourceMap() {
+		return sourceMap;
+	}
 
-    public LanguageMode getLanguageOut() {
-        return languageOut;
-    }
+	public LanguageMode getLanguageIn() {
+		return languageIn;
+	}
 
-    public boolean isEmitUseStrict() {
-        return emitUseStrict;
-    }
+	public LanguageMode getLanguageOut() {
+		return languageOut;
+	}
 
-    public boolean isProcessCommonJSModules() {
-        return processCommonJSModules;
-    }
+	public boolean isEmitUseStrict() {
+		return emitUseStrict;
+	}
+
+	public boolean isProcessCommonJSModules() {
+		return processCommonJSModules;
+	}
+
+	public boolean isGzip() {
+		return gzip;
+	}
 }
