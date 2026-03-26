@@ -160,7 +160,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 						FileUtils.rename(outputFile, file);
 
 						if (isGzipRequested) {
-							gzipFile(outputFile);
+							gzipFile(file);
 						}
 
 						if (sourceMapFile != null) {
