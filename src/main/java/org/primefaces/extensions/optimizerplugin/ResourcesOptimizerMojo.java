@@ -19,14 +19,19 @@
 package org.primefaces.extensions.optimizerplugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.CompilerOptions.Environment;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.jscomp.WarningLevel;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -187,6 +192,30 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	 */
 	@Parameter(defaultValue = "true")
 	private boolean rewritePolyfills;
+
+	/**
+	 * Environment whose built-in externs are passed to the Closure Compiler
+	 * (equivalent of the command line option --env). Possible values: BROWSER
+	 * (externs for browser APIs like window, document, ...) and CUSTOM (no built-in
+	 * externs, only the files configured in externs).
+	 */
+	@Parameter(defaultValue = "BROWSER")
+	private String environment;
+
+	/**
+	 * Additional externs files for the Closure Compiler (equivalent of the command
+	 * line option --externs). Externs declare names defined outside of the
+	 * compiled code (e.g. third-party libraries) which must not be renamed with
+	 * ADVANCED_OPTIMIZATIONS.
+	 */
+	@Parameter
+	private File[] externs;
+
+	/**
+	 * Resolved externs (built-in environment externs plus custom externs files),
+	 * lazily created once per execution.
+	 */
+	private List<SourceFile> resolvedExterns;
 
 	/**
 	 * Compile sets.
@@ -439,13 +468,60 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 		resFound = true;
 		final ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(inputDir, jsFiles, aggr, compilationLevel,
 				warningLevel, sourceMap, encoding, failOnWarning, suffix, languageIn, languageOut, emitUseStrict,
-				processCommonJSModules, isGzip, rewritePolyfills);
+				processCommonJSModules, isGzip, rewritePolyfills, resolveExterns());
 
 		final ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer(getLog());
 		closureOptimizer.optimize(rsa);
 
 		originalFilesSize += closureOptimizer.getTotalOriginalSize();
 		optimizedFilesSize += closureOptimizer.getTotalOptimizedSize();
+	}
+
+	private List<SourceFile> resolveExterns() throws MojoExecutionException {
+		if (resolvedExterns != null) {
+			return resolvedExterns;
+		}
+
+		final List<SourceFile> result = new ArrayList<>();
+		final Environment env = getEnvironment(environment);
+		if (env != Environment.CUSTOM) {
+			try {
+				result.addAll(CommandLineRunner.getBuiltinExterns(env));
+			} catch (final IOException e) {
+				throw new MojoExecutionException("Built-in externs for environment " + env + " could not be loaded", e);
+			}
+		}
+
+		if (externs != null) {
+			final Charset cset = Charset.forName(encoding);
+			for (final File extern : externs) {
+				if (extern == null || !extern.isFile()) {
+					throw new MojoExecutionException("Externs file '" + extern + "' does not exist");
+				}
+				result.add(SourceFile.fromPath(extern.toPath(), cset));
+			}
+		}
+
+		getLog().debug("Using " + result.size() + " externs file(s) for environment " + env);
+		resolvedExterns = result;
+		return resolvedExterns;
+	}
+
+	private Environment getEnvironment(final String environment) throws MojoExecutionException {
+		try {
+			return Environment.valueOf(environment);
+		} catch (final Exception e) {
+			final String errMsg = "Environment '" + environment + "' is wrong. Valid constants are: "
+					+ Arrays.toString(Environment.values());
+			if (failOnWarning) {
+				throw new MojoExecutionException(errMsg);
+			} else {
+				getLog().warn(errMsg);
+				getLog().warn("Using 'BROWSER' as environment");
+
+				return Environment.BROWSER;
+			}
+		}
 	}
 
 	private boolean checkAggregation(final Aggregation aggregation) throws MojoExecutionException {
