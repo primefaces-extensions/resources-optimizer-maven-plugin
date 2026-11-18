@@ -39,15 +39,35 @@ jobs:
 
       - name: Set version
         if: github.event_name == 'workflow_dispatch'
+        env:
+          VERSION: ${{ github.event.inputs.version }}
         run: |
-          mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${{ github.event.inputs.version }}
+          mvn -B versions:set -DgenerateBackupPoms=false -DnewVersion="$VERSION"
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add pom.xml
-          git commit -m "Release version ${{ github.event.inputs.version }}"
-          git tag -a "v${{ github.event.inputs.version }}" -m "Release version ${{ github.event.inputs.version }}"
+
+          # idempotent, so a failed release can be re-run with the same version
+          if git diff --cached --quiet; then
+            echo "pom.xml is already at version $VERSION, nothing to commit"
+          else
+            git commit -m "Release version $VERSION"
+          fi
+
+          if git rev-parse -q --verify "refs/tags/v$VERSION" > /dev/null; then
+            TAG_COMMIT=$(git rev-list -n 1 "v$VERSION")
+            if [ "$TAG_COMMIT" != "$(git rev-parse HEAD)" ]; then
+              echo "::error::Tag v$VERSION already exists at $TAG_COMMIT, but master is at $(git rev-parse HEAD)." \
+                "Either release a new version, or delete the tag (git push origin :refs/tags/v$VERSION) to release master as $VERSION."
+              exit 1
+            fi
+            echo "Tag v$VERSION already exists at HEAD, reusing it"
+          else
+            git tag -a "v$VERSION" -m "Release version $VERSION"
+          fi
+
           git push origin master
-          git push origin "v${{ github.event.inputs.version }}"
+          git push origin "v$VERSION"
 
       - name: Release
         env:
@@ -57,12 +77,49 @@ jobs:
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
-        run: mvn -Prelease
+        run: mvn -B -e -Prelease
+
+      # JReleaser does not log the response body of a failed Maven Central call.
+      # Print the deployment status (state + validation errors) from the Central Portal API.
+      - name: Show Maven Central deployment status
+        if: failure()
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
+        run: |
+          DEPLOYMENT_ID=$(grep -ihoE 'DeploymentId=[0-9a-f-]+' target/jreleaser/output.properties 2>/dev/null | head -n 1 | cut -d= -f2)
+          if [ -z "$DEPLOYMENT_ID" ]; then
+            DEPLOYMENT_ID=$(grep -ohE 'uploaded as deployment [0-9a-f-]+' target/jreleaser/trace.log 2>/dev/null | head -n 1 | awk '{print $NF}')
+          fi
+          if [ -z "$DEPLOYMENT_ID" ]; then
+            echo "No Maven Central deployment was created, nothing to show."
+            exit 0
+          fi
+          AUTH=$(printf '%s:%s' "$SONATYPE_USERNAME" "$SONATYPE_TOKEN" | base64 -w 0)
+          echo "::add-mask::$AUTH"
+          echo "Deployment: $DEPLOYMENT_ID"
+          echo "Portal: https://central.sonatype.com/publishing/deployments"
+          curl -sS -X POST -H "Authorization: Bearer $AUTH" \
+            "https://central.sonatype.com/api/v1/publisher/status?id=$DEPLOYMENT_ID" | jq . || true
+
+      - name: Upload JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: jreleaser-${{ github.event.inputs.version }}
+          path: |
+            target/jreleaser/trace.log
+            target/jreleaser/output.properties
+            target/jreleaser/release/CHANGELOG.md
+          if-no-files-found: ignore
+          retention-days: 30
 
       - name: Set next version
         if: github.event_name == 'workflow_dispatch'
+        env:
+          NEXT_VERSION: ${{ github.event.inputs.next_version }}
         run: |
-          mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${{ github.event.inputs.next_version }}
+          mvn -B versions:set -DgenerateBackupPoms=false -DnewVersion="$NEXT_VERSION"
           git add pom.xml
           git commit -m "Prepare for next development version"
           git push origin master
