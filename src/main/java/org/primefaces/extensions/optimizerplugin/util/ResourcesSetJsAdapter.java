@@ -51,10 +51,12 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
 	private boolean gzip;
 
+	private final boolean rewritePolyfills;
+
 	public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation,
 			CompilationLevel compilationLevel, WarningLevel warningLevel, SourceMap sourceMap, String encoding,
 			boolean failOnWarning, String suffix, LanguageMode languageIn, LanguageMode languageOut,
-			boolean emitUseStrict, boolean processCommonJSModules, boolean gzip) {
+			boolean emitUseStrict, boolean processCommonJSModules, boolean gzip, boolean rewritePolyfills) {
 		super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
 		this.compilationLevel = compilationLevel;
 		this.warningLevel = warningLevel;
@@ -64,6 +66,7 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 		this.emitUseStrict = emitUseStrict;
 		this.processCommonJSModules = processCommonJSModules;
 		this.gzip = gzip;
+		this.rewritePolyfills = rewritePolyfills;
 	}
 
 	public CompilationLevel getCompilationLevel() {
@@ -96,5 +99,9 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
 	public boolean isGzip() {
 		return gzip;
+	}
+
+	public boolean isRewritePolyfills() {
+		return rewritePolyfills;
 	}
 }
