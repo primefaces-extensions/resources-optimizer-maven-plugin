@@ -185,7 +185,7 @@ public abstract class AbstractOptimizer {
 		if ((file == null) || (!file.exists())) {
 			return null;
 		}
-		if (".gz".equalsIgnoreCase(FileUtils.getExtension(file.getName()))) {
+		if ("gz".equalsIgnoreCase(FileUtils.getExtension(file.getName()))) {
 			return null;
 		}
 		File gzipped = new File(file.getAbsolutePath() + ".gz");

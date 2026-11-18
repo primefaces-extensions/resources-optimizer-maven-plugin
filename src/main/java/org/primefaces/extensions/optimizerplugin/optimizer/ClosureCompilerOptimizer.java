@@ -159,13 +159,14 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 						Files.asCharSink(outputFile, cset).write(compiler.toSource());
 						FileUtils.rename(outputFile, file);
 
-						if (isGzipRequested) {
-							gzipFile(file);
-						}
-
 						if (sourceMapFile != null) {
 							// write sourceMappingURL into the minified file
 							writeSourceMappingURL(file, sourceMapFile, rsa.getSourceMap().getSourceMapRoot(), cset);
+						}
+
+						// gzip after the minified file is complete (incl. sourceMappingURL)
+						if (isGzipRequested) {
+							gzipFile(file);
 						}
 
 						// statistic
