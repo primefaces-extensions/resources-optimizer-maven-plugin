@@ -198,6 +198,18 @@ public abstract class AbstractOptimizer {
 				}) {
 			ins.transferTo(out);
 		}
+
+		// only keep the gzipped file if it is actually smaller than the original
+		if (gzipped.length() >= file.length()) {
+			if (log != null) {
+				log.info("Gzipped file " + gzipped.getName() + " (" + gzipped.length() + " bytes) is not smaller than "
+						+ file.getName() + " (" + file.length() + " bytes), removing it.");
+			}
+			if (!gzipped.delete() && log != null) {
+				log.warn("Gzipped file " + gzipped.getName() + " could not be deleted.");
+			}
+			return null;
+		}
 		return gzipped;
 	}
 

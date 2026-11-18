@@ -40,6 +40,24 @@ public class ClosureCompilerOptimizerTest {
 	}
 
 	@Test
+	public void testGzipNotKeptWhenNotSmaller(@TempDir Path tempDir) throws IOException {
+		// gzip header/trailer (~20 bytes) makes a tiny file bigger
+		Path jsFile = tempDir.resolve("tiny.js");
+		Files.write(jsFile, "a();".getBytes());
+		// stale .gz from a previous build must not survive
+		Path gzFile = tempDir.resolve("tiny.js.gz");
+		Files.write(gzFile, new byte[] { 1, 2, 3 });
+		ClosureCompilerOptimizer optimizer = new ClosureCompilerOptimizer(null);
+
+		File result = optimizer.gzipFile(jsFile.toFile());
+
+		// Verify
+		assertNull(result);
+		assertFalse(Files.exists(gzFile));
+		assertTrue(Files.exists(jsFile));
+	}
+
+	@Test
 	public void testAlreadyGzippedFileIsSkipped(@TempDir Path tempDir) throws IOException {
 		Path gzFile = tempDir.resolve("script.js.gz");
 		Files.write(gzFile, new byte[] { 1, 2, 3 });
