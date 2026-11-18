@@ -53,8 +53,6 @@ import com.google.javascript.jscomp.WarningLevel;
  */
 public class ClosureCompilerOptimizer extends AbstractOptimizer {
 
-	private static final List<SourceFile> EXTERNS_EMPTY = new ArrayList<>();
-
 	private static final String OPTIMIZED_FILE_EXTENSION = ".optjs";
 
 	private static final String SOURCE_MAP_FILE_EXTENSION = ".map";
@@ -131,7 +129,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 					// compile
 					final List<SourceFile> interns = new ArrayList<>();
 					interns.add(SourceFile.fromPath(sourceFile.toPath(), cset));
-					final Compiler compiler = compile(interns, options, rsa.isFailOnWarning());
+					final Compiler compiler = compile(rsa.getExterns(), interns, options, rsa.isFailOnWarning());
 
 					if (StringUtils.isNotBlank(rsa.getSuffix())) {
 						// write compiled content into the new file
@@ -207,7 +205,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 					// compile
 					final List<SourceFile> interns = new ArrayList<>();
 					interns.add(SourceFile.fromPath(aggrOutputFile.toPath(), cset));
-					final Compiler compiler = compile(interns, options, rsa.isFailOnWarning());
+					final Compiler compiler = compile(rsa.getExterns(), interns, options, rsa.isFailOnWarning());
 
 					// delete single files if necessary
 					deleteFilesIfNecessary(rsa);
@@ -257,11 +255,12 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 		}
 	}
 
-	protected Compiler compile(final List<SourceFile> interns, final CompilerOptions options,
+	protected Compiler compile(final List<SourceFile> externs, final List<SourceFile> interns,
+			final CompilerOptions options,
 			final boolean failOnWarning) throws MojoExecutionException {
 		// compile
 		final Compiler compiler = new Compiler();
-		final Result result = compiler.compile(EXTERNS_EMPTY, interns, options);
+		final Result result = compiler.compile(externs, interns, options);
 
 		// evaluate result
 		evalResult(result, failOnWarning);

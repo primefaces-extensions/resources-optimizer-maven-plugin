@@ -35,7 +35,7 @@ public class ClosureCompilerPolyfillTest {
 		File file = js.toFile();
 		ResourcesSetJsAdapter rsa = new ResourcesSetJsAdapter(dir.toFile(), Collections.singleton(file), null,
 				CompilationLevel.SIMPLE_OPTIMIZATIONS, WarningLevel.QUIET, null, "UTF-8", false, null, in, out,
-				false, false, false, rewritePolyfills);
+				false, false, false, rewritePolyfills, null);
 		new ClosureCompilerOptimizer(new SystemStreamLog()).optimize(rsa);
 		return new String(Files.readAllBytes(js), StandardCharsets.UTF_8);
 	}

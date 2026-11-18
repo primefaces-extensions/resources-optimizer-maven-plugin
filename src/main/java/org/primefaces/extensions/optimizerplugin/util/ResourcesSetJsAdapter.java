@@ -19,6 +19,8 @@
 package org.primefaces.extensions.optimizerplugin.util;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.primefaces.extensions.optimizerplugin.model.Aggregation;
@@ -26,6 +28,7 @@ import org.primefaces.extensions.optimizerplugin.model.SourceMap;
 
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.jscomp.WarningLevel;
 
 /**
@@ -53,10 +56,13 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
 	private final boolean rewritePolyfills;
 
+	private final List<SourceFile> externs;
+
 	public ResourcesSetJsAdapter(File inputDir, Set<File> files, Aggregation aggregation,
 			CompilationLevel compilationLevel, WarningLevel warningLevel, SourceMap sourceMap, String encoding,
 			boolean failOnWarning, String suffix, LanguageMode languageIn, LanguageMode languageOut,
-			boolean emitUseStrict, boolean processCommonJSModules, boolean gzip, boolean rewritePolyfills) {
+			boolean emitUseStrict, boolean processCommonJSModules, boolean gzip, boolean rewritePolyfills,
+			List<SourceFile> externs) {
 		super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
 		this.compilationLevel = compilationLevel;
 		this.warningLevel = warningLevel;
@@ -67,6 +73,7 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 		this.processCommonJSModules = processCommonJSModules;
 		this.gzip = gzip;
 		this.rewritePolyfills = rewritePolyfills;
+		this.externs = externs == null ? Collections.emptyList() : externs;
 	}
 
 	public CompilationLevel getCompilationLevel() {
@@ -103,5 +110,13 @@ public class ResourcesSetJsAdapter extends ResourcesSetAdapter {
 
 	public boolean isRewritePolyfills() {
 		return rewritePolyfills;
+	}
+
+	/**
+	 * @return externs passed to the Closure Compiler (built-in environment externs
+	 *         plus custom externs files), never null
+	 */
+	public List<SourceFile> getExterns() {
+		return externs;
 	}
 }
