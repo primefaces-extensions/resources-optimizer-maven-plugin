@@ -171,7 +171,8 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	private boolean skip;
 
 	/**
-	 * Flag whether minified files should be gzipped.
+	 * Flag whether minified JS and CSS files should be gzipped. A .gz file is only
+	 * kept if it is smaller than the minified file.
 	 */
 	@Parameter
 	private boolean gzip;
@@ -422,7 +423,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 			throws MojoExecutionException {
 		resFound = true;
 		final ResourcesSetAdapter rsa = new ResourcesSetCssAdapter(inputDir, cssFiles, projectDataUriTokenResolver,
-				aggr, encoding, failOnWarning, suffix);
+				aggr, encoding, failOnWarning, suffix, gzip);
 
 		final YuiCompressorOptimizer yuiOptimizer = new YuiCompressorOptimizer(getLog());
 		yuiOptimizer.optimize(rsa);

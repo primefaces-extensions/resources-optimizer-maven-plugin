@@ -108,6 +108,10 @@ public class YuiCompressorOptimizer extends AbstractOptimizer {
                         // rename the new file (overwrite the original file)
                         FileUtils.rename(outputFile, file);
 
+                        if (rsa.isGzip()) {
+                            gzipFile(file);
+                        }
+
                         // statistic
                         addToOptimizedSize(file);
                     }

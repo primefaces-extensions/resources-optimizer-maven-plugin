@@ -33,14 +33,21 @@ public class ResourcesSetCssAdapter extends ResourcesSetAdapter {
 
     private final DataUriTokenResolver projectDataUriTokenResolver;
 
+    private final boolean gzip;
+
     public ResourcesSetCssAdapter(File inputDir, Set<File> files, DataUriTokenResolver projectDataUriTokenResolver,
                 Aggregation aggregation, String encoding, boolean failOnWarning,
-                String suffix) {
+                String suffix, boolean gzip) {
         super(inputDir, files, aggregation, encoding, failOnWarning, suffix);
         this.projectDataUriTokenResolver = projectDataUriTokenResolver;
+        this.gzip = gzip;
     }
 
     public DataUriTokenResolver getProjectDataUriTokenResolver() {
         return projectDataUriTokenResolver;
+    }
+
+    public boolean isGzip() {
+        return gzip;
     }
 }
