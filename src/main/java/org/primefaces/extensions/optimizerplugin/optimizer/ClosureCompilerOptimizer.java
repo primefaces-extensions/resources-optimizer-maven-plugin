@@ -84,7 +84,7 @@ public class ClosureCompilerOptimizer extends AbstractOptimizer {
 		options.setEnvironment(CompilerOptions.Environment.BROWSER);
 
 		// polyfills
-		options.setRewritePolyfills(true);
+		options.setRewritePolyfills(rsa.isRewritePolyfills());
 
 		options.setProcessCommonJSModules(rsa.isProcessCommonJSModules());
 

@@ -177,6 +177,17 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	private boolean gzip;
 
 	/**
+	 * Flag whether Closure Compiler should inject polyfills (e.g. for
+	 * Array.prototype.find) when the input uses APIs that are newer than the
+	 * output language. Polyfills are only needed when the output language is lower
+	 * than the language the code relies on, e.g. ES6 APIs with
+	 * languageIn=ECMASCRIPT5 and languageOut=NO_TRANSPILE. Set to false to never
+	 * inject polyfills.
+	 */
+	@Parameter(defaultValue = "true")
+	private boolean rewritePolyfills;
+
+	/**
 	 * Compile sets.
 	 */
 	@Parameter
@@ -263,7 +274,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 												getCompilationLevel(compilationLevel), getWarningLevel(warningLevel),
 												resolveSourceMap(null), null, getLanguageIn(languageIn),
 												getLanguageOut(languageOut), emitUseStrict, processCommonJSModules,
-												gzip);
+												gzip, rewritePolyfills);
 									}
 								}
 							}
@@ -283,7 +294,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 							processJsFiles(dir, scanner.getJsFiles(), aggr, getCompilationLevel(compilationLevel),
 									getWarningLevel(warningLevel), resolveSourceMap(null), suffix,
 									getLanguageIn(languageIn), getLanguageOut(languageOut), emitUseStrict,
-									processCommonJSModules, gzip);
+									processCommonJSModules, gzip, rewritePolyfills);
 						}
 					}
 				}
@@ -365,7 +376,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 													resolveCompilationLevel(rs), resolveWarningLevel(rs),
 													resolveSourceMap(rs), null, resolveLanguageIn(rs),
 													resolveLanguageOut(rs), emitUseStrict, processCommonJSModules,
-													gzip);
+													gzip, rewritePolyfills);
 										}
 									}
 								}
@@ -384,7 +395,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 								// handle JavaScript files
 								processJsFiles(dir, scanner.getJsFiles(), aggr, resolveCompilationLevel(rs),
 										resolveWarningLevel(rs), resolveSourceMap(rs), suffix, resolveLanguageIn(rs),
-										resolveLanguageOut(rs), emitUseStrict, processCommonJSModules, gzip);
+										resolveLanguageOut(rs), emitUseStrict, processCommonJSModules, gzip, rewritePolyfills);
 							}
 						}
 					}
@@ -423,11 +434,11 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 	private void processJsFiles(final File inputDir, final Set<File> jsFiles, final Aggregation aggr,
 			final CompilationLevel compilationLevel, final WarningLevel warningLevel, final SourceMap sourceMap,
 			final String suffix, final LanguageMode languageIn, final LanguageMode languageOut, boolean emitUseStrict,
-			boolean processCommonJSModules, boolean isGzip) throws MojoExecutionException {
+			boolean processCommonJSModules, boolean isGzip, boolean rewritePolyfills) throws MojoExecutionException {
 		resFound = true;
 		final ResourcesSetAdapter rsa = new ResourcesSetJsAdapter(inputDir, jsFiles, aggr, compilationLevel,
 				warningLevel, sourceMap, encoding, failOnWarning, suffix, languageIn, languageOut, emitUseStrict,
-				processCommonJSModules, isGzip);
+				processCommonJSModules, isGzip, rewritePolyfills);
 
 		final ClosureCompilerOptimizer closureOptimizer = new ClosureCompilerOptimizer(getLog());
 		closureOptimizer.optimize(rsa);
@@ -550,7 +561,7 @@ public class ResourcesOptimizerMojo extends AbstractMojo {
 		if (rs.getLanguageOut() != null) {
 			langOut = getLanguageOut(rs.getLanguageOut());
 		} else {
-			langOut = getLanguageIn(languageOut);
+			langOut = getLanguageOut(languageOut);
 		}
 
 		return langOut;
