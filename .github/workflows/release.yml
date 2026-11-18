@@ -35,7 +35,18 @@ jobs:
         with:
           distribution: ${{ env.JAVA_DISTRO }}
           java-version: ${{ env.JAVA_VERSION }}
-          cache: 'maven'
+
+      # Reuse the Maven cache of the "Java CI" build (same path and key format), so a release
+      # doesn't download everything from Maven Central (which rate limits runners with 429s).
+      # Release caches are preferred because they also contain the versions and JReleaser plugins.
+      - name: Restore Maven packages
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-release-
+            ${{ runner.os }}-m2
 
       - name: Set version
         if: github.event_name == 'workflow_dispatch'
@@ -113,6 +124,21 @@ jobs:
             target/jreleaser/release/CHANGELOG.md
           if-no-files-found: ignore
           retention-days: 30
+
+      # Don't cache failed downloads (e.g. 429s from Maven Central, which Maven would otherwise
+      # not retry until the next day) or this project's own artifacts.
+      - name: Clean up Maven packages for caching
+        if: always()
+        run: |
+          find ~/.m2/repository \( -name '*.lastUpdated' -o -name 'resolver-status.properties' \) -delete 2>/dev/null || true
+          rm -rf ~/.m2/repository/org/primefaces/extensions/resources-optimizer-maven-plugin
+
+      - name: Save Maven packages
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-release-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Set next version
         if: github.event_name == 'workflow_dispatch'
