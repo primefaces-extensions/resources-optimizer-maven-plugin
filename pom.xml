@@ -200,7 +200,10 @@
                         </release>
                         <signing>
                             <active>ALWAYS</active>
-                            <armored>true</armored>
+                            <pgp>
+                                <active>ALWAYS</active>
+                                <armored>true</armored>
+                            </pgp>
                         </signing>
                         <deploy>
                             <maven>
