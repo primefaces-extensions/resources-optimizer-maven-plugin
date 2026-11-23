@@ -23,7 +23,7 @@ Version  | Java version
 ------------ | ------------- |
 ![2.4.x](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg?versionPrefix=2.4&color=cyan) | ![Java](https://img.shields.io/badge/Java%208+-blue.svg)
 ![2.6.x](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg?versionPrefix=2.6&color=cyan) | ![Java](https://img.shields.io/badge/Java%2011+-blue.svg)
-![2.7.x](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg?versionPrefix=2.7&color=cyan) | ![Java](https://img.shields.io/badge/Java%2021+-blue.svg)
+![2.8.x](https://img.shields.io/maven-central/v/org.primefaces.extensions/resources-optimizer-maven-plugin.svg?versionPrefix=2.8&color=cyan) | ![Java](https://img.shields.io/badge/Java%2021+-blue.svg)
 
 ## JDK 8
 > [!WARNING]  
